@@ -1,4 +1,5 @@
 import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
@@ -144,6 +145,8 @@ export default function Home() {
           </blockquote>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }
