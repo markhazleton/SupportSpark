@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx npm-check-updates)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(timeout 12 npm run dev:*)"
+    ]
+  }
+}

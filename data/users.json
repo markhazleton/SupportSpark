@@ -1,0 +1,18 @@
+[
+  {
+    "id": "demo-member-sarah",
+    "email": "sarah@demo.supportspark.com",
+    "password": "DEMO_ONLY_879c6e94-4a53-4aa5-bea8-911e31c8ceba",
+    "firstName": "Sarah",
+    "lastName": "Mitchell",
+    "createdAt": "2025-12-26T21:59:22.290Z"
+  },
+  {
+    "id": "demo-supporter-james",
+    "email": "james@demo.supportspark.com",
+    "password": "DEMO_ONLY_879c6e94-4a53-4aa5-bea8-911e31c8ceba",
+    "firstName": "James",
+    "lastName": "Chen",
+    "createdAt": "2025-12-26T21:59:22.290Z"
+  }
+]
