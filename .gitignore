@@ -1,9 +1,46 @@
-node_modules
-dist
-.DS_Store
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Environment variables (NEVER commit secrets)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Vite
 server/public
 vite.config.ts.*
-*.tar.gz
+
+# OS files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 
 # VS Code
 .vscode/*
@@ -21,3 +58,36 @@ vite.config.ts.*
 *.userosscache
 *.sln.docstates
 nul
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Archives
+*.tar.gz
+*.zip
+*.rar
+
+# Replit
+.replit
+replit.nix
+.cache/
+.upm/
+
+# Claude/Copilot (keep config, ignore cache)
+.claude/*
+!.claude/settings.json
+
+# Optional: Uncomment to ignore development data files
+# data/users.json
+# data/supporters.json
+# data/conversations/
