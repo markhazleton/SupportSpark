@@ -32,6 +32,38 @@ This feature implements critical security hardening, type safety improvements, t
 - 24 audit issues across 5 categories
 - 6 React pages, 44 UI components, 5 server modules
 
+## Phase Cross-Reference
+
+*This plan uses "Planning Phases" (0-2) for specification workflow. The `tasks.md` file uses "Execution Phases" (1-8) for implementation.*
+
+| Planning Phase | Description | Execution Phase(s) in tasks.md |
+|----------------|-------------|--------------------------------|
+| Phase 0 | Outline & Research | N/A (completed) |
+| Phase 1 | Design & Contracts | N/A (completed) |
+| Phase 2 | Implementation Tasks | Execution Phases 1-8 |
+
+| Execution Phase | User Story | Priority |
+|-----------------|------------|----------|
+| Phase 1: Setup | Shared infrastructure | - |
+| Phase 2: Foundational | Blocking prerequisites | - |
+| Phase 3: Security | US1 - Secure Authentication | P1 |
+| Phase 4: Type Safety | US2 - Reliable Code Structure | P2 |
+| Phase 5: Testing | US3 - Automated Testing | P3 |
+| Phase 6: Code Quality | US4 - Consistent Standards | P4 |
+| Phase 7: Deployment | US5 - Production Readiness | P2 |
+| Phase 8: Polish | Cross-cutting validation | - |
+
+## Terminology Reference
+
+*Consistent terms used across spec, plan, and tasks documents:*
+
+| Term | Meaning | Example |
+|------|---------|----------|
+| **Zod schema** | Runtime validator object (lowercase) | `messageSchema`, `userSchema` |
+| **TypeScript type** | Compile-time type (capitalized) | `Message`, `User`, `AuthenticatedRequest` |
+| **Data model** | Entity structure in storage | "User entity in data/users.json" |
+| **API contract** | Route definition in shared/routes.ts | `GET /api/conversations` schema |
+
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
@@ -78,6 +110,8 @@ This feature implements critical security hardening, type safety improvements, t
 - Add explicit filename sanitization for file uploads
 - Create `.env.example` documenting required environment variables  
 **Post-Fix Status**: ✅ MUST PASS - All CRITICAL security vulnerabilities resolved
+
+**Note on FR-009/FR-010**: Session token generation (FR-009) and session timeout (FR-010) are satisfied by `express-session` default configuration using cryptographically random session IDs. The `secret` option (from SESSION_SECRET env var) provides HMAC signing. Session timeout is configurable via `cookie.maxAge` option. No explicit tasks required—verify in implementation that defaults are appropriate.
 
 ### Principle V: API Contract Pattern
 **Status**: ✅ PASSING → MAINTAIN  

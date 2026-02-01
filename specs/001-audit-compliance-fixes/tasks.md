@@ -142,7 +142,10 @@
 - [ ] T061 [P] [US3] Write test "User schema validates correct registration data"
 - [ ] T062 [P] [US3] Write test "User schema rejects passwords shorter than 8 characters"
 - [ ] T063 [P] [US3] Write test "Message schema validates complete message structure"
-- [ ] T064 [US3] Run `npm test -- --coverage` and verify 80%+ coverage achieved for server/routes.ts and server/storage.ts
+- [ ] T064 [US3] Run `npm test -- --coverage` and verify:
+  - 80%+ coverage achieved for `server/routes.ts`
+  - 80%+ coverage achieved for `server/storage.ts`
+  - Client hooks (`client/src/hooks/`) have test files with reasonable coverage (target: 60%+)
 
 **Checkpoint**: Comprehensive test suite operational. 80%+ coverage on critical modules. All tests passing.
 
@@ -205,6 +208,7 @@
 
 - [ ] T090 [US5] Test deployment script - run `script/deploy-iis.ps1 -SitePath "C:\test\site"` in test environment and verify permissions, structure, validation
 - [ ] T091 [US5] Test IIS deployment - deploy to IIS staging environment, configure SESSION_SECRET, restart IIS, verify application starts and handles requests
+- [ ] T091a [P] [US5] Implement health check endpoint (FR-042): Add `GET /api/health` route in `server/routes.ts` returning `{status: "ok", configValid: true, storageReady: true}` - validates env vars and storage access
 
 **Checkpoint**: IIS deployment fully automated and validated. Application deploys successfully with correct permissions and configuration.
 
@@ -213,6 +217,8 @@
 ## Phase 8: Polish & Cross-Cutting Concerns
 
 **Purpose**: Final validation, documentation updates, cleanup
+
+**Note on T092 vs T096**: T092 (`npm run validate`) runs technical checks (TypeScript, linting, tests). T096 (site-audit) runs comprehensive architectural and constitution compliance analysis. Both are required for full validation.
 
 - [ ] T092 [P] Run `npm run validate` (type-check + lint + format:check + test) and ensure all checks pass
 - [ ] T093 [P] Update `README.md` with new npm scripts (lint, test, validate) and setup instructions referencing quickstart.md
@@ -412,11 +418,12 @@ T060-T063: Schema tests → shared/schema.test.ts
 
 ---
 
-**Total Tasks**: 100  
+**Total Tasks**: 101 (100 original + T091a health check)  
 **Critical Path Tasks**: 23 (Setup + Foundational + US1 Security)  
-**Parallelizable Tasks**: 62 (marked with [P])  
+**Parallelizable Tasks**: 63 (marked with [P])  
 **Test Tasks**: 31 (US3 - all optional but recommended)  
 
 **Generated**: 2026-02-01  
 **Feature**: 001-audit-compliance-fixes  
-**Ready for**: Implementation with GitHub Copilot
+**Ready for**: Implementation with GitHub Copilot  
+**Last Updated**: 2026-02-01 (Analysis remediation applied)

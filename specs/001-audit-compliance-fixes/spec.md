@@ -100,7 +100,7 @@ As a platform owner, I need the application properly configured for production h
 ### Edge Cases
 
 - **What happens when user passwords need to be migrated from insecure to secure storage format?**  
-  Existing users must reset passwords or go through a one-time migration process. System should detect old format and prompt for password reset on next login.
+  **Decision**: Reset-on-next-login approach. The system detects users with `passwordVersion` field missing and returns HTTP 403 with `{requiresReset: true}` response. Client displays password reset UI. No automatic migration script is implemented in this phase. See T023 for implementation and T045 for test coverage.
 
 - **How does the system handle rate limiting for legitimate users who forget their password multiple times?**  
   Rate limiter should apply per-IP address with a reasonable window (15 minutes, 5 attempts). Users who hit the limit should see a clear message indicating when they can try again. Consider implementing account recovery flow separately.
@@ -205,7 +205,7 @@ As a platform owner, I need the application properly configured for production h
 - **SC-006**: Code validation with strict checking produces zero type errors across entire codebase
 - **SC-007**: Zero instances of unjustified ambiguous type definitions remain in production code (down from 12 violations)
 - **SC-008**: All API routes have explicit request/response data contracts validated by compilation
-- **SC-009**: Developer confidence score improves - 90% of developers report catching errors during development vs production
+- **SC-009**: *(ASPIRATIONAL - baseline TBD)* Developer confidence score improves - target 90% of developers reporting catching errors during development vs production. Measurement: Anonymous survey after 2 months of using new tooling. Baseline to be established via pre-implementation survey.
 
 ### Measurable Outcomes - Testing
 
@@ -213,15 +213,15 @@ As a platform owner, I need the application properly configured for production h
 - **SC-011**: Authentication module achieves minimum 80% code coverage with passing tests
 - **SC-012**: Storage layer achieves minimum 80% code coverage with passing tests
 - **SC-013**: Zero regressions in security features detected by automated security tests across 100 test runs
-- **SC-014**: Critical bug detection rate improves by 80% before production deployment due to automated testing
-- **SC-015**: Test suite catches 95% of introduced bugs before code review (measured over 1 month)
+- **SC-014**: *(ASPIRATIONAL - baseline TBD)* Critical bug detection rate improves by 80% before production deployment due to automated testing. Measurement: Track bugs found in tests vs production over 3-month period. Baseline: Current detection rate = 0% (no tests exist).
+- **SC-015**: *(ASPIRATIONAL - baseline TBD)* Test suite catches 95% of introduced bugs before code review (measured over 1 month). Measurement: Track bugs found by tests vs bugs found in code review. Baseline to be established after first month of test coverage.
 
 ### Measurable Outcomes - Code Quality
 
 - **SC-016**: Zero linting violations across entire codebase after initial cleanup
 - **SC-017**: Automated formatting applied to 100% of source files with consistent style
 - **SC-018**: Pre-commit hooks prevent 100% of attempts to commit non-compliant code
-- **SC-019**: Code review time reduced by 30% due to automated style enforcement removing style discussions
+- **SC-019**: *(ASPIRATIONAL - baseline TBD)* Code review time reduced by 30% due to automated style enforcement removing style discussions. Measurement: Average PR review time before/after linting implementation. Baseline to be established from Git metrics before enforcement.
 - **SC-020**: New developer onboarding time includes less than 15 minutes for understanding code standards (automated vs manual)
 
 ### Measurable Outcomes - Deployment
