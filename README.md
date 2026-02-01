@@ -100,6 +100,48 @@ The application will be available at `http://localhost:5000`
 
 ---
 
+## Deployment
+
+### Windows 11 + IIS (Production)
+
+SupportSpark is designed for production deployment on **Windows 11 with IIS**. The application uses **iisnode** to host the Node.js backend through IIS.
+
+#### Automated Deployment
+
+Use the PowerShell deployment script:
+
+```powershell
+# Run as Administrator
+.\script\deploy-iis.ps1
+```
+
+This script will:
+- Build the application
+- Copy files to `C:\inetpub\supportspark`
+- Install production dependencies
+- Set folder permissions
+- Create and configure IIS site
+
+#### Manual Deployment
+
+See the comprehensive [IIS Deployment Guide](docs/domain/deployment-iis.md) for:
+- Prerequisites (IIS, iisnode, URL Rewrite)
+- Step-by-step deployment instructions
+- SSL/TLS configuration
+- Database setup for production
+- Troubleshooting guide
+
+#### Build Output
+
+The build process (`npm run build`) creates:
+- `dist/index.cjs` — Compiled Express server (CommonJS for iisnode)
+- `dist/public/` — Frontend static files
+- `dist/web.config` — IIS configuration with URL rewrite rules
+
+For other deployment options (Docker, cloud platforms), see the constitution principle VIII for build requirements.
+
+---
+
 ## Project Structure
 
 ```
@@ -198,6 +240,7 @@ This project follows strict development principles defined in the [Constitution]
 | [Constitution](.specify/memory/constitution.md) | Project governance and principles |
 | [Architecture](docs/domain/architecture.md) | System design and data flow |
 | [Patterns](docs/domain/development-patterns.md) | Common development patterns |
+| [IIS Deployment](docs/domain/deployment-iis.md) | Windows 11 + IIS deployment guide |
 | [Copilot Instructions](.github/copilot-instructions.md) | AI assistant context |
 
 ---

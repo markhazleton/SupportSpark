@@ -1,15 +1,18 @@
 <!--
 Sync Impact Report
 ==================
-Version change: 0.0.0 → 1.0.0 (MAJOR: Initial formal constitution)
-Modified principles: N/A (initial version)
-Added sections: Core Principles (7), Technology Stack, Project Structure, Governance
+Version change: 1.0.0 → 1.1.0 (MINOR: Added deployment standards)
+Modified principles: N/A
+Added sections: Principle VIII (Deployment & Hosting Standards)
 Removed sections: None
 Templates requiring updates:
-  - plan-template.md: ✅ Constitution Check section aligns with principles
-  - spec-template.md: ✅ Requirements section compatible
-  - tasks-template.md: ✅ Phase structure compatible
+  - plan-template.md: ✅ Add deployment phase for IIS configuration
+  - spec-template.md: ✅ No changes needed
+  - tasks-template.md: ✅ Add deployment tasks template
 Follow-up TODOs:
+  - Create web.config template with iisnode configuration (Principle VIII)
+  - Add deployment scripts for IIS (Principle VIII)
+  - Update build script to include web.config in dist/ (Principle VIII)
   - Add Vitest configuration (Principle II)
   - Add ESLint + Prettier configuration (Principle VII)
   - Implement bcrypt password hashing (Principle IV)
@@ -108,6 +111,36 @@ Consistent code formatting MUST be enforced through tooling.
 
 **Rationale**: Automated formatting eliminates style debates and ensures consistent, readable code.
 
+### VIII. Deployment & Hosting Standards (NON-NEGOTIABLE)
+
+The application MUST be deployable to Windows 11 with IIS for production hosting.
+
+- Target hosting platform: Windows 11 + IIS 10.0+
+- Build output MUST include both frontend static files and compiled backend
+- Backend MUST compile to CommonJS format (`.cjs`) for iisnode compatibility
+- The `web.config` file MUST be included with URL rewrite rules for:
+  - Static file serving from `public/` directory
+  - API routing to Node.js backend (iisnode)
+  - SPA fallback routing for client-side navigation
+- iisnode configuration MUST specify:
+  - `node_env="production"` environment variable
+  - Logging enabled with dedicated log directory
+  - Appropriate process and connection limits
+- Environment variables MUST be configurable via:
+  - `.env` file for local development
+  - IIS Configuration Editor for production deployment
+- Data directory MUST have write permissions for `IIS_IUSRS` group
+- Production storage MUST use database (PostgreSQL) not file-based JSON
+- SSL/TLS MUST be configured in IIS for HTTPS in production
+
+**Build Requirements**:
+- `npm run build` MUST produce deployment-ready artifacts in `dist/`
+- `dist/index.cjs` = Compiled Express server (CommonJS)
+- `dist/public/` = Frontend static assets
+- Dependencies MUST be installed with `npm install --production` on server
+
+**Rationale**: Standardizing on Windows 11 + IIS ensures consistent deployment processes, leverages enterprise Windows infrastructure, and provides robust hosting for production environments with native Windows integration.
+
 ## Technology Stack
 
 | Layer | Technology | Constraint |
@@ -123,6 +156,8 @@ Consistent code formatting MUST be enforced through tooling.
 | Testing | Vitest or Jest | MUST be configured |
 | Linting | ESLint + Prettier | MUST be configured |
 | Storage | File-based JSON (dev) / PostgreSQL (prod) | Production MUST use database |
+| Hosting | Windows 11 + IIS 10.0+ | MUST support iisnode |
+| Build | Vite (client) + esbuild (server) | MUST output CommonJS |
 
 ## Project Structure
 
@@ -146,6 +181,11 @@ shared/                    # Shared between client & server
   
 data/                      # File-based JSON storage (development only)
   users.json               # User accounts
+
+dist/                      # Build output (production deployment)
+  index.cjs                # Compiled Express server (CommonJS)
+  public/                  # Frontend static assets
+  web.config               # IIS configuration with URL rewrite rules
   supporters.json          # Member-supporter relationships
   conversations/           # Individual conversation files
 ```
@@ -163,7 +203,7 @@ data/                      # File-based JSON storage (development only)
 
 1. Propose change with rationale in a dedicated PR
 2. Document impact on existing code
-3. Obtain lead developer approval
+3. Obtain lead 1eveloper approval
 4. Update version following semantic versioning:
    - MAJOR: Backward-incompatible principle changes or removals
    - MINOR: New principles or expanded guidance added

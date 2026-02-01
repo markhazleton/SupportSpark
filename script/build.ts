@@ -70,6 +70,14 @@ async function buildAll() {
     console.log("No favicon found, skipping...");
   }
 
+  // Copy web.config for IIS deployment
+  console.log("Copying web.config for IIS...");
+  try {
+    await copyFile("web.config", "dist/web.config");
+  } catch {
+    console.log("No web.config found, skipping...");
+  }
+
   console.log("Building server...");
   const pkg = JSON.parse(await readFile("package.json", "utf-8"));
   const allDeps = [

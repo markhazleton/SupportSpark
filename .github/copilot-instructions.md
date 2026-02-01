@@ -161,6 +161,7 @@ import { helper } from "./utils";        // Relative imports
 | Auth | Passport.js + express-session | With bcrypt |
 | Validation | Zod | All schemas |
 | Testing | Vitest | All new features |
+| Hosting | Windows 11 + IIS | Production environment |
 
 ## File Structure Convention
 
@@ -228,6 +229,16 @@ Before completing any feature, verify:
 - [ ] Security best practices applied
 - [ ] API contract defined in `shared/routes.ts`
 - [ ] Code passes ESLint/Prettier
+
+## Deployment Checklist
+
+When implementing features that affect deployment:
+
+- [ ] Build output compatible with IIS + iisnode (CommonJS format)
+- [ ] web.config updated if new routes added
+- [ ] Environment variables documented
+- [ ] Database-ready (no hardcoded file paths for production)
+- [ ] Tested with `npm run build` and `npm start`
 
 ---
 
