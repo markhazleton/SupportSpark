@@ -242,7 +242,10 @@ export function CreateUpdateDialog() {
                       {...field}
                       ref={(e) => {
                         field.ref(e);
-                        (textareaRef as any).current = e;
+                        // TYPE12 FIX: Properly type the ref assignment
+                        if (textareaRef && 'current' in textareaRef) {
+                          textareaRef.current = e;
+                        }
                       }}
                     />
                   </FormControl>

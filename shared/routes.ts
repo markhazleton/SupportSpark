@@ -1,5 +1,12 @@
 import { z } from 'zod';
-import { insertConversationSchema, insertSupporterSchema, type Conversation, type Supporter } from './schema';
+import { 
+  insertConversationSchema, 
+  insertSupporterSchema, 
+  conversationSchema,
+  supporterSchema,
+  type Conversation, 
+  type Supporter 
+} from './schema';
 
 // ============================================
 // SHARED ERROR SCHEMAS
@@ -19,6 +26,21 @@ export const errorSchemas = {
     message: z.string(),
   }),
 };
+
+// ============================================
+// RESPONSE SCHEMAS
+// ============================================
+// Schema for enriched supporter object in list response
+const enrichedSupporterSchema = supporterSchema.extend({
+  userName: z.string(),
+  userEmail: z.string().optional(),
+});
+
+// Schema for supportconversationSchema), // TYPE1 FIX: Use proper schema instead of any
+const supportersListSchema = z.object({
+  mySupporters: z.array(enrichedSupporterSchema),
+  supporting: z.array(enrichedSupporterSchema),
+});
 
 // ============================================
 // API CONTRACT
@@ -57,7 +79,7 @@ export const api = {
       method: 'POST' as const,
       path: '/api/conversations/:id/messages',
       input: z.object({
-        content: z.string(),
+        contesupportersListSchema, // TYPE2 FIX: Use proper schema instead of any
         parentMessageId: z.string().optional(),
         images: z.array(z.string()).optional(),
       }),

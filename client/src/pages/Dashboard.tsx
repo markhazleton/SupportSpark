@@ -4,6 +4,7 @@ import { useConversations } from "@/hooks/use-conversations";
 import { CreateUpdateDialog } from "@/components/create-update-dialog";
 import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import type { Conversation } from "@shared/schema";
 import { format } from "date-fns";
 import { MessageCircle, Calendar, ArrowRight, Activity, Users } from "lucide-react";
 import { motion } from "framer-motion";
@@ -112,7 +113,7 @@ export default function Dashboard() {
   );
 }
 
-function UpdateCard({ conversation, isMine }: { conversation: any, isMine?: boolean }) {
+function UpdateCard({ conversation, isMine }: { conversation: Conversation, isMine?: boolean }) {
   const latestMessage = conversation.data.messages[0]; // Assuming newest first or just taking first
   const date = new Date(conversation.createdAt);
 
@@ -124,7 +125,7 @@ function UpdateCard({ conversation, isMine }: { conversation: any, isMine?: bool
             <div className="flex justify-between items-start">
               <div>
                 <span className="text-xs font-bold text-primary tracking-wide uppercase mb-1 block">
-                  {isMine ? "My Update" : `From ${conversation.memberName || conversation.patientName || 'Member'}`}
+                  {isMine ? "My Update" : `From ${conversation.memberName || 'Member'}`}
                 </span>
                 <CardTitle className="group-hover:text-primary transition-colors text-xl">
                   {conversation.title}
@@ -147,7 +148,7 @@ function UpdateCard({ conversation, isMine }: { conversation: any, isMine?: bool
                   img: () => null,
                 }}
               >
-                {conversation.initialMessage || latestMessage?.content || "No preview available..."}
+                {latestMessage?.content || conversation.data.messages[0]?.content || "No preview available..."}
               </ReactMarkdown>
             </div>
             <div className="mt-4 flex items-center gap-4 text-xs text-stone-400 font-medium">

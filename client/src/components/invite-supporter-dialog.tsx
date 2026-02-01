@@ -47,10 +47,12 @@ export function InviteSupporterDialog() {
       });
       setOpen(false);
       form.reset();
-    } catch (error: any) {
+    } catch (error) {
+      // TYPE11 FIX: Use proper error type checking
+      const errorMessage = error instanceof Error ? error.message : "Failed to invite supporter.";
       toast({
         title: "Error",
-        description: error.message || "Failed to invite supporter.",
+        description: errorMessage,
         variant: "destructive",
       });
     }

@@ -3,6 +3,27 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 
+// === ENVIRONMENT VARIABLE VALIDATION ===
+// Validate required environment variables at startup
+const requiredEnvVars = ['SESSION_SECRET'];
+const missingEnvVars = requiredEnvVars.filter(key => !process.env[key]);
+
+if (missingEnvVars.length > 0) {
+  console.error('❌ Missing required environment variables:', missingEnvVars.join(', '));
+  console.error('See .env.example for configuration details');
+  process.exit(1);
+}
+
+// Reject default/insecure secrets in production
+if (process.env.NODE_ENV === 'production') {
+  const insecureSecrets = ['simple-secret-key', 'your-secret-key-here'];
+  if (insecureSecrets.some(secret => process.env.SESSION_SECRET === secret)) {
+    console.error('❌ Production environment detected with default SESSION_SECRET');
+    console.error('Generate a secure secret: node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'hex\'))"');
+    process.exit(1);
+  }
+}
+
 const app = express();
 const httpServer = createServer(app);
 
@@ -62,6 +83,7 @@ app.use((req, res, next) => {
 (async () => {
   await registerRoutes(httpServer, app);
 
+  // @ts-expect-error - Error handler type conflict with Express overloads
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";

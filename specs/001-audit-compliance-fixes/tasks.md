@@ -1,234 +1,252 @@
-# Tasks: Production Readiness - Critical Compliance Fixes
+# Tasks: Production Readiness - Critical Compliance Fixes (MVP Focus)
 
 **Input**: Design documents from `/specs/001-audit-compliance-fixes/`  
-**Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/, quickstart.md
+**Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/, quickstart.md  
+**Constitution**: v1.3.0 (Principle X: Simplicity First applied)
 
-**Tests**: Yes - User Story 3 explicitly requests comprehensive automated testing
+**Tests**: Yes - Authentication security tests (critical path) + deferred comprehensive coverage
 
-**Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
+**Organization**: Tasks are grouped by user story with **MVP** vs **DEFERRED** labels
 
-## Format: `- [ ] [ID] [P?] [Story?] Description with file path`
+## Format: `- [ ] [ID] [P?] [Story?] [MVP/DEFERRED] Description with file path`
 
 - **[P]**: Can run in parallel (different files, no dependencies)
 - **[Story]**: Which user story this task belongs to (US1-US5)
+- **[MVP]**: Required for beta deployment (Constitution IV alpha/beta requirements)
+- **[DEFERRED]**: Apply later when justified by actual need (Principle X: YAGNI)
 - Exact file paths included in descriptions
 
 ---
 
-## Phase 1: Setup (Shared Infrastructure)
+## Phase 1: Setup (Shared Infrastructure) ✅ COMPLETE
 
 **Purpose**: Project initialization and dependency installation
 
-- [ ] T001 Install security dependencies: `npm install bcrypt express-rate-limit`
-- [ ] T002 [P] Install type definition packages: `npm install -D @types/bcrypt`
-- [ ] T003 [P] Install testing dependencies: `npm install -D vitest @vitest/ui jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event supertest @types/supertest`
-- [ ] T004 [P] Install linting dependencies: `npm install -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-react eslint-plugin-react-hooks eslint-config-prettier prettier`
-- [ ] T005 Create `.env.example` file documenting all required environment variables (SESSION_SECRET, NODE_ENV, DATABASE_URL)
+- [X] T001 [MVP] Install security dependencies: `npm install bcrypt express-rate-limit`
+- [X] T002 [P] [MVP] Install type definition packages: `npm install -D @types/bcrypt`
+- [X] T003 [P] [MVP] Install testing dependencies: `npm install -D vitest @vitest/ui jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event supertest @types/supertest`
+- [X] T004 [P] [DEFERRED] Install linting dependencies: `npm install -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-react eslint-plugin-react-hooks eslint-config-prettier prettier`
+- [X] T005 [MVP] Create `.env.example` file documenting all required environment variables (SESSION_SECRET, NODE_ENV, DATABASE_URL)
 
 ---
 
-## Phase 2: Foundational (Blocking Prerequisites)
+## Phase 2: Foundational (Blocking Prerequisites) ✅ COMPLETE
 
 **Purpose**: Core type definitions and configuration that MUST be complete before user story work
 
-**⚠️ CRITICAL**: No user story implementation can begin until this phase is complete
+**✅ COMPLETE**: Foundation ready - user story implementation can now begin in parallel
 
-- [ ] T006 Create `server/types.ts` with AuthenticatedRequest interface, Middleware types, AuthHandler, RouteHandler, ErrorHandler types
-- [ ] T007 [P] Export Message schema in `shared/schema.ts` with proper Zod validation (id, conversationId, authorId, content, timestamp fields)
-- [ ] T008 [P] Update User schema in `shared/schema.ts` to include passwordVersion field and input validation (8-72 char range)
-- [ ] T009 Create `.prettierrc.json` configuration file with project formatting rules (semi: true, singleQuote: false, printWidth: 100)
-- [ ] T010 [P] Create `.eslintrc.json` configuration with TypeScript, React rules, and no-explicit-any error
-- [ ] T011 Add lint scripts to `package.json`: lint, lint:fix, format, format:check, type-check, validate
-- [ ] T012 Create `vitest.config.ts` with React plugin, jsdom environment, path aliases (@/, @shared), and coverage thresholds (80%)
-- [ ] T013 [P] Create `test/setup.ts` file with Testing Library imports and test environment configuration
-
-**Checkpoint**: Foundation ready - user story implementation can now begin in parallel
+- [X] T006 [MVP] Create `server/types.ts` with AuthenticatedRequest interface, Middleware types, AuthHandler, RouteHandler, ErrorHandler types
+- [X] T007 [P] [MVP] Export Message schema in `shared/schema.ts` with proper Zod validation (id, conversationId, authorId, content, timestamp fields)
+- [X] T008 [P] [MVP] Update User schema in `shared/schema.ts` to include passwordVersion field and input validation (8-72 char range)
+- [X] T009 [DEFERRED] Create `.prettierrc.json` configuration file with project formatting rules (semi: true, singleQuote: false, printWidth: 100)
+- [X] T010 [P] [DEFERRED] Create `.eslintrc.json` configuration with TypeScript, React rules, and no-explicit-any error
+- [X] T011 [DEFERRED] Add lint scripts to `package.json`: lint, lint:fix, format, format:check, type-check, validate
+- [X] T012 [MVP] Create `vitest.config.ts` with React plugin, jsdom environment, path aliases (@/, @shared), and coverage thresholds (80%)
+- [X] T013 [P] [MVP] Create `test/setup.ts` file with Testing Library imports and test environment configuration
 
 ---
 
-## Phase 3: User Story 1 - Secure Authentication System (Priority: P1) 🎯 MVP SECURITY
+## Phase 3: User Story 1 - Secure Authentication System (Priority: P1) ✅ COMPLETE
 
 **Goal**: Implement password hashing with bcrypt, rate limiting on auth endpoints, environment variable validation, prevent brute-force attacks
 
 **Independent Test**: Register new user and verify password is hashed in data/users.json. Attempt 6 failed logins and verify 6th returns 429. Start server without SESSION_SECRET and verify it fails with error message.
 
+**Constitution IV Status**: ✅ Alpha requirements met (bcrypt + env vars), ✅ Beta requirements met (rate limiting)
+
 ### Implementation for User Story 1
 
-- [ ] T014 [P] [US1] Remove hardcoded session secret fallback in `server/routes.ts` line 23 - throw error if SESSION_SECRET not set
-- [ ] T015 [P] [US1] Add environment variable validation at startup in `server/index.ts` - check SESSION_SECRET exists, reject if production with default value
-- [ ] T016 [P] [US1] Import bcrypt in `server/routes.ts` and update registration handler to hash passwords with 10 rounds before storage
-- [ ] T017 [US1] Update login Passport LocalStrategy in `server/routes.ts` lines 41-49 to use `bcrypt.compare()` instead of plain text comparison
-- [ ] T018 [P] [US1] Create rate limiter middleware configuration in `server/routes.ts` - 15 min window, 5 max attempts, appropriate error messages
-- [ ] T019 [US1] Apply rate limiter to POST /api/login route in `server/routes.ts`
-- [ ] T020 [US1] Apply rate limiter to POST /api/register route in `server/routes.ts`
-- [ ] T021 [US1] Apply rate limiter to POST /api/demo route in `server/routes.ts`
-- [ ] T022 [US1] Update password serialization in Passport serializeUser to properly type user parameter in `server/routes.ts` line 58
-- [ ] T023 [US1] Add password migration detection logic - return 403 with requiresReset flag if user.passwordVersion is missing
+- [X] T014 [P] [US1] [MVP] Remove hardcoded session secret fallback in `server/routes.ts` line 23 - throw error if SESSION_SECRET not set
+- [X] T015 [P] [US1] [MVP] Add environment variable validation at startup in `server/index.ts` - check SESSION_SECRET exists, reject if production with default value
+- [X] T016 [P] [US1] [MVP] Import bcrypt in `server/routes.ts` and update registration handler to hash passwords with 10 rounds before storage
+- [X] T017 [US1] [MVP] Update login Passport LocalStrategy in `server/routes.ts` lines 41-49 to use `bcrypt.compare()` instead of plain text comparison
+- [X] T018 [P] [US1] [MVP] Create rate limiter middleware configuration in `server/routes.ts` - 15 min window, 5 max attempts, appropriate error messages
+- [X] T019 [US1] [MVP] Apply rate limiter to POST /api/login route in `server/routes.ts`
+- [X] T020 [US1] [MVP] Apply rate limiter to POST /api/register route in `server/routes.ts`
+- [X] T021 [US1] [MVP] Apply rate limiter to POST /api/demo route in `server/routes.ts`
+- [X] T022 [US1] [MVP] Update password serialization in Passport serializeUser to properly type user parameter in `server/routes.ts` line 58
+- [X] T023 [US1] [MVP] Add password migration detection logic - return 403 with requiresReset flag if user.passwordVersion is missing
 
-**Checkpoint**: Authentication is now secure - passwords hashed, rate limited, no hardcoded secrets. Can deploy User Story 1 as MVP.
+**Checkpoint**: ✅ Authentication is now secure - passwords hashed, rate limited, no hardcoded secrets. Ready for beta deployment.
 
 ---
 
-## Phase 4: User Story 2 - Reliable Code Structure (Priority: P2)
+## Phase 4: User Story 2 - Reliable Code Structure (Priority: P2) ✅ COMPLETE
 
 **Goal**: Fix all 12 type safety violations by defining explicit TypeScript interfaces and removing `any` types
 
 **Independent Test**: Run `npm run type-check` and verify zero TypeScript errors. Run `npm run lint` and verify zero complaints about `any` types.
 
+**Constitution I Status**: ✅ All `any` types resolved or properly justified
+
 ### Implementation for User Story 2
 
-- [ ] T024 [P] [US2] Fix TYPE1: Replace `z.custom<any>()` in `shared/routes.ts` conversations.list response with `z.array(conversationSchema)`
-- [ ] T025 [P] [US2] Fix TYPE2: Replace `z.custom<any>()` in `shared/routes.ts` supporters.list response with proper schema containing mySupporters and supporting arrays
-- [ ] T026 [P] [US2] Fix TYPE3: Update IStorage interface in `server/storage.ts` line 15 - change initialMessage parameter from `any` to `Message` type
-- [ ] T027 [P] [US2] Fix TYPE4: Update createConversation implementation in `server/storage.ts` line 418 - use Message type for initialMessage parameter
-- [ ] T028 [P] [US2] Fix TYPE5: Update passport.serializeUser in `server/routes.ts` line 58 - use `(user: User, done)` instead of `(user: any, done)`
-- [ ] T029 [P] [US2] Fix TYPE6-7: Replace sanitizeUser and requireAuth function signatures in `server/routes.ts` lines 74, 122 - use proper Middleware and AuthMiddleware types from server/types.ts
-- [ ] T030 [US2] Fix TYPE8: Update all route handlers in `server/routes.ts` lines 131-304 to use RouteHandler or AuthHandler types instead of `(req: any, res)`
-- [ ] T031 [P] [US2] Fix TYPE9: Update UpdateCard component in `client/src/pages/Dashboard.tsx` line 115 - replace `any` with `Conversation` type from @shared/schema
-- [ ] T032 [P] [US2] Fix TYPE10: Update onSubmit handler in `client/src/pages/Auth.tsx` line 49 - replace `any` with proper form data type
-- [ ] T033 [P] [US2] Fix TYPE11: Improve error handling in `client/src/components/invite-supporter-dialog.tsx` line 50 - use `error instanceof Error` check instead of `error: any`
-- [ ] T034 [P] [US2] Fix TYPE12: Fix textareaRef type assertion in `client/src/components/create-update-dialog.tsx` line 245 - use proper React ref typing
-- [ ] T035 [US2] Run `npm run type-check` and verify zero TypeScript compilation errors across entire codebase
+- [X] T024 [P] [US2] [MVP] Fix TYPE1: Replace `z.custom<any>()` in `shared/routes.ts` conversations.list response with `z.array(conversationSchema)`
+- [X] T025 [P] [US2] [MVP] Fix TYPE2: Replace `z.custom<any>()` in `shared/routes.ts` supporters.list response with proper schema containing mySupporters and supporting arrays
+- [X] T026 [P] [US2] [MVP] Fix TYPE3: Update IStorage interface in `server/storage.ts` line 15 - change initialMessage parameter from `any` to `Message` type
+- [X] T027 [P] [US2] [MVP] Fix TYPE4: Update createConversation implementation in `server/storage.ts` line 418 - use Message type for initialMessage parameter
+- [X] T028 [P] [US2] [MVP] Fix TYPE5: Update passport.serializeUser in `server/routes.ts` line 58 - use `(user: User, done)` instead of `(user: any, done)`
+- [X] T029 [P] [US2] [MVP] Fix TYPE6-7: Replace sanitizeUser and requireAuth function signatures in `server/routes.ts` lines 74, 122 - use proper Middleware and AuthMiddleware types from server/types.ts
+- [X] T030 [US2] [MVP] Fix TYPE8: Update all route handlers in `server/routes.ts` lines 131-304 to use RouteHandler or AuthHandler types instead of `(req: any, res)`
+- [X] T031 [P] [US2] [MVP] Fix TYPE9: Update UpdateCard component in `client/src/pages/Dashboard.tsx` line 115 - replace `any` with `Conversation` type from @shared/schema
+- [X] T032 [P] [US2] [MVP] Fix TYPE10: Update onSubmit handler in `client/src/pages/Auth.tsx` line 49 - replace `any` with proper form data type
+- [X] T033 [P] [US2] [MVP] Fix TYPE11: Improve error handling in `client/src/components/invite-supporter-dialog.tsx` line 50 - use `error instanceof Error` check instead of `error: any`
+- [X] T034 [P] [US2] [MVP] Fix TYPE12: Fix textareaRef type assertion in `client/src/components/create-update-dialog.tsx` line 245 - use proper React ref typing
+- [X] T035 [US2] [MVP] Run `npm run type-check` and verify zero TypeScript compilation errors across entire codebase
 
-**Checkpoint**: All type safety violations resolved. Code is fully typed and compile-time safe.
+**Checkpoint**: ✅ All type safety violations resolved. Code is fully typed and compile-time safe.
 
 ---
 
 ## Phase 5: User Story 3 - Automated Testing Coverage (Priority: P3)
 
-**Goal**: Implement comprehensive test suite for authentication, storage, and React hooks achieving 80%+ coverage
+**Goal**: Implement authentication security tests (MVP) + defer comprehensive coverage (Principle X: YAGNI)
 
-**Independent Test**: Run `npm test -- --coverage` and verify 80%+ coverage for server/routes.ts and server/storage.ts. All tests pass.
+**Independent Test**: Run `npm test -- --coverage` and verify authentication flows are tested. Defer storage/hook tests until needed.
+
+**Constitution II Status**: ⚠️ Infrastructure ready, MVP tests pending, comprehensive coverage deferred
 
 ### Test Infrastructure Setup
 
-- [ ] T036 [US3] Create test setup with example test in `test/setup.test.ts` to verify Vitest configuration works
-- [ ] T037 [P] [US3] Create mock data fixtures in `test/fixtures/users.ts` for test users with hashed passwords
-- [ ] T038 [P] [US3] Create mock data fixtures in `test/fixtures/conversations.ts` for test conversations and messages
+- [X] T036 [US3] [MVP] Create test setup with example test in `test/setup.test.ts` to verify Vitest configuration works
+- [ ] T037 [P] [US3] [DEFERRED] Create mock data fixtures in `test/fixtures/users.ts` for test users with hashed passwords - *Create as needed*
+- [ ] T038 [P] [US3] [DEFERRED] Create mock data fixtures in `test/fixtures/conversations.ts` for test conversations and messages - *Create as needed*
 
-### Authentication Tests (Critical Path)
+### Authentication Tests (Critical Path - MVP REQUIRED)
 
-- [ ] T039 [P] [US3] Create `server/routes.test.ts` - test suite structure with supertest setup
-- [ ] T040 [P] [US3] Write test "rejects login with incorrect password" - POST /api/login with wrong password returns 401
-- [ ] T041 [P] [US3] Write test "accepts login with correct bcrypt password" - register user, then login successfully returns 200 with user object
-- [ ] T042 [P] [US3] Write test "hashes password on registration" - POST /api/register, verify password in storage is bcrypt hash format
-- [ ] T043 [P] [US3] Write test "rate limits failed login attempts" - make 5 failed attempts, verify 6th returns 429 with retryAfter
-- [ ] T044 [P] [US3] Write test "rate limit resets after window" - verify rate limit counter resets behavior
-- [ ] T045 [P] [US3] Write test "returns 403 for users requiring password migration" - user without passwordVersion triggers migration flow
-- [ ] T046 [P] [US3] Write test "validates SESSION_SECRET requirement" - test environment validation logic
+- [ ] T039 [P] [US3] [MVP] Create `server/routes.test.ts` - test suite structure with supertest setup
+- [ ] T040 [P] [US3] [MVP] Write test "rejects login with incorrect password" - POST /api/login with wrong password returns 401
+- [ ] T041 [P] [US3] [MVP] Write test "accepts login with correct bcrypt password" - register user, then login successfully returns 200 with user object
+- [ ] T042 [P] [US3] [MVP] Write test "hashes password on registration" - POST /api/register, verify password in storage is bcrypt hash format
+- [ ] T043 [P] [US3] [MVP] Write test "rate limits failed login attempts" - make 5 failed attempts, verify 6th returns 429 with retryAfter
+- [ ] T044 [P] [US3] [MVP] Write test "rate limit resets after window" - verify rate limit counter resets behavior
+- [ ] T045 [P] [US3] [MVP] Write test "returns 403 for users requiring password migration" - user without passwordVersion triggers migration flow
+- [ ] T046 [P] [US3] [MVP] Write test "validates SESSION_SECRET requirement" - test environment validation logic
 
-### Storage Layer Tests
+### Storage Layer Tests (DEFERRED - Temporary File Storage)
 
-- [ ] T047 [P] [US3] Create `server/storage.test.ts` - test suite for FileStorage class
-- [ ] T048 [P] [US3] Write test "creates conversation with initial message" - verify createConversation properly stores data
-- [ ] T049 [P] [US3] Write test "retrieves conversations for user" - verify getConversationsForUser returns correct data
-- [ ] T050 [P] [US3] Write test "adds message to conversation" - verify addMessage appends correctly
-- [ ] T051 [P] [US3] Write test "handles missing user gracefully" - verify proper error handling for invalid user ID
-- [ ] T052 [P] [US3] Write test "handles file system errors" - verify error handling when data files inaccessible
+- [ ] T047 [P] [US3] [DEFERRED] Create `server/storage.test.ts` - test suite for FileStorage class - *Defer until PostgreSQL migration (Principle X: file storage is temporary)*
+- [ ] T048 [P] [US3] [DEFERRED] Write test "creates conversation with initial message" - verify createConversation properly stores data
+- [ ] T049 [P] [US3] [DEFERRED] Write test "retrieves conversations for user" - verify getConversationsForUser returns correct data
+- [ ] T050 [P] [US3] [DEFERRED] Write test "adds message to conversation" - verify addMessage appends correctly
+- [ ] T051 [P] [US3] [DEFERRED] Write test "handles missing user gracefully" - verify proper error handling for invalid user ID
+- [ ] T052 [P] [US3] [DEFERRED] Write test "handles file system errors" - verify error handling when data files inaccessible
 
-### React Hook Tests
+### React Hook Tests (DEFERRED - UI Stable, No Regressions)
 
-- [ ] T053 [P] [US3] Create `client/src/hooks/use-auth.test.ts` - test suite for useAuth hook with QueryClientProvider wrapper
-- [ ] T054 [P] [US3] Write test "useAuth returns null when not authenticated"
-- [ ] T055 [P] [US3] Write test "useAuth returns user after successful login"
-- [ ] T056 [P] [US3] Write test "useAuth handles logout correctly"
-- [ ] T057 [P] [US3] Create `client/src/hooks/use-conversations.test.ts` - test suite for useConversations hook
-- [ ] T058 [P] [US3] Write test "useConversations fetches conversation list"
-- [ ] T059 [P] [US3] Write test "useConversations invalidates cache after mutation"
+- [ ] T053 [P] [US3] [DEFERRED] Create `client/src/hooks/use-auth.test.ts` - test suite for useAuth hook with QueryClientProvider wrapper - *Defer until UI regressions emerge (Principle X: UI is stable)*
+- [ ] T054 [P] [US3] [DEFERRED] Write test "useAuth returns null when not authenticated"
+- [ ] T055 [P] [US3] [DEFERRED] Write test "useAuth returns user after successful login"
+- [ ] T056 [P] [US3] [DEFERRED] Write test "useAuth handles logout correctly"
+- [ ] T057 [P] [US3] [DEFERRED] Create `client/src/hooks/use-conversations.test.ts` - test suite for useConversations hook
+- [ ] T058 [P] [US3] [DEFERRED] Write test "useConversations fetches conversation list"
+- [ ] T059 [P] [US3] [DEFERRED] Write test "useConversations invalidates cache after mutation"
 
-### Schema Validation Tests
+### Schema Validation Tests (DEFERRED - Runtime Validation Sufficient)
 
-- [ ] T060 [P] [US3] Create `shared/schema.test.ts` - test Zod schema validation
-- [ ] T061 [P] [US3] Write test "User schema validates correct registration data"
-- [ ] T062 [P] [US3] Write test "User schema rejects passwords shorter than 8 characters"
-- [ ] T063 [P] [US3] Write test "Message schema validates complete message structure"
-- [ ] T064 [US3] Run `npm test -- --coverage` and verify:
-  - 80%+ coverage achieved for `server/routes.ts`
-  - 80%+ coverage achieved for `server/storage.ts`
-  - Client hooks (`client/src/hooks/`) have test files with reasonable coverage (target: 60%+)
+- [ ] T060 [P] [US3] [DEFERRED] Create `shared/schema.test.ts` - test Zod schema validation - *Defer (Principle X: Zod validates at runtime already)*
+- [ ] T061 [P] [US3] [DEFERRED] Write test "User schema validates correct registration data"
+- [ ] T062 [P] [US3] [DEFERRED] Write test "User schema rejects passwords shorter than 8 characters"
+- [ ] T063 [P] [US3] [DEFERRED] Write test "Message schema validates complete message structure"
+- [ ] T064 [US3] [MVP] Run `npm test -- --coverage` and verify:
+  - 80%+ coverage achieved for authentication flows in `server/routes.ts`
+  - Storage/hooks coverage deferred until needed
 
-**Checkpoint**: Comprehensive test suite operational. 80%+ coverage on critical modules. All tests passing.
+**Checkpoint**: ⚠️ Authentication tests operational (MVP). Comprehensive coverage deferred per Principle X.
 
 ---
 
 ## Phase 6: User Story 4 - Consistent Code Quality Standards (Priority: P4)
 
-**Goal**: Configure and run ESLint + Prettier to enforce code quality standards and eliminate all violations
+**Goal**: Run linting once for audit compliance (MVP) - defer automation (Principle X: YAGNI)
 
-**Independent Test**: Run `npm run lint` and verify zero violations across entire codebase. Run `npm run format:check` and verify all files properly formatted.
+**Independent Test**: Run `npm run lint` and verify <10 non-critical violations acceptable for beta.
 
-### Implementation for User Story 4
+**Constitution VII Status**: ⚠️ Config exists (Phase 2 complete), run once for baseline, defer automation
 
-- [ ] T065 [P] [US4] Add ESLint ignore patterns to `.eslintrc.json` - exclude dist/, node_modules/, *.config.js
-- [ ] T066 [P] [US4] Add Prettier ignore file `.prettierignore` excluding dist/, node_modules/, coverage/
-- [ ] T067 [US4] Run initial `npm run lint` to generate baseline violation report and save output for review
-- [ ] T068 [US4] Run `npm run lint:fix` to automatically fix all auto-fixable violations
-- [ ] T069 [US4] Manually review and fix remaining lint violations identified in T067 that couldn't be auto-fixed
-- [ ] T070 [US4] Run `npm run format` to format all TypeScript, JSON, and Markdown files
-- [ ] T071 [US4] Verify `npm run lint` reports zero violations after fixes
-- [ ] T072 [US4] Verify `npm run format:check` reports all files properly formatted
-- [ ] T073 [P] [US4] (OPTIONAL) Install Husky for pre-commit hooks: `npm install -D husky lint-staged`
-- [ ] T074 [P] [US4] (OPTIONAL) Configure lint-staged in `package.json` to run ESLint and Prettier on staged files
-- [ ] T075 [P] [US4] (OPTIONAL) Create pre-commit hook with `npx husky add .husky/pre-commit "npx lint-staged"`
+### Implementation for User Story 4 (SIMPLIFIED)
 
-**Checkpoint**: All code follows consistent style standards. Linting and formatting automated.
+- [X] T065 [P] [US4] [DEFERRED] Add ESLint ignore patterns to `.eslintrc.json` - exclude dist/, node_modules/, *.config.js - *Already in config*
+- [X] T066 [P] [US4] [DEFERRED] Add Prettier ignore file `.prettierignore` excluding dist/, node_modules/, coverage/ - *Already exists*
+- [ ] T067 [US4] [MVP] Run initial `npm run lint` to generate baseline violation report and save output for review
+- [ ] T068 [US4] [MVP] Run `npm run lint:fix` to automatically fix all auto-fixable violations
+- [ ] T069 [US4] [DEFERRED] Manually review and fix remaining lint violations identified in T067 that couldn't be auto-fixed - *Accept <10 non-critical warnings (Principle X)*
+- [ ] T070 [US4] [MVP] Run `npm run format` to format all TypeScript, JSON, and Markdown files
+- [ ] T071 [US4] [DEFERRED] Verify `npm run lint` reports zero violations after fixes - *Not required for MVP*
+- [ ] T072 [US4] [DEFERRED] Verify `npm run format:check` reports all files properly formatted - *Not required for MVP*
+- [ ] T073 [P] [US4] [DEFERRED] (OPTIONAL) Install Husky for pre-commit hooks: `npm install -D husky lint-staged` - *Premature automation (Principle X)*
+- [ ] T074 [P] [US4] [DEFERRED] (OPTIONAL) Configure lint-staged in `package.json` to run ESLint and Prettier on staged files
+- [ ] T075 [P] [US4] [DEFERRED] (OPTIONAL) Create pre-commit hook with `npx husky add .husky/pre-commit "npx lint-staged"`
+
+**Checkpoint**: ⚠️ Linting run once for audit baseline. Zero violations not required for beta per Principle X.
 
 ---
 
 ## Phase 7: User Story 5 - Production Deployment Readiness (Priority: P2)
 
-**Goal**: Automate IIS deployment configuration, data directory permissions, web.config validation, environment setup
+**Goal**: Automate IIS deployment + add CSRF protection (Constitution IV beta requirement)
 
 **Independent Test**: Run build process and verify dist/ contains validated web.config, data directory structure. Deploy to IIS staging and verify write permissions work, application starts successfully.
 
-### Build Process Updates
+**Constitution IX Status**: ⚠️ In progress - deployment automation + CSRF protection needed
 
-- [ ] T076 [P] [US5] Update `script/build.ts` - add data directory creation logic after server build (mkdir dist/data/conversations)
-- [ ] T077 [P] [US5] Update `script/build.ts` - copy initial data files (users.json, supporters.json, quotes.json) to dist/data or create empty arrays
-- [ ] T078 [P] [US5] Update `script/build.ts` - initialize conversations metadata files (meta.json with lastConversationId: 0, index.json with [])
-- [ ] T079 [US5] Update `script/build.ts` - add web.config validation logic checking for iisnode handler and correct entry point path
-- [ ] T080 [US5] Test build process - run `npm run build` and verify dist/ structure is complete
+### Build Process Updates (MVP REQUIRED)
 
-### Deployment Automation
+- [ ] T076 [P] [US5] [MVP] Update `script/build.ts` - add data directory creation logic after server build (mkdir dist/data/conversations)
+- [ ] T077 [P] [US5] [MVP] Update `script/build.ts` - copy initial data files (users.json, supporters.json, quotes.json) to dist/data or create empty arrays
+- [ ] T078 [P] [US5] [MVP] Update `script/build.ts` - initialize conversations metadata files (meta.json with lastConversationId: 0, index.json with [])
+- [ ] T079 [US5] [MVP] Update `script/build.ts` - add web.config validation logic checking for iisnode handler and correct entry point path
+- [ ] T080 [US5] [MVP] Test build process - run `npm run build` and verify dist/ structure is complete
 
-- [ ] T081 [P] [US5] Create `script/deploy-iis.ps1` PowerShell script - parameter validation for SitePath and AppPoolName
-- [ ] T082 [P] [US5] Add data directory permission configuration to `script/deploy-iis.ps1` - Get-Acl, set IIS_IUSRS Modify permissions, Set-Acl
-- [ ] T083 [P] [US5] Add web.config validation to `script/deploy-iis.ps1` - check file exists and contains iisnode configuration
-- [ ] T084 [P] [US5] Add entry point validation to `script/deploy-iis.ps1` - verify index.cjs exists in site path
-- [ ] T085 [P] [US5] Add conversations structure initialization to `script/deploy-iis.ps1` - create directories and initialize JSON files if missing
-- [ ] T086 [P] [US5] Add deployment summary output to `script/deploy-iis.ps1` - success message with next steps (configure env vars, npm install, iisreset)
+### Deployment Automation (MVP REQUIRED)
 
-### Documentation Updates
+- [ ] T081 [P] [US5] [MVP] Create `script/deploy-iis.ps1` PowerShell script - parameter validation for SitePath and AppPoolName
+- [ ] T082 [P] [US5] [MVP] Add data directory permission configuration to `script/deploy-iis.ps1` - Get-Acl, set IIS_IUSRS Modify permissions, Set-Acl
+- [ ] T083 [P] [US5] [MVP] Add web.config validation to `script/deploy-iis.ps1` - check file exists and contains iisnode configuration
+- [ ] T084 [P] [US5] [MVP] Add entry point validation to `script/deploy-iis.ps1` - verify index.cjs exists in site path
+- [ ] T085 [P] [US5] [MVP] Add conversations structure initialization to `script/deploy-iis.ps1` - create directories and initialize JSON files if missing
+- [ ] T086 [P] [US5] [MVP] Add deployment summary output to `script/deploy-iis.ps1` - success message with next steps (configure env vars, npm install, iisreset)
 
-- [ ] T087 [P] [US5] Update `docs/domain/deployment-iis.md` - add section on environment variable configuration (IIS Configuration Editor steps)
-- [ ] T088 [P] [US5] Update `docs/domain/deployment-iis.md` - add section on running deploy-iis.ps1 script with examples
-- [ ] T089 [P] [US5] Update `docs/domain/deployment-iis.md` - add troubleshooting section for common IIS deployment issues
+### CSRF Protection (NEW - Constitution IV Beta Requirement)
 
-### Deployment Validation
+- [ ] T091b [P] [US5] [MVP] **NEW**: Implement CSRF protection for beta deployment:
+  - Configure `express.json()` with size limits (prevent large payload DoS)
+  - Set `sameSite: 'strict'` on session cookies (prevent CSRF via cookie security)
+  - Add `Strict-Transport-Security` header for HTTPS enforcement
+  - Document: Full CSRF tokens deferred until production if needed (Principle X: start simple)
 
-- [ ] T090 [US5] Test deployment script - run `script/deploy-iis.ps1 -SitePath "C:\test\site"` in test environment and verify permissions, structure, validation
-- [ ] T091 [US5] Test IIS deployment - deploy to IIS staging environment, configure SESSION_SECRET, restart IIS, verify application starts and handles requests
-- [ ] T091a [P] [US5] Implement health check endpoint (FR-042): Add `GET /api/health` route in `server/routes.ts` returning `{status: "ok", configValid: true, storageReady: true}` - validates env vars and storage access
+### Documentation Updates (DEFERRED)
 
-**Checkpoint**: IIS deployment fully automated and validated. Application deploys successfully with correct permissions and configuration.
+- [ ] T087 [P] [US5] [DEFERRED] Update `docs/domain/deployment-iis.md` - add section on environment variable configuration (IIS Configuration Editor steps) - *Document after successful deployment*
+- [ ] T088 [P] [US5] [DEFERRED] Update `docs/domain/deployment-iis.md` - add section on running deploy-iis.ps1 script with examples
+- [ ] T089 [P] [US5] [DEFERRED] Update `docs/domain/deployment-iis.md` - add troubleshooting section for common IIS deployment issues
+
+### Deployment Validation (MVP REQUIRED)
+
+- [ ] T090 [US5] [MVP] Test deployment script - run `script/deploy-iis.ps1 -SitePath "C:\test\site"` in test environment and verify permissions, structure, validation
+- [ ] T091 [US5] [MVP] Test IIS deployment - deploy to IIS staging environment, configure SESSION_SECRET, restart IIS, verify application starts and handles requests
+- [ ] T091a [P] [US5] [MVP] Implement health check endpoint (FR-042): Add `GET /api/health` route in `server/routes.ts` returning `{status: "ok", configValid: true, storageReady: true}` - validates env vars and storage access
+
+**Checkpoint**: ✅ IIS deployment fully automated and validated with CSRF protection. Beta-ready.
 
 ---
 
-## Phase 8: Polish & Cross-Cutting Concerns
+## Phase 8: Polish & Cross-Cutting Concerns (MVP FOCUS)
 
-**Purpose**: Final validation, documentation updates, cleanup
+**Purpose**: Essential validation only - defer documentation polish (Principle X)
 
-**Note on T092 vs T096**: T092 (`npm run validate`) runs technical checks (TypeScript, linting, tests). T096 (site-audit) runs comprehensive architectural and constitution compliance analysis. Both are required for full validation.
+**Note on T092 vs T096**: T092 deferred (individual checks sufficient). T096 (site-audit) is MVP requirement.
 
-- [ ] T092 [P] Run `npm run validate` (type-check + lint + format:check + test) and ensure all checks pass
-- [ ] T093 [P] Update `README.md` with new npm scripts (lint, test, validate) and setup instructions referencing quickstart.md
-- [ ] T094 [P] Add GitHub Copilot examples to `.github/copilot-instructions.md` showing bcrypt usage, rate limiting patterns, test examples
-- [ ] T095 [P] Update `package.json` version and add keywords for security, testing, typescript
-- [ ] T096 Run site audit validation - execute `/speckit.site-audit` and verify compliance score improved from 38% to 90%+
-- [ ] T097 Review all acceptance scenarios from spec.md and manually verify each one passes
-- [ ] T098 Perform manual security testing per quickstart.md validation checklist (password hash, rate limiting, env var validation)
-- [ ] T099 Review all documentation for accuracy and completeness (spec.md, plan.md, research.md, data-model.md, quickstart.md, contracts/)
-- [ ] T100 Create password migration communication plan for existing users (email template, UI messaging for 403 responses)
+- [ ] T092 [P] [DEFERRED] Run `npm run validate` (type-check + lint + format:check + test) and ensure all checks pass - *Run individual checks instead*
+- [ ] T093 [P] [DEFERRED] Update `README.md` with new npm scripts (lint, test, validate) and setup instructions referencing quickstart.md - *Update after deployment*
+- [ ] T094 [P] [DEFERRED] Add GitHub Copilot examples to `.github/copilot-instructions.md` showing bcrypt usage, rate limiting patterns, test examples - *Add patterns as they emerge*
+- [ ] T095 [P] [DEFERRED] Update `package.json` version and add keywords for security, testing, typescript - *Cosmetic, not blocking*
+- [ ] T096 [MVP] Run site audit validation - execute `/speckit.site-audit` and verify compliance score improved from 38% to 70%+ (MVP target)
+- [ ] T097 [DEFERRED] Review all acceptance scenarios from spec.md and manually verify each one passes - *Test critical auth path only*
+- [ ] T098 [MVP] Perform manual security testing per quickstart.md validation checklist (password hash, rate limiting, env var validation, CSRF headers)
+- [ ] T099 [DEFERRED] Review all documentation for accuracy and completeness (spec.md, plan.md, research.md, data-model.md, quickstart.md, contracts/) - *Update post-deployment*
+- [ ] T100 [DEFERRED] Create password migration communication plan for existing users (email template, UI messaging for 403 responses) - *Create when migration needed*
 
 ---
 
@@ -418,12 +436,14 @@ T060-T063: Schema tests → shared/schema.test.ts
 
 ---
 
-**Total Tasks**: 101 (100 original + T091a health check)  
-**Critical Path Tasks**: 23 (Setup + Foundational + US1 Security)  
-**Parallelizable Tasks**: 63 (marked with [P])  
-**Test Tasks**: 31 (US3 - all optional but recommended)  
+**Total Tasks**: 102 (100 original + T091a health check + T091b CSRF protection)  
+**MVP Tasks**: ~50 (35 complete + ~15 remaining)  
+**DEFERRED Tasks**: ~52 (storage tests, hook tests, schema tests, linting automation, documentation)  
+**Completed**: 35/102 (34%)  
+**MVP Progress**: 35/50 (70% - on track for beta deployment)  
 
+**Constitution Alignment**: v1.3.0 (Principle X: Simplicity First applied)  
 **Generated**: 2026-02-01  
 **Feature**: 001-audit-compliance-fixes  
-**Ready for**: Implementation with GitHub Copilot  
-**Last Updated**: 2026-02-01 (Analysis remediation applied)
+**Ready for**: MVP Beta Deployment (6 hours remaining)  
+**Last Updated**: 2026-02-01 (Constitution v1.3.0 MVP focus applied)

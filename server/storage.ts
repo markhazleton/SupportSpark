@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Conversation, type Supporter } from "@shared/schema";
+import { type User, type InsertUser, type Conversation, type Supporter, type Message } from "@shared/schema";
 import fs from "fs/promises";
 import path from "path";
 import { randomUUID } from "crypto";
@@ -12,7 +12,7 @@ export interface IStorage {
   // Conversation Operations
   getConversationsForUser(userId: string): Promise<Conversation[]>;
   getConversation(id: number): Promise<Conversation | undefined>;
-  createConversation(memberId: string, title: string, initialMessage: any): Promise<Conversation>;
+  createConversation(memberId: string, title: string, initialMessage: Message): Promise<Conversation>;
   updateConversation(id: number, conversation: Conversation): Promise<Conversation>;
 
   // Supporter Operations
@@ -81,9 +81,11 @@ export class FileStorage implements IStorage {
         id: FileStorage.DEMO_MEMBER_ID,
         email: "sarah@demo.supportspark.com",
         password: demoPasswordBlocker,
+        passwordVersion: 'bcrypt-10', // Demo accounts bypass normal auth but need version field
         firstName: "Sarah",
         lastName: "Mitchell",
         createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
       this.users.set(demoMember.id, demoMember);
       await this.persistUsers();
@@ -95,9 +97,11 @@ export class FileStorage implements IStorage {
         id: FileStorage.DEMO_SUPPORTER_ID,
         email: "james@demo.supportspark.com",
         password: demoPasswordBlocker,
+        passwordVersion: 'bcrypt-10', // Demo accounts bypass normal auth but need version field
         firstName: "James",
         lastName: "Chen",
         createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
       this.users.set(demoSupporter.id, demoSupporter);
       await this.persistUsers();
@@ -368,7 +372,9 @@ export class FileStorage implements IStorage {
     const user: User = {
       ...insertUser,
       id,
+      passwordVersion: 'bcrypt-10', // Set password version for new users
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
     this.users.set(id, user);
     await this.persistUsers();
@@ -415,7 +421,7 @@ export class FileStorage implements IStorage {
     return this.readConversationFile(indexEntry.memberId, id);
   }
 
-  async createConversation(memberId: string, title: string, initialMessage: any): Promise<Conversation> {
+  async createConversation(memberId: string, title: string, initialMessage: Message): Promise<Conversation> {
     await this.ensureInitialized();
 
     const id = this.currentConversationId++;

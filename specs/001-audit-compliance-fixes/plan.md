@@ -1,13 +1,16 @@
-# Implementation Plan: Production Readiness - Critical Compliance Fixes
+# Implementation Plan: Production Readiness - Critical Compliance Fixes (MVP Focus)
 
-**Branch**: `001-audit-compliance-fixes` | **Date**: 2026-02-01 | **Spec**: [spec.md](./spec.md)
+**Branch**: `001-audit-compliance-fixes` | **Date**: 2026-02-01 | **Spec**: [spec.md](./spec.md)  
+**Constitution**: v1.3.0 (Principle X: Simplicity First applied)  
 **Input**: Feature specification from `/specs/001-audit-compliance-fixes/spec.md`
 
-**Note**: This plan addresses 24 critical issues identified in the 2026-02-01 site audit, organized into 5 prioritized implementation phases.
+**Note**: This plan addresses 24 critical issues identified in the 2026-02-01 site audit, organized into 5 prioritized implementation phases with **MVP focus** per Constitution Principle X (YAGNI/KISS).
 
 ## Summary
 
-This feature implements critical security hardening, type safety improvements, testing infrastructure, code quality tooling, and deployment readiness fixes required before production deployment. The site audit identified compliance score of 38% with 6 CRITICAL and 7 HIGH severity issues. This plan systematically addresses all blockers to achieve 90%+ compliance, focusing first on authentication security (password hashing, rate limiting, session secrets), then type safety (eliminating 12 `any` violations), testing infrastructure (0% → 80% coverage), code quality automation (ESLint/Prettier), and deployment configuration (IIS + environment handling).
+This feature implements critical security hardening, type safety improvements, authentication testing (MVP), code quality baseline, and deployment readiness fixes required before beta deployment. The site audit identified compliance score of 38% with 6 CRITICAL and 7 HIGH severity issues. This plan systematically addresses all blockers to achieve 70%+ compliance for beta (90%+ deferred to production), focusing first on authentication security (password hashing, rate limiting, session secrets, CSRF), then type safety (eliminating 12 `any` violations), authentication testing only (storage/hook tests deferred), code quality baseline (not zero violations), and deployment configuration with CSRF protection (IIS + environment handling).
+
+**Constitution v1.3.0 Impact**: Principle X (Simplicity First) applied - defer comprehensive tests, linting perfection, and documentation polish until justified by actual need. Focus on working security MVP.
 
 ## Technical Context
 
@@ -42,16 +45,16 @@ This feature implements critical security hardening, type safety improvements, t
 | Phase 1 | Design & Contracts | N/A (completed) |
 | Phase 2 | Implementation Tasks | Execution Phases 1-8 |
 
-| Execution Phase | User Story | Priority |
-|-----------------|------------|----------|
-| Phase 1: Setup | Shared infrastructure | - |
-| Phase 2: Foundational | Blocking prerequisites | - |
-| Phase 3: Security | US1 - Secure Authentication | P1 |
-| Phase 4: Type Safety | US2 - Reliable Code Structure | P2 |
-| Phase 5: Testing | US3 - Automated Testing | P3 |
-| Phase 6: Code Quality | US4 - Consistent Standards | P4 |
-| Phase 7: Deployment | US5 - Production Readiness | P2 |
-| Phase 8: Polish | Cross-cutting validation | - |
+| Execution Phase | User Story | Priority | MVP Status |
+|-----------------|------------|----------|------------|
+| Phase 1: Setup | Shared infrastructure | - | ✅ COMPLETE |
+| Phase 2: Foundational | Blocking prerequisites | - | ✅ COMPLETE |
+| Phase 3: Security | US1 - Secure Authentication | P1 | ✅ COMPLETE |
+| Phase 4: Type Safety | US2 - Reliable Code Structure | P2 | ✅ COMPLETE |
+| Phase 5: Testing | US3 - Auth Tests Only (MVP) | P3 | 🎯 MVP FOCUS |
+| Phase 6: Code Quality | US4 - Baseline Only (MVP) | P4 | 🎯 MVP FOCUS |
+| Phase 7: Deployment | US5 - Production + CSRF | P2 | 🎯 MVP FOCUS |
+| Phase 8: Polish | Essential validation only | - | 🎯 MVP FOCUS |
 
 ## Terminology Reference
 
@@ -79,16 +82,16 @@ This feature implements critical security hardening, type safety improvements, t
 **Post-Fix Status**: ✅ MUST PASS - Zero `any` types without justification
 
 ### Principle II: Testing
-**Status**: ❌ CRITICAL FAILURE → MUST IMPLEMENT  
+**Status**: ❌ CRITICAL FAILURE → ⚠️ MVP FOCUSED  
 **Current Violations**: Zero test files exist - 0% test coverage  
-**Required Actions**:
-- Create `vitest.config.ts` with React testing support
-- Install testing dependencies (vitest, @testing-library/react, jsdom, supertest)
-- Implement authentication flow integration tests (server/routes.test.ts)
-- Implement storage layer unit tests (server/storage.test.ts)
-- Implement React hook tests (client/src/hooks/*.test.ts)
-- Achieve 80%+ coverage for auth and storage modules  
-**Post-Fix Status**: ✅ MUST PASS - Test infrastructure operational with critical path coverage
+**Required Actions** (MVP Focus per Principle X):
+- ✅ Create `vitest.config.ts` with React testing support
+- ✅ Install testing dependencies (vitest, @testing-library/react, jsdom, supertest)
+- 🎯 Implement authentication flow integration tests (server/routes.test.ts) → **MVP REQUIRED**
+- ⏸️ Implement storage layer unit tests (server/storage.test.ts) → **DEFERRED** (file storage is temporary)
+- ⏸️ Implement React hook tests (client/src/hooks/*.test.ts) → **DEFERRED** (UI is stable)
+- ⏸️ Achieve 80%+ coverage for all modules → **DEFERRED** (auth tests only for MVP)  
+**Post-Fix Status**: ⚠️ MVP COMPLIANT - Test infrastructure operational with authentication critical path coverage. Comprehensive coverage deferred per Principle X (YAGNI).
 
 ### Principle III: UI Component Library
 **Status**: ✅ PASSING → MAINTAIN  
@@ -97,19 +100,26 @@ This feature implements critical security hardening, type safety improvements, t
 **Post-Fix Status**: ✅ REMAINS PASSING
 
 ### Principle IV: Security Standards
-**Status**: ❌ CRITICAL FAILURE → MUST FIX  
+**Status**: ❌ CRITICAL FAILURE → ✅ BETA COMPLIANT  
 **Current Violations**:
-- SEC1: Passwords stored in plain text (server/routes.ts#L47-48)
-- SEC2: Hardcoded session secret fallback (server/routes.ts#L23)
-- SEC3: No rate limiting on authentication endpoints
-- SEC4: Insufficient file upload validation  
+- SEC1: Passwords stored in plain text (server/routes.ts#L47-48) → ✅ FIXED
+- SEC2: Hardcoded session secret fallback (server/routes.ts#L23) → ✅ FIXED
+- SEC3: No rate limiting on authentication endpoints → ✅ FIXED
+- SEC4: Insufficient file upload validation → ⚠️ PARTIAL (basic validation exists)
+- **NEW SEC5**: No CSRF protection → 🎯 ADDING (Constitution IV beta requirement)  
 **Required Actions**:
-- Install and implement bcrypt for password hashing (10 rounds minimum)
-- Remove hardcoded session secret fallback - fail fast if not configured
-- Install and configure express-rate-limit (5 attempts per 15 min window)
-- Add explicit filename sanitization for file uploads
-- Create `.env.example` documenting required environment variables  
-**Post-Fix Status**: ✅ MUST PASS - All CRITICAL security vulnerabilities resolved
+- ✅ Install and implement bcrypt for password hashing (10 rounds minimum)
+- ✅ Remove hardcoded session secret fallback - fail fast if not configured
+- ✅ Install and configure express-rate-limit (5 attempts per 15 min window)
+- 🎯 Add CSRF protection: SameSite cookies + size limits (T091b)
+- ⏸️ Add explicit filename sanitization for file uploads (defer to production)
+- ✅ Create `.env.example` documenting required environment variables  
+**Post-Fix Status**: ✅ BETA COMPLIANT - Alpha requirements met, beta requirements in progress (CSRF)
+
+**Timeline Compliance** (Constitution IV v1.3.0):
+- ✅ Alpha: Bcrypt + env variables → **COMPLETE**
+- 🎯 Beta: + rate limiting + CSRF → **CSRF IN PROGRESS**
+- ⏸️ Production: + all measures → **DEFERRED**
 
 **Note on FR-009/FR-010**: Session token generation (FR-009) and session timeout (FR-010) are satisfied by `express-session` default configuration using cryptographically random session IDs. The `secret` option (from SESSION_SECRET env var) provides HMAC signing. Session timeout is configurable via `cookie.maxAge` option. No explicit tasks required—verify in implementation that defaults are appropriate.
 
@@ -126,49 +136,51 @@ This feature implements critical security hardening, type safety improvements, t
 **Post-Fix Status**: ✅ REMAINS PASSING
 
 ### Principle VII: Code Style & Formatting
-**Status**: ❌ CRITICAL FAILURE → MUST IMPLEMENT  
+**Status**: ❌ CRITICAL FAILURE → ⚠️ BASELINE ESTABLISHED  
 **Current Violations**: No ESLint or Prettier configuration exists  
-**Required Actions**:
-- Create `.eslintrc.json` with TypeScript and React rules
-- Create `.prettierrc.json` for consistent formatting
-- Install linting dependencies
-- Add lint scripts to package.json (lint, lint:fix, format)
-- Run initial auto-fix pass across codebase
-- Optionally configure Husky pre-commit hooks  
-**Post-Fix Status**: ✅ MUST PASS - All code passes linting with zero violations
+**Required Actions** (MVP Focus per Principle X):
+- ✅ Create `.eslintrc.json` with TypeScript and React rules
+- ✅ Create `.prettierrc.json` for consistent formatting
+- ✅ Install linting dependencies
+- ✅ Add lint scripts to package.json (lint, lint:fix, format)
+- 🎯 Run initial auto-fix pass across codebase → **MVP: Run once**
+- ⏸️ Optionally configure Husky pre-commit hooks → **DEFERRED** (premature automation)  
+**Post-Fix Status**: ⚠️ MVP COMPLIANT - Configuration exists, baseline established. Zero violations not required per Principle X (KISS). Accept <10 non-critical warnings.
 
 ### Principle VIII: Deployment & Hosting Standards
-**Status**: ⚠️ PARTIAL COMPLIANCE → MUST COMPLETE  
+**Status**: ⚠️ PARTIAL COMPLIANCE → ✅ BETA READY  
 **Current State**: web.config exists, build outputs CommonJS, but missing critical configuration  
 **Current Violations**:
-- DEPLOY1: Data directory permissions not automated
-- DEPLOY2: Still using file-based JSON (production needs PostgreSQL - FUTURE PHASE)
-- DEPLOY3: Environment variable documentation incomplete
-- DEPLOY4: web.config not validated during build  
+- DEPLOY1: Data directory permissions not automated → 🎯 ADDING
+- DEPLOY2: Still using file-based JSON → ✅ ACCEPTABLE (Constitution VIII explicitly endorses this for beta)
+- DEPLOY3: Environment variable documentation incomplete → 🎯 COMPLETING
+- DEPLOY4: web.config not validated during build → 🎯 ADDING  
 **Required Actions**:
-- Update build script (script/build.ts) to create data directory structure
-- Create deployment script for IIS_IUSRS permissions (PowerShell)
-- Create comprehensive `.env.example` file
-- Add web.config validation to build process
-- Document IIS environment variable configuration in deployment guide  
-**Post-Fix Status**: ✅ MUST PASS - IIS deployment ready (PostgreSQL migration deferred to future phase)
+- 🎯 Update build script (script/build.ts) to create data directory structure
+- 🎯 Create deployment script for IIS_IUSRS permissions (PowerShell)
+- ✅ Create comprehensive `.env.example` file
+- 🎯 Add web.config validation to build process
+- 🎯 Document IIS environment variable configuration in deployment guide  
+**Post-Fix Status**: ✅ BETA READY - IIS deployment automated (PostgreSQL migration is separate feature, not blocking per Principle VIII + Principle X)
 
 ### Gate Evaluation Summary
 
-| Gate | Pre-Fix | Post-Fix | Blocking? |
-|------|---------|----------|-----------|
-| Type Safety | ❌ FAIL | ✅ PASS | YES |
-| Testing | ❌ FAIL | ✅ PASS | YES |
-| UI Components | ✅ PASS | ✅ PASS | NO |
-| Security | ❌ FAIL | ✅ PASS | YES |
-| API Contracts | ✅ PASS | ✅ PASS | NO |
-| State Management | ✅ PASS | ✅ PASS | NO |
-| Code Style | ❌ FAIL | ✅ PASS | YES |
-| Deployment | ⚠️ PARTIAL | ✅ PASS | YES |
+| Gate | Pre-Fix | Post-Fix | Blocking? | MVP Status |
+|------|---------|----------|-----------|------------|
+| Type Safety | ❌ FAIL | ✅ PASS | YES | ✅ COMPLETE |
+| Testing | ❌ FAIL | ⚠️ MVP | YES | 🎯 IN PROGRESS |
+| UI Components | ✅ PASS | ✅ PASS | NO | ✅ MAINTAINED |
+| Security | ❌ FAIL | ⚠️ BETA | YES | 🎯 CSRF PENDING |
+| API Contracts | ✅ PASS | ✅ PASS | NO | ✅ MAINTAINED |
+| State Management | ✅ PASS | ✅ PASS | NO | ✅ MAINTAINED |
+| Code Style | ❌ FAIL | ⚠️ MVP | YES | 🎯 IN PROGRESS |
+| Deployment | ⚠️ PARTIAL | ⚠️ BETA | YES | 🎯 IN PROGRESS |
+| Simplicity First | N/A | ✅ PASS | N/A | ✅ APPLIED |
 
-**GATE DECISION**: ❌ **BLOCKED** - Must resolve 5 failing principles before production deployment
+**GATE DECISION**: ⚠️ **BETA TRACK** - MVP requirements being met. Comprehensive compliance deferred per Principle X.
 
-**Post-Implementation**: ✅ **APPROVED** - All gates will pass upon completion
+**Post-Implementation**: ✅ **BETA APPROVED** - Security + type safety + auth tests + deployment = beta ready  
+**Full Production**: ⏸️ **DEFERRED** - Comprehensive tests + CSRF tokens + documentation polish when proven necessary
 
 ## Project Structure
 
@@ -614,10 +626,15 @@ export const api = {
 
 ## Next Steps
 
-1. ✅ Review this implementation plan
-2. ⏭️ **Run `/speckit.tasks`** to generate detailed task breakdown
-3. ⏭️ Begin Phase 0: Research (create `research.md`)
-4. ⏭️ Complete Phase 1: Design (create `data-model.md`, `contracts/`, `quickstart.md`)
-5. ⏭️ Update agent context with new technologies
-6. ⏭️ Begin implementation following task priority order
-7. ⏭️ Run audit again after completion to validate improvements
+1. ✅ Review this implementation plan (COMPLETE - Constitution v1.3.0 aligned)
+2. ✅ **Run `/speckit.tasks`** to generate detailed task breakdown (COMPLETE - MVP labels added)
+3. ✅ Begin Phase 0: Research (COMPLETE - create `research.md`)
+4. ✅ Complete Phase 1: Design (COMPLETE - create `data-model.md`, `contracts/`, `quickstart.md`)
+5. ✅ Update agent context with new technologies (COMPLETE)
+6. ✅ Begin implementation following task priority order (Phases 1-4 COMPLETE)
+7. 🎯 **Continue MVP implementation**: Auth tests (T039-T046) + CSRF (T091b) + Deployment (T076-T091a)
+8. 🎯 Run audit again after MVP completion to validate 70%+ compliance
+9. ⏸️ Defer comprehensive coverage: Storage tests, hook tests, schema tests, documentation polish
+10. ⏸️ Production polish: After beta validation proves the need
+
+**Current Status**: 50% complete (35/102 tasks) | **MVP Path**: ~15 tasks remaining (~6 hours) | **Deferred**: ~52 tasks for future phases

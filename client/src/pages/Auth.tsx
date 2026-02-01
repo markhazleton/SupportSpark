@@ -46,7 +46,7 @@ export default function AuthPage() {
   );
 }
 
-function LoginForm({ onSubmit, isPending }: { onSubmit: (data: any) => void, isPending: boolean }) {
+function LoginForm({ onSubmit, isPending }: { onSubmit: (data: { email: string; password: string }) => void, isPending: boolean }) {
   const form = useForm({
     defaultValues: {
       email: "",

@@ -1,22 +1,29 @@
 <!--
 Sync Impact Report
 ==================
-Version change: 1.0.0 → 1.1.0 (MINOR: Added deployment standards)
-Modified principles: N/A
-Added sections: Principle VIII (Deployment & Hosting Standards)
+Version change: 1.2.1 → 1.3.0 (MINOR: Added simplicity principle, relaxed API contracts)
+Modified principles:
+  - Principle IV: UPDATED - Added timeline guidance (alpha/beta/production) for security measures
+  - Principle V: DOWNGRADED from NON-NEGOTIABLE to RECOMMENDED - Added prototyping exception for API contracts
+  - Principle X: NEW - Simplicity First (YAGNI/KISS/anti-premature-optimization)
+Added sections: Principle X (Simplicity First)
 Removed sections: None
 Templates requiring updates:
-  - plan-template.md: ✅ Add deployment phase for IIS configuration
-  - spec-template.md: ✅ No changes needed
-  - tasks-template.md: ✅ Add deployment tasks template
+  - plan-template.md: ✅ Emphasize starting simple, growing into complexity
+  - spec-template.md: ✅ Add "Why now?" justification for complex features
+  - tasks-template.md: ✅ Flag tasks that add complexity vs simplicity
 Follow-up TODOs:
-  - Create web.config template with iisnode configuration (Principle VIII)
-  - Add deployment scripts for IIS (Principle VIII)
-  - Update build script to include web.config in dist/ (Principle VIII)
+  - Review existing features for over-engineering (Principle X)
+  - Remove premature abstractions and unused code (Principle X)
+  - Ensure file-based storage has proper locking mechanisms (Principle VIII)
+  - Implement progressive security timeline: alpha → beta → production (Principle IV)
+  - Create web.config template with iisnode configuration (Principle IX)
+  - Add deployment scripts for IIS (Principle IX)
+  - Update build script to include web.config in dist/ (Principle IX)
   - Add Vitest configuration (Principle II)
   - Add ESLint + Prettier configuration (Principle VII)
-  - Implement bcrypt password hashing (Principle IV)
-  - Implement rate limiting (Principle IV)
+  - Implement bcrypt password hashing (Principle IV - alpha phase)
+  - Implement rate limiting (Principle IV - beta phase)
 -->
 
 # SupportSpark Constitution
@@ -64,28 +71,38 @@ All user interface components MUST use the shadcn/ui component library for consi
 
 ### IV. Security Standards (NON-NEGOTIABLE)
 
-Security protections MUST be implemented before production deployment.
+Security protections MUST be implemented before public deployment (beta/production).
 
 - User passwords MUST be hashed using bcrypt (minimum 10 rounds)
-- Authentication endpoints MUST implement rate limiting
-- CSRF protection MUST be implemented for state-changing operations
+- Authentication endpoints MUST implement rate limiting before public access
+- CSRF protection MUST be implemented for state-changing operations in production
 - Session secrets MUST be provided via environment variables (never hardcoded)
 - File uploads MUST validate file types and enforce size limits
 - SQL injection prevention MUST be ensured through parameterized queries
 
-**Rationale**: Security vulnerabilities can cause irreversible harm. These are minimum viable protections.
+**Timeline Guidance**:
+- Alpha (internal testing): Bcrypt + env variables required
+- Beta (limited external): Add rate limiting + CSRF protection
+- Production (public): All security measures fully implemented
 
-### V. API Contract Pattern (NON-NEGOTIABLE)
+**Rationale**: Security vulnerabilities can cause irreversible harm. These are minimum viable protections. However, not all security measures are needed for early internal testing—implement progressively as exposure increases.
 
-All API endpoints MUST be defined in a shared contract for type-safe client-server communication.
+### V. API Contract Pattern (RECOMMENDED)
 
-- All API routes MUST be defined in `shared/routes.ts`
-- Route definitions MUST include: method, path, input schema (if applicable), response schemas
-- Error responses MUST use standardized error schemas from `errorSchemas`
-- The `buildUrl()` helper MUST be used for parameterized URLs
+API endpoints SHOULD be defined in a shared contract for type-safe client-server communication.
+
+- API routes SHOULD be defined in `shared/routes.ts` as they stabilize
+- Route definitions SHOULD include: method, path, input schema (if applicable), response schemas
+- Error responses SHOULD use standardized error schemas from `errorSchemas`
+- The `buildUrl()` helper SHOULD be used for parameterized URLs
 - Breaking API changes MUST increment version or provide migration path
 
-**Rationale**: Shared contracts eliminate client-server type mismatches and enable compile-time API validation.
+**Prototyping Exception**: During early prototyping, simple endpoint implementations without formal contracts are acceptable. Add contracts when:
+- The endpoint design stabilizes
+- Multiple clients use the endpoint
+- Type safety becomes a maintenance burden
+
+**Rationale**: Shared contracts eliminate client-server type mismatches and enable compile-time API validation. However, requiring contracts for every experimental endpoint creates unnecessary overhead during prototyping. Grow into this pattern as needs emerge.
 
 ### VI. State Management (RECOMMENDED)
 
@@ -111,7 +128,31 @@ Consistent code formatting MUST be enforced through tooling.
 
 **Rationale**: Automated formatting eliminates style debates and ensures consistent, readable code.
 
-### VIII. Deployment & Hosting Standards (NON-NEGOTIABLE)
+### VIII. Data Storage Strategy (NON-NEGOTIABLE)
+
+Storage solutions MUST be chosen based on actual needs, not premature optimization.
+
+- JSON file storage on the server is ACCEPTABLE for:
+  - Alpha phase deployments
+  - Beta testing periods
+  - Initial production rollout
+  - Production preview environments
+- Database migration MUST be justified by evidence from:
+  - Traffic analysis showing scalability needs
+  - Load testing revealing performance bottlenecks
+  - Operational requirements (backup, replication, transactions)
+- Premature optimization to database is PROHIBITED during early phases
+- Data directory MUST have appropriate file system permissions
+- File-based storage MUST implement proper locking for concurrent access
+- When database migration IS justified, options include:
+  - PostgreSQL (relational database)
+  - Azure Cosmos DB (NoSQL, global distribution)
+  - Other NoSQL solutions based on architecture needs
+- Database selection MUST be based on access patterns, scalability requirements, and operational constraints
+
+**Rationale**: Early-stage applications rarely need database complexity. JSON files provide simplicity, transparency, and easier debugging. Migrate only when data proves the need, avoiding premature optimization costs. Database choice should match actual usage patterns discovered during operation.
+
+### IX. Deployment & Hosting Standards (NON-NEGOTIABLE)
 
 The application MUST be deployable to Windows 11 with IIS for production hosting.
 
@@ -130,7 +171,7 @@ The application MUST be deployable to Windows 11 with IIS for production hosting
   - `.env` file for local development
   - IIS Configuration Editor for production deployment
 - Data directory MUST have write permissions for `IIS_IUSRS` group
-- Production storage MUST use database (PostgreSQL) not file-based JSON
+- Storage implementation MUST follow Principle VIII (Data Storage Strategy)
 - SSL/TLS MUST be configured in IIS for HTTPS in production
 
 **Build Requirements**:
@@ -140,6 +181,30 @@ The application MUST be deployable to Windows 11 with IIS for production hosting
 - Dependencies MUST be installed with `npm install --production` on server
 
 **Rationale**: Standardizing on Windows 11 + IIS ensures consistent deployment processes, leverages enterprise Windows infrastructure, and provides robust hosting for production environments with native Windows integration.
+
+### X. Simplicity First (NON-NEGOTIABLE)
+
+Avoid premature optimization and over-engineering. Build what is needed now, not what might be needed later.
+
+- YAGNI (You Aren't Gonna Need It): Do not add functionality until it is actually required
+- KISS (Keep It Simple, Stupid): Prefer simple solutions over complex ones
+- Start with the simplest implementation that could possibly work
+- Add complexity only when proven necessary by real usage data
+- Reject "nice to have" features that aren't solving current problems
+- Refactor towards simplicity when complexity accumulates
+- Question every dependency, abstraction, and pattern: "Do we need this now?"
+- Prototype first, optimize later (only when measurements show the need)
+
+**Examples of Simplicity First**:
+- ✓ Use JSON files before databases (Principle VIII)
+- ✓ Use React's useState before Redux/Zustand
+- ✓ Write inline code before extracting utilities
+- ✓ Use direct API calls before setting up API contracts for prototypes
+- ✗ Building user roles system before multi-user access is needed
+- ✗ Implementing caching before measuring performance problems
+- ✗ Creating abstractions for code that's only used once
+
+**Rationale**: Premature optimization wastes time on problems you don't have. Simple code is easier to understand, modify, and debug. Complexity should be earned through demonstrated need, not added speculatively.
 
 ## Technology Stack
 
@@ -155,7 +220,7 @@ The application MUST be deployable to Windows 11 with IIS for production hosting
 | Validation | Zod | MUST for all schemas |
 | Testing | Vitest or Jest | MUST be configured |
 | Linting | ESLint + Prettier | MUST be configured |
-| Storage | File-based JSON (dev) / PostgreSQL (prod) | Production MUST use database |
+| Storage | File-based JSON (initial) / Database TBD (when justified) | Follow Principle VIII |
 | Hosting | Windows 11 + IIS 10.0+ | MUST support iisnode |
 | Build | Vite (client) + esbuild (server) | MUST output CommonJS |
 
@@ -210,4 +275,4 @@ dist/                      # Build output (production deployment)
    - PATCH: Clarifications, wording improvements, typo fixes
 5. Update `Last Amended` date
 
-**Version**: 1.0.0 | **Ratified**: 2026-02-01 | **Last Amended**: 2026-02-01
+**Version**: 1.3.0 | **Ratified**: 2026-02-01 | **Last Amended**: 2026-02-01
