@@ -1,4 +1,10 @@
-import { type User, type InsertUser, type Conversation, type Supporter } from "@shared/schema";
+import {
+  type User,
+  type InsertUser,
+  type Conversation,
+  type Supporter,
+  type Message,
+} from "@shared/schema";
 import fs from "fs/promises";
 import path from "path";
 import { randomUUID } from "crypto";
@@ -12,7 +18,11 @@ export interface IStorage {
   // Conversation Operations
   getConversationsForUser(userId: string): Promise<Conversation[]>;
   getConversation(id: number): Promise<Conversation | undefined>;
-  createConversation(memberId: string, title: string, initialMessage: any): Promise<Conversation>;
+  createConversation(
+    memberId: string,
+    title: string,
+    initialMessage: Message
+  ): Promise<Conversation>;
   updateConversation(id: number, conversation: Conversation): Promise<Conversation>;
 
   // Supporter Operations
@@ -81,9 +91,11 @@ export class FileStorage implements IStorage {
         id: FileStorage.DEMO_MEMBER_ID,
         email: "sarah@demo.supportspark.com",
         password: demoPasswordBlocker,
+        passwordVersion: "bcrypt-10", // Demo accounts bypass normal auth but need version field
         firstName: "Sarah",
         lastName: "Mitchell",
         createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
       this.users.set(demoMember.id, demoMember);
       await this.persistUsers();
@@ -95,9 +107,11 @@ export class FileStorage implements IStorage {
         id: FileStorage.DEMO_SUPPORTER_ID,
         email: "james@demo.supportspark.com",
         password: demoPasswordBlocker,
+        passwordVersion: "bcrypt-10", // Demo accounts bypass normal auth but need version field
         firstName: "James",
         lastName: "Chen",
         createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
       this.users.set(demoSupporter.id, demoSupporter);
       await this.persistUsers();
@@ -105,8 +119,10 @@ export class FileStorage implements IStorage {
 
     // Create supporter relationship if not exists
     // Note: We directly access the map here since we're inside init() and can't call ensureInitialized()
-    const existingRelation = Array.from(this.supporters.values())
-      .find(s => s.memberId === FileStorage.DEMO_MEMBER_ID && s.supporterId === FileStorage.DEMO_SUPPORTER_ID);
+    const existingRelation = Array.from(this.supporters.values()).find(
+      (s) =>
+        s.memberId === FileStorage.DEMO_MEMBER_ID && s.supporterId === FileStorage.DEMO_SUPPORTER_ID
+    );
     if (!existingRelation) {
       const supporterId = this.currentSupporterId++;
       const supporter: Supporter = {
@@ -121,9 +137,10 @@ export class FileStorage implements IStorage {
     }
 
     // Create demo conversations if none exist for demo member
-    const demoConversations = Array.from(this.conversationIndex.values())
-      .filter(c => c.memberId === FileStorage.DEMO_MEMBER_ID);
-    
+    const demoConversations = Array.from(this.conversationIndex.values()).filter(
+      (c) => c.memberId === FileStorage.DEMO_MEMBER_ID
+    );
+
     if (demoConversations.length === 0) {
       const now = new Date();
       const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -146,46 +163,51 @@ export class FileStorage implements IStorage {
               id: "msg-1-1",
               authorId: FileStorage.DEMO_MEMBER_ID,
               authorName: "Sarah Mitchell",
-              content: "Hi everyone. I wanted to create this space to keep you all updated during this transition. As some of you know, I was laid off last week. It's been a shock, but I'm trying to stay positive and see this as an opportunity for a fresh start.",
+              content:
+                "Hi everyone. I wanted to create this space to keep you all updated during this transition. As some of you know, I was laid off last week. It's been a shock, but I'm trying to stay positive and see this as an opportunity for a fresh start.",
               timestamp: sevenDaysAgo.toISOString(),
               replies: [
                 {
                   id: "msg-1-1-reply-1",
                   authorId: FileStorage.DEMO_SUPPORTER_ID,
                   authorName: "James Chen",
-                  content: "Sarah, I'm so sorry to hear this. We've all been thinking of you. Your skills and experience are incredible - this is just a temporary setback. We're here for whatever you need.",
+                  content:
+                    "Sarah, I'm so sorry to hear this. We've all been thinking of you. Your skills and experience are incredible - this is just a temporary setback. We're here for whatever you need.",
                   timestamp: new Date(sevenDaysAgo.getTime() + 2 * 60 * 60 * 1000).toISOString(),
-                  replies: []
-                }
-              ]
+                  replies: [],
+                },
+              ],
             },
             {
               id: "msg-1-2",
               authorId: FileStorage.DEMO_MEMBER_ID,
               authorName: "Sarah Mitchell",
-              content: "Day 2 update: Started updating my resume today. It's been a while since I've done this, but it's actually nice to reflect on what I've accomplished. Small steps forward!",
+              content:
+                "Day 2 update: Started updating my resume today. It's been a while since I've done this, but it's actually nice to reflect on what I've accomplished. Small steps forward!",
               timestamp: sixDaysAgo.toISOString(),
               replies: [
                 {
                   id: "msg-1-2-reply-1",
                   authorId: FileStorage.DEMO_SUPPORTER_ID,
                   authorName: "James Chen",
-                  content: "That's the spirit! Every small step counts. Happy to review your resume if you'd like another set of eyes on it.",
+                  content:
+                    "That's the spirit! Every small step counts. Happy to review your resume if you'd like another set of eyes on it.",
                   timestamp: new Date(sixDaysAgo.getTime() + 3 * 60 * 60 * 1000).toISOString(),
-                  replies: []
-                }
-              ]
+                  replies: [],
+                },
+              ],
             },
             {
               id: "msg-1-3",
               authorId: FileStorage.DEMO_MEMBER_ID,
               authorName: "Sarah Mitchell",
-              content: "Had a great call with a former colleague who offered to introduce me to some people in her network. It really helps to know I'm not alone in this. Thank you all for the encouraging messages.",
+              content:
+                "Had a great call with a former colleague who offered to introduce me to some people in her network. It really helps to know I'm not alone in this. Thank you all for the encouraging messages.",
               timestamp: fiveDaysAgo.toISOString(),
-              replies: []
-            }
-          ]
-        }
+              replies: [],
+            },
+          ],
+        },
       };
 
       // Second conversation - Week 1 progress
@@ -201,46 +223,51 @@ export class FileStorage implements IStorage {
               id: "msg-2-1",
               authorId: FileStorage.DEMO_MEMBER_ID,
               authorName: "Sarah Mitchell",
-              content: "First week has been an emotional rollercoaster. Some days I feel motivated, others I just want to stay in bed. My cat hasn't left my side - she seems to know I need extra cuddles right now.",
+              content:
+                "First week has been an emotional rollercoaster. Some days I feel motivated, others I just want to stay in bed. My cat hasn't left my side - she seems to know I need extra cuddles right now.",
               timestamp: threeDaysAgo.toISOString(),
               replies: [
                 {
                   id: "msg-2-1-reply-1",
                   authorId: FileStorage.DEMO_SUPPORTER_ID,
                   authorName: "James Chen",
-                  content: "Those ups and downs are completely normal. Be kind to yourself - you're going through a major life change. We're all cheering for you!",
+                  content:
+                    "Those ups and downs are completely normal. Be kind to yourself - you're going through a major life change. We're all cheering for you!",
                   timestamp: new Date(threeDaysAgo.getTime() + 4 * 60 * 60 * 1000).toISOString(),
-                  replies: []
-                }
-              ]
+                  replies: [],
+                },
+              ],
             },
             {
               id: "msg-2-2",
               authorId: FileStorage.DEMO_MEMBER_ID,
               authorName: "Sarah Mitchell",
-              content: "Milestone today - had my first informational interview! It went really well and they mentioned a potential opening. Also established a daily routine which helps a lot. Feeling more like myself each day.",
+              content:
+                "Milestone today - had my first informational interview! It went really well and they mentioned a potential opening. Also established a daily routine which helps a lot. Feeling more like myself each day.",
               timestamp: twoDaysAgo.toISOString(),
               replies: [
                 {
                   id: "msg-2-2-reply-1",
                   authorId: FileStorage.DEMO_SUPPORTER_ID,
                   authorName: "James Chen",
-                  content: "That's amazing progress! Establishing a routine is so important. Keep celebrating those wins - they add up!",
+                  content:
+                    "That's amazing progress! Establishing a routine is so important. Keep celebrating those wins - they add up!",
                   timestamp: new Date(twoDaysAgo.getTime() + 2 * 60 * 60 * 1000).toISOString(),
-                  replies: []
-                }
-              ]
+                  replies: [],
+                },
+              ],
             },
             {
               id: "msg-2-3",
               authorId: FileStorage.DEMO_MEMBER_ID,
               authorName: "Sarah Mitchell",
-              content: "Applied to five positions this week and feeling hopeful. Also taking time to think about what I really want in my next role. Grateful for all your support through this journey.",
+              content:
+                "Applied to five positions this week and feeling hopeful. Also taking time to think about what I really want in my next role. Grateful for all your support through this journey.",
               timestamp: oneDayAgo.toISOString(),
-              replies: []
-            }
-          ]
-        }
+              replies: [],
+            },
+          ],
+        },
       };
 
       // Add both conversations to index
@@ -249,7 +276,7 @@ export class FileStorage implements IStorage {
           id: conv.id,
           memberId: FileStorage.DEMO_MEMBER_ID,
           title: conv.title,
-          createdAt: conv.createdAt
+          createdAt: conv.createdAt,
         });
         await this.writeConversationFile(conv);
       }
@@ -269,21 +296,23 @@ export class FileStorage implements IStorage {
     try {
       // Load Users
       const usersData = await this.readFile<User[]>(this.usersFile, []);
-      this.users = new Map(usersData.map(u => [u.id, u]));
+      this.users = new Map(usersData.map((u) => [u.id, u]));
 
       // Load Conversation Index
       const indexData = await this.readFile<ConversationIndex[]>(this.conversationIndexFile, []);
-      this.conversationIndex = new Map(indexData.map(c => [c.id, c]));
+      this.conversationIndex = new Map(indexData.map((c) => [c.id, c]));
 
       // Load Conversation Meta
-      const metaData = await this.readFile<ConversationMeta>(this.conversationMetaFile, { lastConversationId: 0 });
+      const metaData = await this.readFile<ConversationMeta>(this.conversationMetaFile, {
+        lastConversationId: 0,
+      });
       this.currentConversationId = metaData.lastConversationId + 1;
 
       // Load Supporters
       const supportersData = await this.readFile<Supporter[]>(this.supportersFile, []);
-      this.supporters = new Map(supportersData.map(s => [s.id, s]));
+      this.supporters = new Map(supportersData.map((s) => [s.id, s]));
       if (supportersData.length > 0) {
-        this.currentSupporterId = Math.max(...supportersData.map(s => s.id)) + 1;
+        this.currentSupporterId = Math.max(...supportersData.map((s) => s.id)) + 1;
       }
     } catch (error) {
       console.error("Error loading data:", error);
@@ -295,7 +324,7 @@ export class FileStorage implements IStorage {
       const content = await fs.readFile(filePath, "utf-8");
       return JSON.parse(content);
     } catch (error) {
-      if ((error as any).code === "ENOENT") {
+      if (error && typeof error === 'object' && 'code' in error && (error as { code: string }).code === "ENOENT") {
         await fs.writeFile(filePath, JSON.stringify(defaultValue, null, 2));
         return defaultValue;
       }
@@ -308,7 +337,10 @@ export class FileStorage implements IStorage {
   }
 
   private async persistConversationIndex() {
-    await fs.writeFile(this.conversationIndexFile, JSON.stringify(Array.from(this.conversationIndex.values()), null, 2));
+    await fs.writeFile(
+      this.conversationIndexFile,
+      JSON.stringify(Array.from(this.conversationIndex.values()), null, 2)
+    );
   }
 
   private async persistConversationMeta() {
@@ -317,7 +349,10 @@ export class FileStorage implements IStorage {
   }
 
   private async persistSupporters() {
-    await fs.writeFile(this.supportersFile, JSON.stringify(Array.from(this.supporters.values()), null, 2));
+    await fs.writeFile(
+      this.supportersFile,
+      JSON.stringify(Array.from(this.supporters.values()), null, 2)
+    );
   }
 
   private getConversationFilePath(memberId: string, conversationId: number): string {
@@ -337,13 +372,16 @@ export class FileStorage implements IStorage {
     await fs.rename(tempPath, filePath);
   }
 
-  private async readConversationFile(memberId: string, conversationId: number): Promise<Conversation | undefined> {
+  private async readConversationFile(
+    memberId: string,
+    conversationId: number
+  ): Promise<Conversation | undefined> {
     try {
       const filePath = this.getConversationFilePath(memberId, conversationId);
       const content = await fs.readFile(filePath, "utf-8");
       return JSON.parse(content);
     } catch (error) {
-      if ((error as any).code === "ENOENT") {
+      if (error && typeof error === 'object' && 'code' in error && (error as { code: string }).code === "ENOENT") {
         return undefined;
       }
       throw error;
@@ -359,7 +397,7 @@ export class FileStorage implements IStorage {
 
   async getUserByEmail(email: string): Promise<User | undefined> {
     await this.ensureInitialized();
-    return Array.from(this.users.values()).find(u => u.email === email);
+    return Array.from(this.users.values()).find((u) => u.email === email);
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
@@ -368,7 +406,9 @@ export class FileStorage implements IStorage {
     const user: User = {
       ...insertUser,
       id,
+      passwordVersion: "bcrypt-10", // Set password version for new users
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
     this.users.set(id, user);
     await this.persistUsers();
@@ -383,15 +423,16 @@ export class FileStorage implements IStorage {
     // Get accepted supporter relationships
     const supporting = await this.getSupportingMembers(userId);
     const acceptedMemberIds = supporting
-      .filter(s => s.status === 'accepted')
-      .map(s => s.memberId);
+      .filter((s) => s.status === "accepted")
+      .map((s) => s.memberId);
 
     // Include own conversations (as member)
     acceptedMemberIds.push(userId);
 
     // Get conversation IDs from index that belong to these members
-    const relevantIndexEntries = Array.from(this.conversationIndex.values())
-      .filter(c => acceptedMemberIds.includes(c.memberId));
+    const relevantIndexEntries = Array.from(this.conversationIndex.values()).filter((c) =>
+      acceptedMemberIds.includes(c.memberId)
+    );
 
     // Load full conversations from individual files
     const conversations: Conversation[] = [];
@@ -415,7 +456,11 @@ export class FileStorage implements IStorage {
     return this.readConversationFile(indexEntry.memberId, id);
   }
 
-  async createConversation(memberId: string, title: string, initialMessage: any): Promise<Conversation> {
+  async createConversation(
+    memberId: string,
+    title: string,
+    initialMessage: Message
+  ): Promise<Conversation> {
     await this.ensureInitialized();
 
     const id = this.currentConversationId++;
@@ -424,9 +469,9 @@ export class FileStorage implements IStorage {
       memberId,
       title,
       data: {
-        messages: [initialMessage]
+        messages: [initialMessage],
       },
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
 
     // Add to index
@@ -434,7 +479,7 @@ export class FileStorage implements IStorage {
       id,
       memberId,
       title,
-      createdAt: conversation.createdAt
+      createdAt: conversation.createdAt,
     });
 
     // Persist conversation file, index, and meta
@@ -447,7 +492,7 @@ export class FileStorage implements IStorage {
 
   async updateConversation(id: number, conversation: Conversation): Promise<Conversation> {
     await this.ensureInitialized();
-    
+
     // Update index if title changed
     const indexEntry = this.conversationIndex.get(id);
     if (indexEntry && indexEntry.title !== conversation.title) {
@@ -455,10 +500,10 @@ export class FileStorage implements IStorage {
       this.conversationIndex.set(id, indexEntry);
       await this.persistConversationIndex();
     }
-    
+
     // Write the updated conversation file
     await this.writeConversationFile(conversation);
-    
+
     return conversation;
   }
 
@@ -466,14 +511,12 @@ export class FileStorage implements IStorage {
 
   async getSupportersForMember(memberId: string): Promise<Supporter[]> {
     await this.ensureInitialized();
-    return Array.from(this.supporters.values())
-      .filter(s => s.memberId === memberId);
+    return Array.from(this.supporters.values()).filter((s) => s.memberId === memberId);
   }
 
   async getSupportingMembers(supporterId: string): Promise<Supporter[]> {
     await this.ensureInitialized();
-    return Array.from(this.supporters.values())
-      .filter(s => s.supporterId === supporterId);
+    return Array.from(this.supporters.values()).filter((s) => s.supporterId === supporterId);
   }
 
   async createSupporter(memberId: string, supporterId: string): Promise<Supporter> {
@@ -484,7 +527,7 @@ export class FileStorage implements IStorage {
       memberId,
       supporterId,
       status: "pending",
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
 
     this.supporters.set(id, supporter);
@@ -505,8 +548,9 @@ export class FileStorage implements IStorage {
 
   async getSupporterRecord(memberId: string, supporterId: string): Promise<Supporter | undefined> {
     await this.ensureInitialized();
-    return Array.from(this.supporters.values())
-      .find(s => s.memberId === memberId && s.supporterId === supporterId);
+    return Array.from(this.supporters.values()).find(
+      (s) => s.memberId === memberId && s.supporterId === supporterId
+    );
   }
 }
 

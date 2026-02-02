@@ -1,7 +1,31 @@
+import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+
+// === ENVIRONMENT VARIABLE VALIDATION ===
+// Validate required environment variables at startup
+const requiredEnvVars = ["SESSION_SECRET"];
+const missingEnvVars = requiredEnvVars.filter((key) => !process.env[key]);
+
+if (missingEnvVars.length > 0) {
+  console.error("❌ Missing required environment variables:", missingEnvVars.join(", "));
+  console.error("See .env.example for configuration details");
+  process.exit(1);
+}
+
+// Reject default/insecure secrets in production
+if (process.env.NODE_ENV === "production") {
+  const insecureSecrets = ["simple-secret-key", "your-secret-key-here"];
+  if (insecureSecrets.some((secret) => process.env.SESSION_SECRET === secret)) {
+    console.error("❌ Production environment detected with default SESSION_SECRET");
+    console.error(
+      "Generate a secure secret: node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\""
+    );
+    process.exit(1);
+  }
+}
 
 const app = express();
 const httpServer = createServer(app);
@@ -14,13 +38,27 @@ declare module "http" {
 
 app.use(
   express.json({
+    limit: "10mb", // CSRF Protection: Prevent large payload DoS attacks (T091b)
     verify: (req, _res, buf) => {
       req.rawBody = buf;
     },
-  }),
+  })
 );
 
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false, limit: "10mb" })); // Also limit URL-encoded payloads
+
+// === CSRF PROTECTION HEADERS (T091b) ===
+app.use((_req, res, next) => {
+  // Strict-Transport-Security: Force HTTPS in production
+  if (process.env.NODE_ENV === "production") {
+    res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  }
+  // X-Content-Type-Options: Prevent MIME-type sniffing
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  // X-Frame-Options: Prevent clickjacking
+  res.setHeader("X-Frame-Options", "DENY");
+  next();
+});
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -30,13 +68,14 @@ export function log(message: string, source = "express") {
     hour12: true,
   });
 
+  // eslint-disable-next-line no-console
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
+  let capturedJsonResponse: Record<string, unknown> | undefined = undefined;
 
   const originalResJson = res.json;
   res.json = function (bodyJson, ...args) {
@@ -62,9 +101,13 @@ app.use((req, res, next) => {
 (async () => {
   await registerRoutes(httpServer, app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+  app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+    const status = (err && typeof err === 'object' && ('status' in err || 'statusCode' in err)) 
+      ? (err as { status?: number; statusCode?: number }).status || (err as { statusCode?: number }).statusCode || 500 
+      : 500;
+    const message = (err && typeof err === 'object' && 'message' in err && typeof (err as { message: unknown }).message === 'string') 
+      ? (err as { message: string }).message 
+      : "Internal Server Error";
 
     res.status(status).json({ message });
     throw err;
@@ -92,6 +135,6 @@ app.use((req, res, next) => {
     },
     () => {
       log(`serving on port ${port}`);
-    },
+    }
   );
 })();

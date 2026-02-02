@@ -5,6 +5,7 @@
 SupportSpark is a support network platform designed to help people going through difficult times share updates with their trusted support network. The application provides a calm, distraction-free space where members can post journey updates and supporters can read and respond with encouragement through threaded conversations.
 
 Key features:
+
 - Member-to-supporter relationship management with invitation system
 - Threaded conversation updates for sharing personal journeys
 - Role-based access (members create updates, supporters view and respond)
@@ -17,6 +18,7 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 ### Frontend Architecture
+
 - **Framework**: React 18 with TypeScript
 - **Routing**: Wouter (lightweight alternative to React Router)
 - **State Management**: TanStack React Query for server state
@@ -26,6 +28,7 @@ Preferred communication style: Simple, everyday language.
 - **Forms**: React Hook Form with Zod validation via @hookform/resolvers
 
 ### Backend Architecture
+
 - **Runtime**: Node.js with Express.js
 - **Language**: TypeScript (ESM modules)
 - **API Pattern**: RESTful endpoints with typed contracts defined in shared/routes.ts
@@ -33,6 +36,7 @@ Preferred communication style: Simple, everyday language.
 - **Build Tool**: Vite for development, esbuild for production bundling
 
 ### Data Storage
+
 - **Primary Storage**: File-based JSON storage (data/ directory)
   - users.json: User accounts
   - supporters.json: Member-supporter relationships
@@ -41,6 +45,7 @@ Preferred communication style: Simple, everyday language.
 - **Schema Location**: shared/schema.ts using Zod for validation
 
 ### Project Structure
+
 ```
 client/           # React frontend
   src/
@@ -59,13 +64,16 @@ data/             # JSON file storage
 ```
 
 ### Authentication Flow
+
 - Session-based authentication using express-session
 - Passport Local Strategy for email/password login
 - Protected routes check authentication state via /api/auth/user endpoint
 - Client-side auth state managed through React Query
 
 ### API Contract Pattern
+
 The shared/routes.ts file defines a typed API contract with:
+
 - HTTP method, path, and response schemas for each endpoint
 - Zod schemas for request/response validation
 - Helper function buildUrl() for constructing parameterized URLs
@@ -73,27 +81,32 @@ The shared/routes.ts file defines a typed API contract with:
 ## External Dependencies
 
 ### UI Framework
+
 - **Radix UI**: Full suite of accessible, unstyled primitives (dialog, dropdown, tabs, etc.)
 - **shadcn/ui**: Pre-styled components using Radix + Tailwind
 - **Lucide React**: Icon library
 
 ### Data & Forms
+
 - **TanStack React Query**: Server state management and caching
 - **React Hook Form**: Form state management
 - **Zod**: Schema validation for forms and API contracts
 
 ### Database (configured but using file storage)
+
 - **Drizzle ORM**: Type-safe ORM configured for PostgreSQL
 - **drizzle-kit**: Database migration tooling
 - **DATABASE_URL**: Environment variable for PostgreSQL connection
 
 ### Authentication
+
 - **Passport.js**: Authentication middleware
 - **passport-local**: Username/password strategy
 - **express-session**: Session management
 - **memorystore**: In-memory session store (development)
 
 ### Build & Development
+
 - **Vite**: Development server with HMR
 - **esbuild**: Production bundling
 - **tsx**: TypeScript execution for Node.js

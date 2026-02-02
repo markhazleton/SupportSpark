@@ -42,7 +42,7 @@ app.post("/api/conversations", async (req, res) => {
   if (!result.success) {
     return res.status(400).json({ error: result.error.message });
   }
-  
+
   const conversation = await storage.createConversation(result.data);
   res.status(201).json(conversation);
 });
@@ -52,16 +52,16 @@ app.post("/api/conversations", async (req, res) => {
 
 ```typescript
 // server/conversations.test.ts
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
 
-describe('POST /api/conversations', () => {
-  it('creates a conversation with valid data', async () => {
+describe("POST /api/conversations", () => {
+  it("creates a conversation with valid data", async () => {
     const response = await request(app)
-      .post('/api/conversations')
-      .send({ title: 'Test', content: 'Content' });
-    
+      .post("/api/conversations")
+      .send({ title: "Test", content: "Content" });
+
     expect(response.status).toBe(201);
-    expect(response.body).toHaveProperty('id');
+    expect(response.body).toHaveProperty("id");
   });
 });
 ```
@@ -96,9 +96,7 @@ export default function ExamplePage() {
         <CardHeader>
           <CardTitle>Title</CardTitle>
         </CardHeader>
-        <CardContent>
-          {/* Content */}
-        </CardContent>
+        <CardContent>{/* Content */}</CardContent>
       </Card>
     </div>
   );
@@ -126,7 +124,7 @@ export function useResource(id: number) {
 
 export function useCreateResource() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (data: CreateResource) => {
       const res = await fetch("/api/resources", {
@@ -150,7 +148,14 @@ export function useCreateResource() {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createResourceSchema, CreateResource } from "@shared/schema";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -220,10 +225,10 @@ const handleSubmit = async (data: CreateResource) => {
     await mutation.mutateAsync(data);
     toast({ title: "Success", description: "Resource created" });
   } catch (error) {
-    toast({ 
-      title: "Error", 
+    toast({
+      title: "Error",
       description: error.message,
-      variant: "destructive" 
+      variant: "destructive",
     });
   }
 };
@@ -234,20 +239,20 @@ const handleSubmit = async (data: CreateResource) => {
 ### Component Test
 
 ```tsx
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi } from 'vitest';
-import { ResourceForm } from './ResourceForm';
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, it, expect, vi } from "vitest";
+import { ResourceForm } from "./ResourceForm";
 
-describe('ResourceForm', () => {
-  it('submits valid data', async () => {
+describe("ResourceForm", () => {
+  it("submits valid data", async () => {
     const onSubmit = vi.fn();
     render(<ResourceForm onSubmit={onSubmit} />);
-    
-    await userEvent.type(screen.getByLabelText(/name/i), 'Test');
-    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
-    
-    expect(onSubmit).toHaveBeenCalledWith({ name: 'Test' });
+
+    await userEvent.type(screen.getByLabelText(/name/i), "Test");
+    await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+    expect(onSubmit).toHaveBeenCalledWith({ name: "Test" });
   });
 });
 ```
@@ -255,14 +260,14 @@ describe('ResourceForm', () => {
 ### Hook Test
 
 ```typescript
-import { renderHook, waitFor } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
-import { useResource } from './use-resource';
+import { renderHook, waitFor } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
+import { useResource } from "./use-resource";
 
-describe('useResource', () => {
-  it('fetches resource data', async () => {
+describe("useResource", () => {
+  it("fetches resource data", async () => {
     const { result } = renderHook(() => useResource(1));
-    
+
     await waitFor(() => {
       expect(result.current.data).toBeDefined();
     });

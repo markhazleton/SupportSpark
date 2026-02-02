@@ -45,11 +45,11 @@ docs/
 
 ## Files Modified
 
-| File | Action |
-|------|--------|
-| `.github/copilot-instructions.md` | Created |
-| `docs/domain/architecture.md` | Created |
-| `docs/domain/development-patterns.md` | Created |
+| File                                         | Action  |
+| -------------------------------------------- | ------- |
+| `.github/copilot-instructions.md`            | Created |
+| `docs/domain/architecture.md`                | Created |
+| `docs/domain/development-patterns.md`        | Created |
 | `docs/copilot/session-2026-02-01/summary.md` | Created |
 
 ## Constitution Compliance

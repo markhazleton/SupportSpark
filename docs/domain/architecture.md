@@ -21,6 +21,7 @@ All API communication flows through shared contracts defined in `shared/routes.t
 ```
 
 **Benefits:**
+
 - Compile-time type checking for API calls
 - Single source of truth for data shapes
 - Breaking changes caught at build time
@@ -113,15 +114,15 @@ User Action
 
 ## Module Boundaries
 
-| Module | Responsibility | Dependencies |
-|--------|----------------|--------------|
-| `client/src/pages/` | Route-level UI, data fetching | hooks, components |
-| `client/src/hooks/` | Business logic, React Query | shared/schema |
-| `client/src/components/` | Reusable UI elements | ui primitives |
-| `server/routes.ts` | HTTP handlers | storage, shared |
-| `server/storage.ts` | Data persistence | shared/schema |
-| `shared/schema.ts` | Type definitions | Zod |
-| `shared/routes.ts` | API contracts | schema |
+| Module                   | Responsibility                | Dependencies      |
+| ------------------------ | ----------------------------- | ----------------- |
+| `client/src/pages/`      | Route-level UI, data fetching | hooks, components |
+| `client/src/hooks/`      | Business logic, React Query   | shared/schema     |
+| `client/src/components/` | Reusable UI elements          | ui primitives     |
+| `server/routes.ts`       | HTTP handlers                 | storage, shared   |
+| `server/storage.ts`      | Data persistence              | shared/schema     |
+| `shared/schema.ts`       | Type definitions              | Zod               |
+| `shared/routes.ts`       | API contracts                 | schema            |
 
 ## Error Handling Strategy
 

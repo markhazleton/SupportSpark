@@ -1,5 +1,10 @@
-import { z } from 'zod';
-import { insertConversationSchema, insertSupporterSchema, type Conversation, type Supporter } from './schema';
+import { z } from "zod";
+import {
+  conversationSchema,
+  supporterSchema,
+  type Conversation,
+  type Supporter,
+} from "./schema";
 
 // ============================================
 // SHARED ERROR SCHEMAS
@@ -21,20 +26,24 @@ export const errorSchemas = {
 };
 
 // ============================================
+// RESPONSE SCHEMAS
+// ============================================
+
+// ============================================
 // API CONTRACT
 // ============================================
 export const api = {
   conversations: {
     list: {
-      method: 'GET' as const,
-      path: '/api/conversations',
+      method: "GET" as const,
+      path: "/api/conversations",
       responses: {
-        200: z.array(z.custom<any>()), // Using custom because of the join/extra fields
+        200: z.array(conversationSchema),
       },
     },
     get: {
-      method: 'GET' as const,
-      path: '/api/conversations/:id',
+      method: "GET" as const,
+      path: "/api/conversations/:id",
       responses: {
         200: z.custom<Conversation>(),
         404: errorSchemas.notFound,
@@ -42,8 +51,8 @@ export const api = {
       },
     },
     create: {
-      method: 'POST' as const,
-      path: '/api/conversations',
+      method: "POST" as const,
+      path: "/api/conversations",
       input: z.object({
         title: z.string(),
         initialMessage: z.string(),
@@ -54,10 +63,10 @@ export const api = {
       },
     },
     addMessage: {
-      method: 'POST' as const,
-      path: '/api/conversations/:id/messages',
+      method: "POST" as const,
+      path: "/api/conversations/:id/messages",
       input: z.object({
-        content: z.string(),
+        content: z.string(), // Message content
         parentMessageId: z.string().optional(),
         images: z.array(z.string()).optional(),
       }),
@@ -69,15 +78,24 @@ export const api = {
   },
   supporters: {
     list: {
-      method: 'GET' as const,
-      path: '/api/supporters',
+      method: "GET" as const,
+      path: "/api/supporters",
       responses: {
-        200: z.array(z.custom<any>()),
+        200: z.object({
+          mySupporters: z.array(supporterSchema.extend({
+            supporterName: z.string().optional(),
+            supporterEmail: z.string().optional(),
+          })),
+          supporting: z.array(supporterSchema.extend({
+            memberName: z.string().optional(),
+            memberEmail: z.string().optional(),
+          })),
+        }),
       },
     },
     invite: {
-      method: 'POST' as const,
-      path: '/api/supporters/invite',
+      method: "POST" as const,
+      path: "/api/supporters/invite",
       input: z.object({
         email: z.string().email(),
       }),
@@ -88,10 +106,10 @@ export const api = {
       },
     },
     updateStatus: {
-      method: 'PATCH' as const,
-      path: '/api/supporters/:id/status',
+      method: "PATCH" as const,
+      path: "/api/supporters/:id/status",
       input: z.object({
-        status: z.enum(['accepted', 'rejected']),
+        status: z.enum(["accepted", "rejected"]),
       }),
       responses: {
         200: z.custom<Supporter>(),

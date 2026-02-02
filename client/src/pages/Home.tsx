@@ -41,7 +41,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-stone-50">
       <Navbar />
-      
+
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-primary/5 py-20 lg:py-32">
         <div className="container mx-auto px-4 relative z-10">
@@ -52,11 +52,11 @@ export default function Home() {
               transition={{ duration: 0.6 }}
             >
               <h1 className="text-5xl lg:text-7xl font-serif text-primary font-bold leading-tight mb-6">
-                Strength in <br/> <span className="text-accent/90">connection.</span>
+                Strength in <br /> <span className="text-accent/90">connection.</span>
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-                A safe, distraction-free space to share your journey through difficult times with the people who matter most.
-                No ads, no algorithms, just support.
+                A safe, distraction-free space to share your journey through difficult times with
+                the people who matter most. No ads, no algorithms, just support.
               </p>
             </motion.div>
 
@@ -74,10 +74,10 @@ export default function Home() {
                 </Link>
               ) : (
                 <>
-                  <Button 
-                    size="lg" 
+                  <Button
+                    size="lg"
                     className="h-14 px-8 text-lg rounded-full shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1"
-                    onClick={() => window.location.href = "/auth"}
+                    onClick={() => (window.location.href = "/auth")}
                   >
                     Start Your Journey
                   </Button>
@@ -134,10 +134,11 @@ export default function Home() {
                   transition={{ duration: 0.5 }}
                 >
                   <p className="text-3xl font-serif italic text-stone-600 mb-8">
-                    "{currentQuote.quote}"
+                    &quot;{currentQuote.quote}&quot;
                   </p>
                   <footer className="text-stone-500 font-medium">
-                    — {currentQuote.author}{currentQuote.date && `, ${currentQuote.date}`}
+                    — {currentQuote.author}
+                    {currentQuote.date && `, ${currentQuote.date}`}
                   </footer>
                 </motion.div>
               )}
@@ -151,19 +152,23 @@ export default function Home() {
   );
 }
 
-function FeatureCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
+function FeatureCard({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) {
   return (
-    <motion.div 
+    <motion.div
       whileHover={{ y: -5 }}
       className="p-8 rounded-2xl bg-stone-50 border border-stone-100 shadow-sm hover:shadow-md transition-all"
     >
-      <div className="mb-6 p-4 bg-white rounded-xl inline-block shadow-sm">
-        {icon}
-      </div>
+      <div className="mb-6 p-4 bg-white rounded-xl inline-block shadow-sm">{icon}</div>
       <h3 className="text-2xl font-serif font-semibold mb-3">{title}</h3>
-      <p className="text-muted-foreground leading-relaxed">
-        {description}
-      </p>
+      <p className="text-muted-foreground leading-relaxed">{description}</p>
     </motion.div>
   );
 }

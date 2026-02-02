@@ -38,12 +38,8 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/demo" component={Demo} />
-      <Route path="/dashboard">
-        {() => <ProtectedRoute component={Dashboard} />}
-      </Route>
-      <Route path="/supporters">
-        {() => <ProtectedRoute component={Supporters} />}
-      </Route>
+      <Route path="/dashboard">{() => <ProtectedRoute component={Dashboard} />}</Route>
+      <Route path="/supporters">{() => <ProtectedRoute component={Supporters} />}</Route>
       <Route path="/conversation/:id">
         {() => <ProtectedRoute component={ConversationView} />}
       </Route>

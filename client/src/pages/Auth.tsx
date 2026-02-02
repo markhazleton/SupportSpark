@@ -4,7 +4,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertUserSchema, type InsertUser } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Redirect } from "wouter";
@@ -21,9 +28,7 @@ export default function AuthPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-serif text-primary">SupportSpark</CardTitle>
-          <CardDescription>
-            A safe space for sharing life's challenges together.
-          </CardDescription>
+          <CardDescription>A safe space for sharing life&apos;s challenges together.</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="login">
@@ -33,11 +38,17 @@ export default function AuthPage() {
             </TabsList>
 
             <TabsContent value="login">
-              <LoginForm onSubmit={(data) => loginMutation.mutate(data)} isPending={loginMutation.isPending} />
+              <LoginForm
+                onSubmit={(data) => loginMutation.mutate(data)}
+                isPending={loginMutation.isPending}
+              />
             </TabsContent>
 
             <TabsContent value="register">
-              <RegisterForm onSubmit={(data) => registerMutation.mutate(data)} isPending={registerMutation.isPending} />
+              <RegisterForm
+                onSubmit={(data) => registerMutation.mutate(data)}
+                isPending={registerMutation.isPending}
+              />
             </TabsContent>
           </Tabs>
         </CardContent>
@@ -46,7 +57,13 @@ export default function AuthPage() {
   );
 }
 
-function LoginForm({ onSubmit, isPending }: { onSubmit: (data: any) => void, isPending: boolean }) {
+function LoginForm({
+  onSubmit,
+  isPending,
+}: {
+  onSubmit: (data: { email: string; password: string }) => void;
+  isPending: boolean;
+}) {
   const form = useForm({
     defaultValues: {
       email: "",
@@ -91,7 +108,13 @@ function LoginForm({ onSubmit, isPending }: { onSubmit: (data: any) => void, isP
   );
 }
 
-function RegisterForm({ onSubmit, isPending }: { onSubmit: (data: InsertUser) => void, isPending: boolean }) {
+function RegisterForm({
+  onSubmit,
+  isPending,
+}: {
+  onSubmit: (data: InsertUser) => void;
+  isPending: boolean;
+}) {
   const form = useForm<InsertUser>({
     resolver: zodResolver(insertUserSchema),
     defaultValues: {

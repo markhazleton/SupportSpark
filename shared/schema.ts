@@ -1,21 +1,23 @@
 import { z } from "zod";
 
 // === USER SCHEMA ===
+export const insertUserSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8).max(72), // bcrypt max 72 bytes, min 8 for security
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+});
+
 export const userSchema = z.object({
   id: z.string(),
   email: z.string().email(),
-  password: z.string(), // Hashed in a real app, keeping simple for now
+  password: z.string(), // Bcrypt hash (no length constraint for stored hash)
+  passwordVersion: z.enum(["bcrypt-10"]).optional(), // Optional for backwards compatibility
   firstName: z.string().optional(),
   lastName: z.string().optional(),
   profileImageUrl: z.string().optional(),
   createdAt: z.string().optional(), // ISO String
-});
-
-export const insertUserSchema = userSchema.pick({
-  email: true,
-  password: true,
-  firstName: true,
-  lastName: true,
+  updatedAt: z.string().optional(), // ISO String
 });
 
 export type User = z.infer<typeof userSchema>;
