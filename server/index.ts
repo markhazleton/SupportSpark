@@ -5,21 +5,23 @@ import { createServer } from "http";
 
 // === ENVIRONMENT VARIABLE VALIDATION ===
 // Validate required environment variables at startup
-const requiredEnvVars = ['SESSION_SECRET'];
-const missingEnvVars = requiredEnvVars.filter(key => !process.env[key]);
+const requiredEnvVars = ["SESSION_SECRET"];
+const missingEnvVars = requiredEnvVars.filter((key) => !process.env[key]);
 
 if (missingEnvVars.length > 0) {
-  console.error('❌ Missing required environment variables:', missingEnvVars.join(', '));
-  console.error('See .env.example for configuration details');
+  console.error("❌ Missing required environment variables:", missingEnvVars.join(", "));
+  console.error("See .env.example for configuration details");
   process.exit(1);
 }
 
 // Reject default/insecure secrets in production
-if (process.env.NODE_ENV === 'production') {
-  const insecureSecrets = ['simple-secret-key', 'your-secret-key-here'];
-  if (insecureSecrets.some(secret => process.env.SESSION_SECRET === secret)) {
-    console.error('❌ Production environment detected with default SESSION_SECRET');
-    console.error('Generate a secure secret: node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'hex\'))"');
+if (process.env.NODE_ENV === "production") {
+  const insecureSecrets = ["simple-secret-key", "your-secret-key-here"];
+  if (insecureSecrets.some((secret) => process.env.SESSION_SECRET === secret)) {
+    console.error("❌ Production environment detected with default SESSION_SECRET");
+    console.error(
+      "Generate a secure secret: node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\""
+    );
     process.exit(1);
   }
 }
@@ -35,13 +37,27 @@ declare module "http" {
 
 app.use(
   express.json({
+    limit: "10mb", // CSRF Protection: Prevent large payload DoS attacks (T091b)
     verify: (req, _res, buf) => {
       req.rawBody = buf;
     },
-  }),
+  })
 );
 
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false, limit: "10mb" })); // Also limit URL-encoded payloads
+
+// === CSRF PROTECTION HEADERS (T091b) ===
+app.use((_req, res, next) => {
+  // Strict-Transport-Security: Force HTTPS in production
+  if (process.env.NODE_ENV === "production") {
+    res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  }
+  // X-Content-Type-Options: Prevent MIME-type sniffing
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  // X-Frame-Options: Prevent clickjacking
+  res.setHeader("X-Frame-Options", "DENY");
+  next();
+});
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -114,6 +130,6 @@ app.use((req, res, next) => {
     },
     () => {
       log(`serving on port ${port}`);
-    },
+    }
   );
 })();

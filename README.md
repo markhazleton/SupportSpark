@@ -29,6 +29,7 @@ During difficult times, keeping loved ones updated can be exhausting. SupportSpa
 ## Features
 
 ### For Members (Update Creators)
+
 - Create and manage journey conversations
 - Post updates with text and images
 - Invite trusted supporters via email
@@ -36,12 +37,14 @@ During difficult times, keeping loved ones updated can be exhausting. SupportSpa
 - View supporter engagement
 
 ### For Supporters
+
 - Receive invitations from members
 - Read journey updates in real-time
 - Reply with encouragement and support
 - Threaded replies for organized conversations
 
 ### Platform Features
+
 - **Demo Mode** — Explore functionality without creating an account
 - **Responsive Design** — Works seamlessly on desktop, tablet, and mobile
 - **Accessible UI** — Built on Radix primitives for WCAG compliance
@@ -51,18 +54,18 @@ During difficult times, keeping loved ones updated can be exhausting. SupportSpa
 
 ## Tech Stack
 
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| **Frontend** | React 19 + Vite | Modern, fast UI with HMR |
-| **UI Library** | shadcn/ui + Radix | Accessible, customizable components |
-| **Styling** | Tailwind CSS 4 | Utility-first, calming design system |
-| **Animations** | Framer Motion | Smooth, purposeful transitions |
-| **State** | TanStack React Query | Server state with caching |
-| **Routing** | Wouter | Lightweight client routing |
-| **Backend** | Express 5 | RESTful API server |
-| **Auth** | Passport.js + Sessions | Secure authentication |
-| **Validation** | Zod | Runtime type safety |
-| **Language** | TypeScript (strict) | Full type coverage |
+| Layer          | Technology             | Purpose                              |
+| -------------- | ---------------------- | ------------------------------------ |
+| **Frontend**   | React 19 + Vite        | Modern, fast UI with HMR             |
+| **UI Library** | shadcn/ui + Radix      | Accessible, customizable components  |
+| **Styling**    | Tailwind CSS 4         | Utility-first, calming design system |
+| **Animations** | Framer Motion          | Smooth, purposeful transitions       |
+| **State**      | TanStack React Query   | Server state with caching            |
+| **Routing**    | Wouter                 | Lightweight client routing           |
+| **Backend**    | Express 5              | RESTful API server                   |
+| **Auth**       | Passport.js + Sessions | Secure authentication                |
+| **Validation** | Zod                    | Runtime type safety                  |
+| **Language**   | TypeScript (strict)    | Full type coverage                   |
 
 ---
 
@@ -70,7 +73,7 @@ During difficult times, keeping loved ones updated can be exhausting. SupportSpa
 
 ### Prerequisites
 
-- **Node.js** 18+ 
+- **Node.js** 18+
 - **npm** or **pnpm**
 
 ### Installation
@@ -91,12 +94,12 @@ The application will be available at `http://localhost:5000`
 
 ### Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server with HMR |
-| `npm run build` | Build for production |
-| `npm start` | Run production build |
-| `npm run check` | TypeScript type checking |
+| Command         | Description                       |
+| --------------- | --------------------------------- |
+| `npm run dev`   | Start development server with HMR |
+| `npm run build` | Build for production              |
+| `npm start`     | Run production build              |
+| `npm run check` | TypeScript type checking          |
 
 ---
 
@@ -116,6 +119,7 @@ Use the PowerShell deployment script:
 ```
 
 This script will:
+
 - Build the application
 - Copy files to `C:\inetpub\supportspark`
 - Install production dependencies
@@ -125,6 +129,7 @@ This script will:
 #### Manual Deployment
 
 See the comprehensive [IIS Deployment Guide](docs/domain/deployment-iis.md) for:
+
 - Prerequisites (IIS, iisnode, URL Rewrite)
 - Step-by-step deployment instructions
 - SSL/TLS configuration
@@ -134,6 +139,7 @@ See the comprehensive [IIS Deployment Guide](docs/domain/deployment-iis.md) for:
 #### Build Output
 
 The build process (`npm run build`) creates:
+
 - `dist/index.cjs` — Compiled Express server (CommonJS for iisnode)
 - `dist/public/` — Frontend static files
 - `dist/web.config` — IIS configuration with URL rewrite rules
@@ -184,27 +190,30 @@ SupportSpark/
 All API endpoints follow the contract pattern defined in `shared/routes.ts`:
 
 ### Authentication
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/auth/register` | POST | Create new account |
-| `/api/auth/login` | POST | Authenticate user |
-| `/api/auth/logout` | POST | End session |
-| `/api/auth/user` | GET | Get current user |
+
+| Endpoint             | Method | Description        |
+| -------------------- | ------ | ------------------ |
+| `/api/auth/register` | POST   | Create new account |
+| `/api/auth/login`    | POST   | Authenticate user  |
+| `/api/auth/logout`   | POST   | End session        |
+| `/api/auth/user`     | GET    | Get current user   |
 
 ### Conversations
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/conversations` | GET | List user's conversations |
-| `/api/conversations` | POST | Create new conversation |
-| `/api/conversations/:id` | GET | Get conversation details |
-| `/api/conversations/:id/messages` | POST | Add message/reply |
+
+| Endpoint                          | Method | Description               |
+| --------------------------------- | ------ | ------------------------- |
+| `/api/conversations`              | GET    | List user's conversations |
+| `/api/conversations`              | POST   | Create new conversation   |
+| `/api/conversations/:id`          | GET    | Get conversation details  |
+| `/api/conversations/:id/messages` | POST   | Add message/reply         |
 
 ### Supporters
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/supporters` | GET | List supporters |
-| `/api/supporters/invite` | POST | Invite by email |
-| `/api/supporters/:id` | PUT | Accept/reject invitation |
+
+| Endpoint                 | Method | Description              |
+| ------------------------ | ------ | ------------------------ |
+| `/api/supporters`        | GET    | List supporters          |
+| `/api/supporters/invite` | POST   | Invite by email          |
+| `/api/supporters/:id`    | PUT    | Accept/reject invitation |
 
 ---
 
@@ -235,13 +244,13 @@ This project follows strict development principles defined in the [Constitution]
 
 ## Documentation
 
-| Document | Purpose |
-|----------|---------|
-| [Constitution](.specify/memory/constitution.md) | Project governance and principles |
-| [Architecture](docs/domain/architecture.md) | System design and data flow |
-| [Patterns](docs/domain/development-patterns.md) | Common development patterns |
-| [IIS Deployment](docs/domain/deployment-iis.md) | Windows 11 + IIS deployment guide |
-| [Copilot Instructions](.github/copilot-instructions.md) | AI assistant context |
+| Document                                                | Purpose                           |
+| ------------------------------------------------------- | --------------------------------- |
+| [Constitution](.specify/memory/constitution.md)         | Project governance and principles |
+| [Architecture](docs/domain/architecture.md)             | System design and data flow       |
+| [Patterns](docs/domain/development-patterns.md)         | Common development patterns       |
+| [IIS Deployment](docs/domain/deployment-iis.md)         | Windows 11 + IIS deployment guide |
+| [Copilot Instructions](.github/copilot-instructions.md) | AI assistant context              |
 
 ---
 

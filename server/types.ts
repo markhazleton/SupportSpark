@@ -1,5 +1,5 @@
-import { type Request, type Response, type NextFunction } from 'express';
-import { type User } from '@shared/schema';
+import { type Request, type Response, type NextFunction } from "express";
+import { type User } from "@shared/schema";
 
 /**
  * Express Request extended with authenticated Passport user
@@ -12,11 +12,7 @@ export interface AuthenticatedRequest extends Request {
 /**
  * Type-safe middleware function
  */
-export type Middleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => void | Promise<void>;
+export type Middleware = (req: Request, res: Response, next: NextFunction) => void | Promise<void>;
 
 /**
  * Type-safe authenticated middleware
@@ -46,9 +42,4 @@ export type RouteHandler = (
 /**
  * Type-safe error handler
  */
-export type ErrorHandler = (
-  error: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => void;
+export type ErrorHandler = (error: Error, req: Request, res: Response, next: NextFunction) => void;

@@ -13,6 +13,7 @@ This guide walks through setting up, testing, and validating the security harden
 ## Prerequisites
 
 **Required**:
+
 - Node.js 18+ and npm 8+
 - Git
 - Windows 11 (for IIS deployment)
@@ -20,6 +21,7 @@ This guide walks through setting up, testing, and validating the security harden
 - PowerShell 5.1+ (for deployment scripts)
 
 **Optional for IIS Testing**:
+
 - IIS 10.0+ with iisnode installed
 - URL Rewrite module for IIS
 
@@ -41,6 +43,7 @@ npm install
 ```
 
 **New Dependencies Added**:
+
 - `bcrypt` - Password hashing
 - `express-rate-limit` - Rate limiting
 - `vitest`, `@vitest/ui` - Testing framework
@@ -63,6 +66,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
 **Example `.env` file**:
+
 ```bash
 NODE_ENV=development
 SESSION_SECRET=a1b2c3d4e5f6...  # Use your generated value
@@ -95,6 +99,7 @@ npm run dev
 
 **Server**: http://localhost:5000 (Vite dev server proxies to Express)  
 **What to Test**:
+
 - Login with existing user (before password migration)
 - Register new user (tests bcrypt hashing)
 - Attempt 6 logins rapidly (tests rate limiting)
@@ -134,6 +139,7 @@ npm test -- --watch
 ```
 
 **Coverage Targets**:
+
 - Authentication: 80%+
 - Storage: 80%+
 - Overall: 70%+
@@ -154,6 +160,7 @@ npm run type-check
 ### Test Password Hashing
 
 **Test Registration**:
+
 ```bash
 # Register a new user via API
 curl -X POST http://localhost:5000/api/register \
@@ -165,6 +172,7 @@ curl -X POST http://localhost:5000/api/register \
 ```
 
 **Test Login with Bcrypt**:
+
 ```bash
 # Login with correct password
 curl -X POST http://localhost:5000/api/login \
@@ -184,6 +192,7 @@ curl -X POST http://localhost:5000/api/login \
 ### Test Rate Limiting
 
 **Test Attack Simulation**:
+
 ```powershell
 # Run 6 failed login attempts rapidly (PowerShell)
 for ($i = 1; $i -le 6; $i++) {
@@ -198,6 +207,7 @@ for ($i = 1; $i -le 6; $i++) {
 ```
 
 **Test Rate Limit Headers**:
+
 ```bash
 # Check headers after login attempt
 curl -v -X POST http://localhost:5000/api/login \
@@ -214,6 +224,7 @@ curl -v -X POST http://localhost:5000/api/login \
 ### Test Environment Validation
 
 **Test Missing SESSION_SECRET**:
+
 ```powershell
 # Temporarily remove SESSION_SECRET
 $env:SESSION_SECRET = ""
@@ -241,6 +252,7 @@ npm run type-check
 ```
 
 **Common Pre-Fix Errors** (should not appear after fixes):
+
 - `Parameter 'req' implicitly has an 'any' type`
 - `Parameter 'res' implicitly has an 'any' type`
 - `Type 'any' is not assignable to type...`
@@ -249,7 +261,7 @@ npm run type-check
 
 ```typescript
 // In VS Code, hover over API responses to see types
-import { api } from '@shared/routes';
+import { api } from "@shared/routes";
 
 // Should show full type, not 'any'
 const listResponse = api.conversations.list.responses[200];
@@ -371,12 +383,14 @@ node index.cjs
 ### Prerequisites
 
 1. **Install iisnode**:
+
    ```powershell
    # Download from: https://github.com/Azure/iisnode/releases
    # Run installer: iisnode-full-v0.2.26-x64.msi
    ```
 
 2. **Install URL Rewrite**:
+
    ```powershell
    # Download from: https://www.iis.net/downloads/microsoft/url-rewrite
    # Or use Web Platform Installer
@@ -414,6 +428,7 @@ Copy-Item -Recurse -Force dist\* $sitePath
 ### Configure Environment Variables in IIS
 
 **Option 1: IIS Configuration Editor (Recommended)**
+
 ```powershell
 # 1. Open IIS Manager
 # 2. Select "SupportSpark" website
@@ -426,6 +441,7 @@ Copy-Item -Recurse -Force dist\* $sitePath
 ```
 
 **Option 2: web.config (Less Secure)**
+
 ```xml
 <!-- In dist/web.config -->
 <iisnode>
@@ -456,6 +472,7 @@ icacls "C:\inetpub\wwwroot\supportspark\data"
 ### Troubleshooting IIS
 
 **Issue: 500 Internal Server Error**
+
 ```powershell
 # Check iisnode logs
 Get-Content "C:\inetpub\wwwroot\supportspark\iisnode\*.log" -Tail 100
@@ -467,6 +484,7 @@ Get-Content "C:\inetpub\wwwroot\supportspark\iisnode\*.log" -Tail 100
 ```
 
 **Issue: 404 for API routes**
+
 ```powershell
 # Verify URL Rewrite module installed
 Get-WindowsFeature | Where-Object {$_.Name -like "*rewrite*"}
@@ -476,6 +494,7 @@ Select-String -Path "C:\inetpub\wwwroot\supportspark\web.config" -Pattern "rewri
 ```
 
 **Issue: Data file write errors**
+
 ```powershell
 # Check data directory permissions
 icacls "C:\inetpub\wwwroot\supportspark\data"
@@ -617,16 +636,19 @@ npm run lint:fix
 ## Support Resources
 
 **Documentation**:
+
 - [SupportSpark Constitution](../../.specify/memory/constitution.md)
 - [Site Audit Results](../../docs/copilot/audit/2026-02-01_results.md)
 - [Feature Specification](./spec.md)
 
 **Tools**:
+
 - Vitest UI: `npm test -- --ui` (http://localhost:51204)
 - Coverage Report: `coverage/index.html`
 - ESLint Viewer: VS Code Problems panel
 
 **Commands Reference**:
+
 ```bash
 npm run dev          # Start development server
 npm test             # Run tests
@@ -644,6 +666,7 @@ npm run validate     # Run all checks
 **Status**: ✅ READY - Follow this guide for development and deployment
 
 **Estimated Setup Time**:
+
 - Initial setup: 5-10 minutes
 - Understanding workflow: 15 minutes
 - First test run: 5 minutes

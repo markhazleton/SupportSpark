@@ -23,7 +23,7 @@ export function useInviteSupporter() {
         body: JSON.stringify(data),
         credentials: "include",
       });
-      
+
       if (!res.ok) {
         if (res.status === 404) throw new Error("User with that email not found");
         throw new Error("Failed to invite supporter");
@@ -39,7 +39,10 @@ export function useInviteSupporter() {
 export function useUpdateSupporterStatus() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, status }: { id: number } & z.infer<typeof api.supporters.updateStatus.input>) => {
+    mutationFn: async ({
+      id,
+      status,
+    }: { id: number } & z.infer<typeof api.supporters.updateStatus.input>) => {
       const url = buildUrl(api.supporters.updateStatus.path, { id });
       const res = await fetch(url, {
         method: api.supporters.updateStatus.method,

@@ -39,7 +39,7 @@ export function CreateUpdateDialog() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
   const createMutation = useCreateConversation();
-  
+
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -51,15 +51,15 @@ export function CreateUpdateDialog() {
   const insertMarkdown = (before: string, after: string = "") => {
     const textarea = textareaRef.current;
     if (!textarea) return;
-    
+
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const text = form.getValues("initialMessage");
     const selectedText = text.substring(start, end);
-    
+
     const newText = text.substring(0, start) + before + selectedText + after + text.substring(end);
     form.setValue("initialMessage", newText);
-    
+
     setTimeout(() => {
       textarea.focus();
       const newCursorPos = start + before.length + selectedText.length + after.length;
@@ -69,13 +69,17 @@ export function CreateUpdateDialog() {
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    const validFiles = files.filter(file => {
+    const validFiles = files.filter((file) => {
       const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
       const validExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
       const ext = "." + file.name.split(".").pop()?.toLowerCase();
-      return validTypes.includes(file.type) && validExtensions.includes(ext) && file.size <= 5 * 1024 * 1024;
+      return (
+        validTypes.includes(file.type) &&
+        validExtensions.includes(ext) &&
+        file.size <= 5 * 1024 * 1024
+      );
     });
-    
+
     if (validFiles.length < files.length) {
       toast({
         title: "Some files skipped",
@@ -83,50 +87,50 @@ export function CreateUpdateDialog() {
         variant: "destructive",
       });
     }
-    
-    setPendingImages(prev => [...prev, ...validFiles].slice(0, 5));
+
+    setPendingImages((prev) => [...prev, ...validFiles].slice(0, 5));
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const removeImage = (index: number) => {
-    setPendingImages(prev => prev.filter((_, i) => i !== index));
+    setPendingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   async function onSubmit(data: z.infer<typeof schema>) {
     try {
       setIsUploading(true);
       const result = await createMutation.mutateAsync(data);
-      
+
       if (pendingImages.length > 0 && result?.id) {
         const formData = new FormData();
-        pendingImages.forEach(file => formData.append("images", file));
-        
+        pendingImages.forEach((file) => formData.append("images", file));
+
         const uploadRes = await fetch(`/api/conversations/${result.id}/images`, {
           method: "POST",
           body: formData,
           credentials: "include",
         });
-        
+
         if (uploadRes.ok) {
           const { images } = await uploadRes.json();
           const imageMarkdown = images.map((url: string) => `![image](${url})`).join("\n");
           const updatedMessage = data.initialMessage + "\n\n" + imageMarkdown;
-          
+
           await fetch(`/api/conversations/${result.id}/messages`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-              content: updatedMessage, 
+            body: JSON.stringify({
+              content: updatedMessage,
               images,
-              isInitialUpdate: true 
+              isInitialUpdate: true,
             }),
             credentials: "include",
           });
-          
+
           queryClient.invalidateQueries({ queryKey: ["/api/conversations"] });
         }
       }
-      
+
       toast({
         title: "Update Published",
         description: "Your supporters will be notified.",
@@ -156,11 +160,9 @@ export function CreateUpdateDialog() {
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
           <DialogTitle>Share an Update</DialogTitle>
-          <DialogDescription>
-            Let your supporters know how you're doing.
-          </DialogDescription>
+          <DialogDescription>Let your supporters know how you're doing.</DialogDescription>
         </DialogHeader>
-        
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -176,7 +178,7 @@ export function CreateUpdateDialog() {
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="initialMessage"
@@ -236,21 +238,21 @@ export function CreateUpdateDialog() {
                     />
                   </div>
                   <FormControl>
-                    <Textarea 
-                      placeholder="Share your journey..." 
+                    <Textarea
+                      placeholder="Share your journey..."
                       className="min-h-[150px] resize-none"
                       {...field}
                       ref={(e) => {
                         field.ref(e);
                         // TYPE12 FIX: Properly type the ref assignment
-                        if (textareaRef && 'current' in textareaRef) {
+                        if (textareaRef && "current" in textareaRef) {
                           textareaRef.current = e;
                         }
                       }}
                     />
                   </FormControl>
                   <FormMessage />
-                  
+
                   {pendingImages.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-3">
                       {pendingImages.map((file, index) => (
@@ -275,18 +277,20 @@ export function CreateUpdateDialog() {
                 </FormItem>
               )}
             />
-            
+
             <div className="flex justify-end gap-3">
               <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={createMutation.isPending || isUploading}>
-                {(createMutation.isPending || isUploading) ? (
+                {createMutation.isPending || isUploading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Publishing...
                   </>
-                ) : "Publish Update"}
+                ) : (
+                  "Publish Update"
+                )}
               </Button>
             </div>
           </form>

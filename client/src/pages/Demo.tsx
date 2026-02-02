@@ -15,7 +15,7 @@ import {
   User,
   UserCircle,
   ChevronRight,
-  Check
+  Check,
 } from "lucide-react";
 import { useLocation } from "wouter";
 
@@ -28,31 +28,36 @@ const WALKTHROUGH_STEPS = [
   {
     id: "intro",
     title: "Welcome to SupportSpark",
-    description: "A private, distraction-free space to share life's challenges with your trusted circle of supporters.",
+    description:
+      "A private, distraction-free space to share life's challenges with your trusted circle of supporters.",
     icon: Sparkles,
   },
   {
     id: "member",
     title: "For Those Seeking Support",
-    description: "Create update threads to share your journey through difficult times. Post when you're ready, at your own pace. Your supporters can read and respond with encouragement.",
+    description:
+      "Create update threads to share your journey through difficult times. Post when you're ready, at your own pace. Your supporters can read and respond with encouragement.",
     icon: UserCircle,
   },
   {
     id: "supporter",
     title: "For Supporters",
-    description: "Stay informed without being intrusive. Read updates, leave supportive messages, and show you care - all in one calm space.",
+    description:
+      "Stay informed without being intrusive. Read updates, leave supportive messages, and show you care - all in one calm space.",
     icon: Users,
   },
   {
     id: "messaging",
     title: "Threaded Conversations",
-    description: "Each update becomes a conversation. Supporters can reply directly to specific messages, keeping discussions organized and easy to follow.",
+    description:
+      "Each update becomes a conversation. Supporters can reply directly to specific messages, keeping discussions organized and easy to follow.",
     icon: MessageCircle,
   },
   {
     id: "privacy",
     title: "Private & Secure",
-    description: "No social media noise. No algorithms. Just you and the people you trust, sharing in a protected environment.",
+    description:
+      "No social media noise. No algorithms. Just you and the people you trust, sharing in a protected environment.",
     icon: Shield,
   },
 ];
@@ -110,13 +115,15 @@ export default function Demo() {
       <div className="flex-1 container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <Badge variant="secondary" className="mb-4">Interactive Demo</Badge>
+            <Badge variant="secondary" className="mb-4">
+              Interactive Demo
+            </Badge>
             <h1 className="text-4xl font-serif font-bold text-primary mb-4">
               See How SupportSpark Works
             </h1>
             <p className="text-lg text-muted-foreground">
-              Experience the platform from both perspectives - as someone sharing their journey,
-              or as a supporter following along.
+              Experience the platform from both perspectives - as someone sharing their journey, or
+              as a supporter following along.
             </p>
           </div>
 
@@ -128,10 +135,10 @@ export default function Demo() {
                     key={s.id}
                     onClick={() => setCurrentStep(index)}
                     className={`w-3 h-3 rounded-full transition-all ${
-                      index === currentStep 
-                        ? "bg-primary w-8" 
-                        : index < currentStep 
-                          ? "bg-primary/50" 
+                      index === currentStep
+                        ? "bg-primary w-8"
+                        : index < currentStep
+                          ? "bg-primary/50"
                           : "bg-stone-200"
                     }`}
                     data-testid={`step-indicator-${index}`}
@@ -159,8 +166,8 @@ export default function Demo() {
               </AnimatePresence>
 
               <div className="flex justify-between mt-8">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={prevStep}
                   disabled={currentStep === 0}
                   data-testid="button-prev-step"
@@ -172,7 +179,11 @@ export default function Demo() {
                     Next <ChevronRight className="w-4 h-4 ml-1" />
                   </Button>
                 ) : (
-                  <Button onClick={() => setCurrentStep(0)} variant="outline" data-testid="button-restart-tour">
+                  <Button
+                    onClick={() => setCurrentStep(0)}
+                    variant="outline"
+                    data-testid="button-restart-tour"
+                  >
                     Restart Tour
                   </Button>
                 )}
@@ -191,8 +202,8 @@ export default function Demo() {
                   <CardTitle className="text-xl">Try as Member</CardTitle>
                 </div>
                 <CardDescription>
-                  Experience the platform as {demoInfo?.patient?.firstName || "Sarah"},
-                  someone sharing their journey with supporters.
+                  Experience the platform as {demoInfo?.patient?.firstName || "Sarah"}, someone
+                  sharing their journey with supporters.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -233,8 +244,8 @@ export default function Demo() {
                   <CardTitle className="text-xl">Try as Supporter</CardTitle>
                 </div>
                 <CardDescription>
-                  Experience the platform as {demoInfo?.supporter?.firstName || "James"},
-                  a friend supporting {demoInfo?.patient?.firstName || "Sarah"}'s journey.
+                  Experience the platform as {demoInfo?.supporter?.firstName || "James"}, a friend
+                  supporting {demoInfo?.patient?.firstName || "Sarah"}'s journey.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -252,9 +263,9 @@ export default function Demo() {
                     See the supporter experience
                   </li>
                 </ul>
-                <Button 
+                <Button
                   variant="outline"
-                  className="w-full" 
+                  className="w-full"
                   onClick={() => loginAsSupporter.mutate()}
                   disabled={loginAsSupporter.isPending}
                   data-testid="button-login-supporter"
@@ -268,11 +279,9 @@ export default function Demo() {
           </div>
 
           <div className="text-center mt-12">
-            <p className="text-sm text-muted-foreground mb-4">
-              Ready to start your own journey?
-            </p>
-            <Button 
-              size="lg" 
+            <p className="text-sm text-muted-foreground mb-4">Ready to start your own journey?</p>
+            <Button
+              size="lg"
               onClick={() => setLocation("/auth")}
               data-testid="button-create-account"
             >

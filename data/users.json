@@ -14,5 +14,341 @@
     "firstName": "James",
     "lastName": "Chen",
     "createdAt": "2025-12-26T21:59:22.290Z"
+  },
+  {
+    "email": "test-wrong-pass-1769975246514@example.com",
+    "password": "$2b$10$5yCshl0weOjzoBbzE7Q6FOVEUGWr17G4l1TxpxEvOGfA1oAkK9VFi",
+    "id": "fa445125-118b-44b7-b424-810140186cc3",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:47:26.576Z",
+    "updatedAt": "2026-02-01T19:47:26.576Z"
+  },
+  {
+    "email": "test-correct-pass-1769975246582@example.com",
+    "password": "$2b$10$cJ6u3amyIbKMrzBDo1ISlOrXjsiMmf6w7jbGlP65xdlfgSzUF1RvC",
+    "id": "bb764266-4cc4-46b9-a12f-945ae740240b",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:47:26.627Z",
+    "updatedAt": "2026-02-01T19:47:26.627Z"
+  },
+  {
+    "email": "test-hash-1769975246629@example.com",
+    "password": "$2b$10$pL/b2v8xfoqTqvUC7EhjMeJayT/vI/DEg5rcg5Yp3sV8LFcpEvDly",
+    "id": "f8b125cc-3085-48ef-8db2-394f485dd696",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:47:26.675Z",
+    "updatedAt": "2026-02-01T19:47:26.675Z"
+  },
+  {
+    "email": "test-rate-limit-1769975246677@example.com",
+    "password": "$2b$10$xk5iF1NQT13G14ViSGoebee4cNdi4Ew/PBINUtQyGUUyYDZE93qeq",
+    "id": "265d69ab-cdd5-48c3-91e6-72dac5e443bf",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:47:26.721Z",
+    "updatedAt": "2026-02-01T19:47:26.721Z"
+  },
+  {
+    "email": "test-rate-reg-1769975246723-0@example.com",
+    "password": "$2b$10$Xvex.3ubTKXXRcr6a86Iz.3DTcnfWJbZrT8z1czYCI5yBHlYXA3vi",
+    "id": "8e3b1709-fb49-439b-89d8-61b3b4cfefc1",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:47:26.767Z",
+    "updatedAt": "2026-02-01T19:47:26.767Z"
+  },
+  {
+    "email": "test-wrong-pass-1769975332224@example.com",
+    "password": "$2b$10$YuwFe2QSXKdRfikBFifjg.2YmKD/SnGZsvDE3OqXPeK5saXyk8V7W",
+    "id": "a393df95-8c59-494b-bb66-f8de8fe19708",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:48:52.284Z",
+    "updatedAt": "2026-02-01T19:48:52.284Z"
+  },
+  {
+    "email": "test-correct-pass-1769975332290@example.com",
+    "password": "$2b$10$sAbBW2BuZDH0bnmDYSVwAeZnCGfqVmgHgmtyEAfRofKugWQTm.ca.",
+    "id": "c45e69a9-e69b-41c0-94b8-f792f6b0091d",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:48:52.335Z",
+    "updatedAt": "2026-02-01T19:48:52.335Z"
+  },
+  {
+    "email": "test-hash-1769975332337@example.com",
+    "password": "$2b$10$BfVnSx2Cj5QJlTU2nh9snOFPlsu0f0NYt78GjANCSk6nE5MDRhDiy",
+    "id": "f56a75bf-30a1-4853-92ef-7de3caafa564",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:48:52.381Z",
+    "updatedAt": "2026-02-01T19:48:52.381Z"
+  },
+  {
+    "email": "test-rate-limit-1769975332383@example.com",
+    "password": "$2b$10$Fzbi3yl9Xi6NZe1AIM6IFOlPbmfYs9JUp3.HG7CiWwipP/0bP/WVa",
+    "id": "dca4acbd-f5f2-4594-baa1-ab282b9a56a4",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:48:52.427Z",
+    "updatedAt": "2026-02-01T19:48:52.427Z"
+  },
+  {
+    "email": "test-rate-reg-1769975332429-0@example.com",
+    "password": "$2b$10$6dS0.yXIe8dCuynAJKR2jeMah8CBZs1u5Xd2gLvzGdzSlcPrQWL0y",
+    "id": "09184c1a-11b9-44ce-9658-c321473606da",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:48:52.472Z",
+    "updatedAt": "2026-02-01T19:48:52.472Z"
+  },
+  {
+    "email": "test-wrong-pass-1769975392429@example.com",
+    "password": "$2b$10$sF01797pZfj7OrdSCzNQJuPFSWa71lmXWE2YXNsOpf41oCnRUwV26",
+    "id": "fa0b3011-ccc3-4eac-a3be-631b3bca7fb7",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:49:52.490Z",
+    "updatedAt": "2026-02-01T19:49:52.490Z"
+  },
+  {
+    "email": "test-correct-pass-1769975392546@example.com",
+    "password": "$2b$10$X7uJVEb0FxGUiCPZoEZx7uJfVzNtPxttrXjv1NGXNjp3oVZBOjVcm",
+    "id": "5b895c42-545f-45f8-828b-436bd718d759",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:49:52.589Z",
+    "updatedAt": "2026-02-01T19:49:52.589Z"
+  },
+  {
+    "email": "test-hash-1769975392638@example.com",
+    "password": "$2b$10$WXVVIJmD7.LAE/OqHB3gneid1QcKO0l.TSjaGdnmdmGGM7BehNnni",
+    "id": "d897bb9f-86aa-41b5-b552-1a75229ce4e9",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:49:52.681Z",
+    "updatedAt": "2026-02-01T19:49:52.681Z"
+  },
+  {
+    "email": "test-wrong-pass-1769975443973@example.com",
+    "password": "$2b$10$pIsqybfT59A1W.R3ij76Iub/CPdpVk7k7k/YPIe.sJ6LB/iVvrT2u",
+    "id": "ed5be111-ffc4-48a1-abdd-ee1c260673cd",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:50:44.033Z",
+    "updatedAt": "2026-02-01T19:50:44.033Z"
+  },
+  {
+    "email": "test-correct-pass-1769975444085@example.com",
+    "password": "$2b$10$MKnToj7Uswe5N7zR9IgGoOn.qZ4vBvdP1Hy1OCpm7T3sYdh9wXNMy",
+    "id": "d0b4dbc7-d6eb-4ff0-9e41-4afc7eed4843",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:50:44.129Z",
+    "updatedAt": "2026-02-01T19:50:44.129Z"
+  },
+  {
+    "email": "test-hash-1769975444178@example.com",
+    "password": "$2b$10$U/tjU1Rc9Hl8vZwcAbMBTeb.tYmEMGMToDEBjPyWMGKUSzIqNaOCK",
+    "id": "a147453c-e400-4b67-ab65-60efd5a2fd42",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:50:44.221Z",
+    "updatedAt": "2026-02-01T19:50:44.221Z"
+  },
+  {
+    "email": "test-wrong-pass-1769975515861@example.com",
+    "password": "$2b$10$5nlLNTRdD2fECM.VMGANjOljf0N.5gDLOIFEisiLBJeXfrSFGU9R6",
+    "id": "10d9bfb8-8de0-4c80-8d34-d82723701649",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:51:55.921Z",
+    "updatedAt": "2026-02-01T19:51:55.921Z"
+  },
+  {
+    "email": "test-correct-pass-1769975515975@example.com",
+    "password": "$2b$10$1dwI1cpq.hBZNSVaOx232.dVVg.bHiN07lxaY9Qpq8bC4MAEuRLAS",
+    "id": "1ac1a99a-f855-4de4-94e4-c43ad10bcbbe",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:51:56.019Z",
+    "updatedAt": "2026-02-01T19:51:56.019Z"
+  },
+  {
+    "email": "test-hash-1769975516068@example.com",
+    "password": "$2b$10$.EhlBiomGW9zCNUVRIydPOimJd53LM03qBjnLYNl2rExjhoaDvrfK",
+    "id": "e0f23b97-2738-4034-9c96-d3d8f8d1aadc",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:51:56.111Z",
+    "updatedAt": "2026-02-01T19:51:56.111Z"
+  },
+  {
+    "email": "test-rate-1769975516155@example.com",
+    "password": "$2b$10$ns0dk1M.2vDWW5YxpBEq/.hN8G67JBSAJjUXeRHi/sM89jQsi3dKi",
+    "id": "efaac77d-3a41-4e62-902d-111debaaaa9c",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:51:56.198Z",
+    "updatedAt": "2026-02-01T19:51:56.198Z"
+  },
+  {
+    "email": "test-rate-reg-1769975516466-0@example.com",
+    "password": "$2b$10$yxuk4xEXEMFEIgkiVEExMeD/4wbFvgsuOVRpuFhpjOn3YnrxxQBse",
+    "id": "00da890d-a188-4477-90a9-1cfc20f40f0e",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:51:56.509Z",
+    "updatedAt": "2026-02-01T19:51:56.509Z"
+  },
+  {
+    "email": "test-rate-reg-1769975516466-1@example.com",
+    "password": "$2b$10$Hi1JYHt16TrkUOFHZz8Cr.MFoocNK28n8J6zhsPw2k1Q4ggJL1QMu",
+    "id": "1c8d0b45-a8c2-4fe3-947a-936e5ac61542",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:51:56.555Z",
+    "updatedAt": "2026-02-01T19:51:56.555Z"
+  },
+  {
+    "email": "test-rate-reg-1769975516466-2@example.com",
+    "password": "$2b$10$lGKQ77kRNRZ8J9Fk/AcCtuaMyulG1J8X2zI8QEL2qQIx8fIasopZW",
+    "id": "cb93d978-7644-488a-acd6-a99ddfe6cd60",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:51:56.601Z",
+    "updatedAt": "2026-02-01T19:51:56.601Z"
+  },
+  {
+    "email": "test-rate-reg-1769975516466-3@example.com",
+    "password": "$2b$10$Iv9VCWH.RmXaHYBpKmY8yeov9dKkWg/UiIrM4XONxRp8Z8tgcVnuu",
+    "id": "be395390-6e28-4acb-88ac-f2e685ab2a9e",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:51:56.646Z",
+    "updatedAt": "2026-02-01T19:51:56.646Z"
+  },
+  {
+    "email": "test-rate-reg-1769975516466-4@example.com",
+    "password": "$2b$10$QxnI7reueyF0Jc5pHig4Ee.ITaFdPfmcjR54DyZr3yyqayUxwfOee",
+    "id": "c272422d-6156-4512-89d7-7d6c5979e65f",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:51:56.691Z",
+    "updatedAt": "2026-02-01T19:51:56.691Z"
+  },
+  {
+    "email": "test-wrong-pass-1769975555326@example.com",
+    "password": "$2b$10$15d0YXHZLMNXSpD5oYd3I.zFC9L9PtbzztVEqFh49lR0SeMTjVoq.",
+    "id": "b353618f-6121-4555-a6f6-2ac42372ba87",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:52:35.387Z",
+    "updatedAt": "2026-02-01T19:52:35.387Z"
+  },
+  {
+    "email": "test-correct-pass-1769975555443@example.com",
+    "password": "$2b$10$WKqxMduk/s6QWJW8/7M1WOaEJfSS1FCUAJCOEEhvAo/vbVhkqtk8y",
+    "id": "82165f8a-a2a4-4c85-a933-3b3ac6c64d0f",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:52:35.486Z",
+    "updatedAt": "2026-02-01T19:52:35.486Z"
+  },
+  {
+    "email": "test-hash-1769975555534@example.com",
+    "password": "$2b$10$kCZEXaGROnAVuHDw9lvwaeKTaBgHLcmmvKhdVdNEP4PWO2c/oSX7.",
+    "id": "a22d48c4-b444-44ac-b0d8-a328f5dc55e3",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:52:35.577Z",
+    "updatedAt": "2026-02-01T19:52:35.577Z"
+  },
+  {
+    "email": "test-rate-1769975555622@example.com",
+    "password": "$2b$10$Yo4dGIoidvmmx.eeewE7H.DKJKNkEEQ3clLhVe0ruHwdDS6E0rsIW",
+    "id": "3884be34-8584-48cb-a1ef-dc34256dd1bf",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:52:35.665Z",
+    "updatedAt": "2026-02-01T19:52:35.665Z"
+  },
+  {
+    "email": "test-rate-reg-1769975555935-0@example.com",
+    "password": "$2b$10$TS73Hcv7g7I1kE8vCkC.0OaaEqSpDn20uZikiMaCfCFM7P8BgIQ2m",
+    "id": "1441fc7e-7c16-467d-be58-c839baa28aa2",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:52:35.978Z",
+    "updatedAt": "2026-02-01T19:52:35.978Z"
+  },
+  {
+    "email": "test-rate-reg-1769975555935-1@example.com",
+    "password": "$2b$10$WTkdvI9C5nfEgzsteO5hxeyDyAoDDF0htfINUhDJYU5qhcYjNx0KG",
+    "id": "1af34266-f109-4dba-baf3-be370edd3d7a",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:52:36.023Z",
+    "updatedAt": "2026-02-01T19:52:36.023Z"
+  },
+  {
+    "email": "test-rate-reg-1769975555935-2@example.com",
+    "password": "$2b$10$eegaLBa4689ML5tfr.2IP./efOk9HRBdvPWVB.xy./CidNsfdezMm",
+    "id": "4883744c-ac22-4ea6-91b8-75bbd505396a",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:52:36.067Z",
+    "updatedAt": "2026-02-01T19:52:36.067Z"
+  },
+  {
+    "email": "test-rate-reg-1769975555935-3@example.com",
+    "password": "$2b$10$9GCa.bCbP1XuWe8g2FdJW.Sb.YgA3nXElHDBqxkT.iuiF/i7DN5V6",
+    "id": "eb8f294b-a52d-4342-9211-6c4987b735e6",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:52:36.112Z",
+    "updatedAt": "2026-02-01T19:52:36.112Z"
+  },
+  {
+    "email": "test-rate-reg-1769975555935-4@example.com",
+    "password": "$2b$10$5cXNQxcZ8Ri.aa0osO75GeINobrR8k3uW6vNLRuhByO15fpVGfHcO",
+    "id": "74656860-d5ce-4a04-b323-c9d03ba6c090",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:52:36.156Z",
+    "updatedAt": "2026-02-01T19:52:36.156Z"
+  },
+  {
+    "email": "test-wrong-pass-1769975599245@example.com",
+    "password": "$2b$10$jDDv2YekRsrPT3JAGyBtn.PrlMydjFgOKX06TKnEYpJLckranykIu",
+    "id": "334e0ed7-b143-490a-8e0b-80e6db88752e",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:53:19.305Z",
+    "updatedAt": "2026-02-01T19:53:19.306Z"
+  },
+  {
+    "email": "test-correct-pass-1769975599358@example.com",
+    "password": "$2b$10$3kwuEwC9gy/2O4R4SZ4uqO6C2SQhzNwQNE8/sl6qfPTX3eX/.goKO",
+    "id": "1b947259-782b-49a3-b024-6934caf615f2",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:53:19.401Z",
+    "updatedAt": "2026-02-01T19:53:19.401Z"
+  },
+  {
+    "email": "test-hash-1769975599450@example.com",
+    "password": "$2b$10$7l.7whBgNtb2tqYUNAVyCuRv/EGN9OK3.7e8kOGv/hTZzd2A.Qg6u",
+    "id": "752fc746-ed5a-4dbb-b88a-df79d9d7ba5c",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:53:19.494Z",
+    "updatedAt": "2026-02-01T19:53:19.494Z"
+  },
+  {
+    "email": "test-rate-reg-1769975599548-0@example.com",
+    "password": "$2b$10$ZmAzrnfr0Cp4H7uJNzU58OcAE3.XL2dKF87TFDiJExNltGi7gS2Cu",
+    "id": "ac22a3fe-fb8e-49bf-820d-2e55d61eb470",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:53:19.591Z",
+    "updatedAt": "2026-02-01T19:53:19.591Z"
+  },
+  {
+    "email": "test-rate-reg-1769975599548-1@example.com",
+    "password": "$2b$10$3i1BqvR2TwE5AjfLDRdfUO9injn241s4louJ7hFq8GsCf5sUNu5sm",
+    "id": "11f0bf7b-2f64-49be-8518-84c0f12ad6b2",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:53:19.636Z",
+    "updatedAt": "2026-02-01T19:53:19.636Z"
+  },
+  {
+    "email": "test-rate-reg-1769975599548-2@example.com",
+    "password": "$2b$10$aX7bmJ0j7mgs8Rie6MNRE.FMzMaB92KW/uPgCKZLWNCXXkCoFS3Kq",
+    "id": "1dd42923-784d-485e-87a0-5abd0497dab6",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:53:19.680Z",
+    "updatedAt": "2026-02-01T19:53:19.680Z"
+  },
+  {
+    "email": "test-rate-reg-1769975599548-3@example.com",
+    "password": "$2b$10$i4bNIj/iznC/xbWlgQcByOOEqHYrGcNOwEyvt8nU9OxcvLnFYBpyC",
+    "id": "e1e720ad-90b3-4f0e-a67a-c5edc4ce1212",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:53:19.725Z",
+    "updatedAt": "2026-02-01T19:53:19.725Z"
+  },
+  {
+    "email": "test-rate-reg-1769975599548-4@example.com",
+    "password": "$2b$10$/b6K.RzIhibND6oP4asmxegsQ0ufVE8pWcvtRSH/lAmCDyfwHLVi.",
+    "id": "d1564a8f-ceb0-44ee-9b9c-ba9473ed51e9",
+    "passwordVersion": "bcrypt-10",
+    "createdAt": "2026-02-01T19:53:19.769Z",
+    "updatedAt": "2026-02-01T19:53:19.769Z"
   }
 ]

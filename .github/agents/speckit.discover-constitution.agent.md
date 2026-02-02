@@ -1,6 +1,6 @@
 ---
 description: Analyze existing codebase to discover implicit patterns and conventions, then guide user through crafting a constitution via interactive questioning.
-handoffs: 
+handoffs:
   - label: Create Constitution
     agent: speckit.constitution
     prompt: Formalize the discovered principles into the constitution template
@@ -44,75 +44,77 @@ Identify the codebase structure:
 - Look for existing AI instruction files (.github/copilot-instructions.md, CLAUDE.md, etc.)
 
 If `.specify/memory/constitution.md` already exists:
+
 - Warn user: "A constitution already exists. This will create a draft to compare/merge."
 - Proceed with analysis to identify gaps or conflicts
 
 ### 2. Automated Pattern Discovery
 
 Scan the codebase for patterns across these categories. For each, note:
+
 - **Consistency**: What % of files follow this pattern?
 - **Examples**: 2-3 specific file paths demonstrating the pattern
 - **Confidence**: HIGH (>80% consistent), MEDIUM (50-80%), LOW (<50% or unclear)
 
 #### A. Code Quality Patterns
 
-| Pattern | Detection Method |
-|---------|------------------|
-| TypeScript strict mode | Check tsconfig.json for strict: true |
-| ESLint/linting rules | Parse .eslintrc* for enabled rules |
-| Formatting tools | Presence of .prettierrc, .editorconfig |
-| Maximum file length | Analyze distribution of file sizes |
-| Naming conventions | Analyze function/class/file naming patterns |
-| Comment density | Ratio of comments to code |
-| JSDoc/documentation | Presence of doc comments on exports |
+| Pattern                | Detection Method                            |
+| ---------------------- | ------------------------------------------- |
+| TypeScript strict mode | Check tsconfig.json for strict: true        |
+| ESLint/linting rules   | Parse .eslintrc\* for enabled rules         |
+| Formatting tools       | Presence of .prettierrc, .editorconfig      |
+| Maximum file length    | Analyze distribution of file sizes          |
+| Naming conventions     | Analyze function/class/file naming patterns |
+| Comment density        | Ratio of comments to code                   |
+| JSDoc/documentation    | Presence of doc comments on exports         |
 
 #### B. Testing Patterns
 
-| Pattern | Detection Method |
-|---------|------------------|
-| Test framework | Detect jest, vitest, mocha, pytest, etc. |
-| Test file location | Co-located vs. separate test directory |
-| Test file naming | *.test.ts, *.spec.ts, test_*.py patterns |
-| Coverage configuration | Presence of coverage config, thresholds |
-| Test types present | Unit, integration, e2e directories |
+| Pattern                | Detection Method                           |
+| ---------------------- | ------------------------------------------ |
+| Test framework         | Detect jest, vitest, mocha, pytest, etc.   |
+| Test file location     | Co-located vs. separate test directory     |
+| Test file naming       | _.test.ts, _.spec.ts, test\_\*.py patterns |
+| Coverage configuration | Presence of coverage config, thresholds    |
+| Test types present     | Unit, integration, e2e directories         |
 
 #### C. Security Patterns
 
-| Pattern | Detection Method |
-|---------|------------------|
-| Secret management | Environment variable usage vs. hardcoded values |
-| Input validation | Presence of validation libraries (Zod, Joi, etc.) |
-| Auth patterns | Authentication library usage |
-| SQL patterns | Parameterized queries vs. string concatenation |
-| Dependency scanning | Security audit in package.json scripts |
+| Pattern             | Detection Method                                  |
+| ------------------- | ------------------------------------------------- |
+| Secret management   | Environment variable usage vs. hardcoded values   |
+| Input validation    | Presence of validation libraries (Zod, Joi, etc.) |
+| Auth patterns       | Authentication library usage                      |
+| SQL patterns        | Parameterized queries vs. string concatenation    |
+| Dependency scanning | Security audit in package.json scripts            |
 
 #### D. Architecture Patterns
 
-| Pattern | Detection Method |
-|---------|------------------|
-| Directory structure | Analyze folder organization |
-| Layer separation | Presence of routes/, services/, models/ etc. |
-| API patterns | REST conventions, GraphQL, tRPC usage |
-| Database access | ORM usage (Prisma, TypeORM, SQLAlchemy) |
-| Error handling | Custom error classes, try/catch patterns |
+| Pattern             | Detection Method                             |
+| ------------------- | -------------------------------------------- |
+| Directory structure | Analyze folder organization                  |
+| Layer separation    | Presence of routes/, services/, models/ etc. |
+| API patterns        | REST conventions, GraphQL, tRPC usage        |
+| Database access     | ORM usage (Prisma, TypeORM, SQLAlchemy)      |
+| Error handling      | Custom error classes, try/catch patterns     |
 
 #### E. Observability Patterns
 
-| Pattern | Detection Method |
-|---------|------------------|
-| Logging | Logger library usage, console.log presence |
-| Structured logging | JSON logging patterns |
-| Error tracking | Sentry, Rollbar, etc. integration |
-| Health checks | /health or /healthz endpoints |
+| Pattern            | Detection Method                           |
+| ------------------ | ------------------------------------------ |
+| Logging            | Logger library usage, console.log presence |
+| Structured logging | JSON logging patterns                      |
+| Error tracking     | Sentry, Rollbar, etc. integration          |
+| Health checks      | /health or /healthz endpoints              |
 
 #### F. Workflow Patterns
 
-| Pattern | Detection Method |
-|---------|------------------|
-| Git workflow | Branch naming in .git, protected branches |
-| CI/CD | Presence of .github/workflows, .gitlab-ci.yml |
-| Pre-commit hooks | .husky/, .pre-commit-config.yaml |
-| Changelog maintenance | CHANGELOG.md updates |
+| Pattern               | Detection Method                              |
+| --------------------- | --------------------------------------------- |
+| Git workflow          | Branch naming in .git, protected branches     |
+| CI/CD                 | Presence of .github/workflows, .gitlab-ci.yml |
+| Pre-commit hooks      | .husky/, .pre-commit-config.yaml              |
+| Changelog maintenance | CHANGELOG.md updates                          |
 
 ### 3. Generate Discovery Report
 
@@ -126,24 +128,24 @@ Produce an internal discovery summary (shown to user before questions):
 
 ### High-Confidence Patterns (>80% consistent)
 
-| Pattern | Evidence | Recommendation |
-|---------|----------|----------------|
-| TypeScript strict mode | tsconfig.json strict: true | → MUST principle |
-| Jest testing | All 47 test files use Jest | → MUST principle |
-| Prisma ORM | No raw SQL found | → SHOULD principle |
+| Pattern                | Evidence                   | Recommendation     |
+| ---------------------- | -------------------------- | ------------------ |
+| TypeScript strict mode | tsconfig.json strict: true | → MUST principle   |
+| Jest testing           | All 47 test files use Jest | → MUST principle   |
+| Prisma ORM             | No raw SQL found           | → SHOULD principle |
 
 ### Medium-Confidence Patterns (50-80% consistent)
 
-| Pattern | Evidence | Needs Decision |
-|---------|----------|----------------|
-| JSDoc on exports | 73% of exported functions | Formalize or relax? |
-| Error classes | 60% use CustomError | Standardize pattern? |
+| Pattern          | Evidence                  | Needs Decision       |
+| ---------------- | ------------------------- | -------------------- |
+| JSDoc on exports | 73% of exported functions | Formalize or relax?  |
+| Error classes    | 60% use CustomError       | Standardize pattern? |
 
 ### Inconsistent Areas (Needs Discussion)
 
-| Area | Observation | Question |
-|------|-------------|----------|
-| Logging | Mixed console.log and winston | Which to standardize? |
+| Area          | Observation                    | Question              |
+| ------------- | ------------------------------ | --------------------- |
+| Logging       | Mixed console.log and winston  | Which to standardize? |
 | Test coverage | /api has tests, /utils doesn't | Coverage requirement? |
 
 ### Gaps Detected (No Clear Pattern)
@@ -177,12 +179,12 @@ I found that **100% of test files use Jest** and tests are co-located with sourc
 
 **Recommended:** Formalize as MUST principle
 
-| Option | Description |
-|--------|-------------|
-| A | MUST: All code must have Jest tests in co-located *.test.ts files |
-| B | SHOULD: Tests strongly encouraged but not blocking |
-| C | No principle: Leave testing as informal convention |
-| D | Different approach (describe in <=10 words) |
+| Option | Description                                                        |
+| ------ | ------------------------------------------------------------------ |
+| A      | MUST: All code must have Jest tests in co-located \*.test.ts files |
+| B      | SHOULD: Tests strongly encouraged but not blocking                 |
+| C      | No principle: Leave testing as informal convention                 |
+| D      | Different approach (describe in <=10 words)                        |
 
 Reply with option letter, "yes"/"recommended" to accept, or your own answer.
 ```
@@ -245,11 +247,11 @@ After draft generation, identify what's NOT covered:
 
 Based on common best practices, these areas have no discovered pattern or explicit decision:
 
-| Area | Common Principle | Why Consider |
-|------|------------------|--------------|
-| Input Validation | All user input MUST be validated | Security best practice |
-| Rate Limiting | Public APIs SHOULD have rate limits | DDoS protection |
-| Accessibility | UI SHOULD meet WCAG AA | Legal/ethical requirement |
+| Area             | Common Principle                    | Why Consider              |
+| ---------------- | ----------------------------------- | ------------------------- |
+| Input Validation | All user input MUST be validated    | Security best practice    |
+| Rate Limiting    | Public APIs SHOULD have rate limits | DDoS protection           |
+| Accessibility    | UI SHOULD meet WCAG AA              | Legal/ethical requirement |
 
 Would you like to add any of these? (Reply with area names, or "none")
 ```
@@ -280,8 +282,8 @@ Write draft to `.specify/memory/constitution-draft.md` (not overwriting existing
 ### Comparison (if existing constitution found)
 
 | Principle | Existing | Discovered | Conflict? |
-|-----------|----------|------------|-----------|
-| ... | ... | ... | ... |
+| --------- | -------- | ---------- | --------- |
+| ...       | ...      | ...        | ...       |
 ```
 
 ## Question Templates
@@ -292,6 +294,7 @@ Write draft to `.specify/memory/constitution-draft.md` (not overwriting existing
 I found that **[pattern description]** with **[X]% consistency** across [Y] files.
 
 Examples:
+
 - `src/api/users.ts` - [specific example]
 - `src/services/auth.ts` - [specific example]
 
@@ -320,11 +323,11 @@ What's your preference?
 ```markdown
 For **[principle]**, what severity should violations have?
 
-| Option | Meaning |
-|--------|---------|
-| A | **MUST** - Violations are blocking (CRITICAL in PR review) |
-| B | **SHOULD** - Strongly recommended (HIGH in PR review) |
-| C | **MAY** - Optional guideline (LOW in PR review) |
+| Option | Meaning                                                    |
+| ------ | ---------------------------------------------------------- |
+| A      | **MUST** - Violations are blocking (CRITICAL in PR review) |
+| B      | **SHOULD** - Strongly recommended (HIGH in PR review)      |
+| C      | **MAY** - Optional guideline (LOW in PR review)            |
 ```
 
 ### Governance Questions
@@ -332,12 +335,12 @@ For **[principle]**, what severity should violations have?
 ```markdown
 How should constitution amendments be handled?
 
-| Option | Description |
-|--------|-------------|
-| A | Any team member can propose; requires team approval |
-| B | Tech lead approval required |
-| C | Documented but informal process |
-| D | Other (describe briefly) |
+| Option | Description                                         |
+| ------ | --------------------------------------------------- |
+| A      | Any team member can propose; requires team approval |
+| B      | Tech lead approval required                         |
+| C      | Documented but informal process                     |
+| D      | Other (describe briefly)                            |
 ```
 
 ## Edge Cases
@@ -345,6 +348,7 @@ How should constitution amendments be handled?
 ### Empty/Minimal Codebase
 
 If fewer than 10 source files found:
+
 - Skip automated discovery
 - Switch to aspirational mode: "What principles do you WANT to establish?"
 - Provide common principle templates to choose from
@@ -352,6 +356,7 @@ If fewer than 10 source files found:
 ### Highly Inconsistent Codebase
 
 If no patterns reach >50% consistency:
+
 - Report honestly: "No strong patterns detected—codebase may have evolved organically"
 - Focus questions on: "What SHOULD the standard be going forward?"
 - Recommend running site-audit after constitution to identify cleanup areas
@@ -366,6 +371,7 @@ If no patterns reach >50% consistency:
 ### User Skips All Questions
 
 If user says "done" before any questions:
+
 - Generate constitution from high-confidence patterns only
 - Mark all medium/low patterns as "SUGGESTED" not MUST/SHOULD
 - Strongly recommend reviewing draft

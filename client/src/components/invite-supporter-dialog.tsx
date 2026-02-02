@@ -32,7 +32,7 @@ export function InviteSupporterDialog() {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const inviteMutation = useInviteSupporter();
-  
+
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: { email: "" },
@@ -73,7 +73,7 @@ export function InviteSupporterDialog() {
             Enter the email address of someone you'd like to invite to your circle.
           </DialogDescription>
         </DialogHeader>
-        
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -89,7 +89,7 @@ export function InviteSupporterDialog() {
                 </FormItem>
               )}
             />
-            
+
             <div className="flex justify-end gap-3">
               <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
                 Cancel

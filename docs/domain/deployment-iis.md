@@ -57,6 +57,7 @@ npm run build
 ```
 
 This creates the `dist/` folder with:
+
 - `index.cjs` - Compiled Express server
 - `public/` - Frontend static files
 - `web.config` - IIS configuration

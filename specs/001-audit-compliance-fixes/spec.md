@@ -5,7 +5,7 @@
 **Status**: Draft  
 **Input**: User description: "Create a spec to address issues from Site Audit"
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Secure Authentication System (Priority: P1)
 
@@ -90,9 +90,11 @@ As a platform owner, I need the application properly configured for production h
 **Acceptance Scenarios**:
 
 - **Given** the application is deployed to production hosting environment, **When** the system attempts to write data, **Then** data storage has correct permissions and writes succeed without errors
+
 2. **Given** required environment variables are configured, **When** application starts, **Then** all variables are loaded and accessible to the application
 3. **Given** environment variables are missing or invalid, **When** application startup occurs, **Then** the system fails fast with clear error messages indicating which variables are missing
 4. **Given** the build process completes, **When** reviewing output, **Then** web.config is validated for correctness and data directory structure is created
+
 - **Given** the application runs in production environment, **When** handling API requests and serving static files, **Then** URL routing works correctly for both API endpoints and single-page application routes
 
 ---
@@ -117,7 +119,7 @@ As a platform owner, I need the application properly configured for production h
 - **How does the system handle data storage connection failures?**  
   Application should retry connections with exponential backoff, log connection attempts, and fail gracefully with clear error messages if storage is unavailable. Health check endpoint should reflect storage status.
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements - Security Hardening (P1)
 
@@ -190,7 +192,7 @@ As a platform owner, I need the application properly configured for production h
 
 - **Deployment Package**: Built artifacts including server application, client assets, configuration templates, data storage structure, and deployment automation. Must be validated before deployment.
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes - Security
 
@@ -205,7 +207,7 @@ As a platform owner, I need the application properly configured for production h
 - **SC-006**: Code validation with strict checking produces zero type errors across entire codebase
 - **SC-007**: Zero instances of unjustified ambiguous type definitions remain in production code (down from 12 violations)
 - **SC-008**: All API routes have explicit request/response data contracts validated by compilation
-- **SC-009**: *(ASPIRATIONAL - baseline TBD)* Developer confidence score improves - target 90% of developers reporting catching errors during development vs production. Measurement: Anonymous survey after 2 months of using new tooling. Baseline to be established via pre-implementation survey.
+- **SC-009**: _(ASPIRATIONAL - baseline TBD)_ Developer confidence score improves - target 90% of developers reporting catching errors during development vs production. Measurement: Anonymous survey after 2 months of using new tooling. Baseline to be established via pre-implementation survey.
 
 ### Measurable Outcomes - Testing
 
@@ -213,15 +215,15 @@ As a platform owner, I need the application properly configured for production h
 - **SC-011**: Authentication module achieves minimum 80% code coverage with passing tests
 - **SC-012**: Storage layer achieves minimum 80% code coverage with passing tests
 - **SC-013**: Zero regressions in security features detected by automated security tests across 100 test runs
-- **SC-014**: *(ASPIRATIONAL - baseline TBD)* Critical bug detection rate improves by 80% before production deployment due to automated testing. Measurement: Track bugs found in tests vs production over 3-month period. Baseline: Current detection rate = 0% (no tests exist).
-- **SC-015**: *(ASPIRATIONAL - baseline TBD)* Test suite catches 95% of introduced bugs before code review (measured over 1 month). Measurement: Track bugs found by tests vs bugs found in code review. Baseline to be established after first month of test coverage.
+- **SC-014**: _(ASPIRATIONAL - baseline TBD)_ Critical bug detection rate improves by 80% before production deployment due to automated testing. Measurement: Track bugs found in tests vs production over 3-month period. Baseline: Current detection rate = 0% (no tests exist).
+- **SC-015**: _(ASPIRATIONAL - baseline TBD)_ Test suite catches 95% of introduced bugs before code review (measured over 1 month). Measurement: Track bugs found by tests vs bugs found in code review. Baseline to be established after first month of test coverage.
 
 ### Measurable Outcomes - Code Quality
 
 - **SC-016**: Zero linting violations across entire codebase after initial cleanup
 - **SC-017**: Automated formatting applied to 100% of source files with consistent style
 - **SC-018**: Pre-commit hooks prevent 100% of attempts to commit non-compliant code
-- **SC-019**: *(ASPIRATIONAL - baseline TBD)* Code review time reduced by 30% due to automated style enforcement removing style discussions. Measurement: Average PR review time before/after linting implementation. Baseline to be established from Git metrics before enforcement.
+- **SC-019**: _(ASPIRATIONAL - baseline TBD)_ Code review time reduced by 30% due to automated style enforcement removing style discussions. Measurement: Average PR review time before/after linting implementation. Baseline to be established from Git metrics before enforcement.
 - **SC-020**: New developer onboarding time includes less than 15 minutes for understanding code standards (automated vs manual)
 
 ### Measurable Outcomes - Deployment

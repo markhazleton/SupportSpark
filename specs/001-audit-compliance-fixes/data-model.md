@@ -17,6 +17,7 @@ This feature primarily secures and types existing data structures rather than in
 **Purpose**: Represent hashed passwords securely and track password algorithm version
 
 **Current Schema** (insecure):
+
 ```typescript
 export const insertUserSchema = z.object({
   email: z.string().email(),
@@ -36,6 +37,7 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 ```
 
 **Updated Schema** (secure):
+
 ```typescript
 export const insertUserSchema = z.object({
   email: z.string().email(),
@@ -49,7 +51,7 @@ export const insertUserSchema = z.object({
 export const userSchema = insertUserSchema.extend({
   id: z.string(),
   password: z.string(), // Now represents bcrypt hash (no length constraint)
-  passwordVersion: z.enum(['bcrypt-10']).default('bcrypt-10'), // Track algorithm
+  passwordVersion: z.enum(["bcrypt-10"]).default("bcrypt-10"), // Track algorithm
   createdAt: z.string().datetime().optional(),
   updatedAt: z.string().datetime().optional(),
 });
@@ -59,6 +61,7 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 ```
 
 **Migration Impact**:
+
 - Existing users with plain text passwords must reset passwords
 - `passwordVersion` field allows future algorithm upgrades
 - Input validation (8+ chars) applied at registration
@@ -73,11 +76,13 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 **Purpose**: Properly type conversation messages (fixes TYPE3-4)
 
 **Current** (ambiguous):
+
 ```typescript
 // Message type not exported, used as `any` in storage.ts
 ```
 
 **Updated** (explicit):
+
 ```typescript
 export const messageSchema = z.object({
   id: z.string(),
@@ -94,6 +99,7 @@ export type Message = z.infer<typeof messageSchema>;
 ```
 
 **Usage in Storage**:
+
 ```typescript
 // Before
 export interface IStorage {
@@ -101,10 +107,14 @@ export interface IStorage {
 }
 
 // After
-import { type Message } from '@shared/schema';
+import { type Message } from "@shared/schema";
 
 export interface IStorage {
-  createConversation(memberId: string, title: string, initialMessage: Message): Promise<Conversation>;
+  createConversation(
+    memberId: string,
+    title: string,
+    initialMessage: Message
+  ): Promise<Conversation>;
 }
 ```
 
@@ -117,9 +127,10 @@ export interface IStorage {
 **Purpose**: Provide proper TypeScript types for Express + Passport.js integration
 
 **New File Structure**:
+
 ```typescript
-import { type Request, type Response, type NextFunction } from 'express';
-import { type User } from '@shared/schema';
+import { type Request, type Response, type NextFunction } from "express";
+import { type User } from "@shared/schema";
 
 /**
  * Express Request extended with authenticated Passport user
@@ -132,11 +143,7 @@ export interface AuthenticatedRequest extends Request {
 /**
  * Type-safe middleware function
  */
-export type Middleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => void | Promise<void>;
+export type Middleware = (req: Request, res: Response, next: NextFunction) => void | Promise<void>;
 
 /**
  * Type-safe authenticated route handler
@@ -160,18 +167,14 @@ export type RouteHandler = (
 /**
  * Type-safe error handler
  */
-export type ErrorHandler = (
-  error: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => void;
+export type ErrorHandler = (error: Error, req: Request, res: Response, next: NextFunction) => void;
 ```
 
 **Module Augmentation for Express Session**:
+
 ```typescript
 // Extend express-session to include Passport types
-declare module 'express-session' {
+declare module "express-session" {
   interface SessionData {
     passport?: {
       user: string; // User ID stored in session
@@ -180,7 +183,7 @@ declare module 'express-session' {
 }
 
 // Extend Express Request to include Passport methods
-declare module 'express' {
+declare module "express" {
   interface Request {
     user?: User;
     isAuthenticated(): boolean;
@@ -197,6 +200,7 @@ declare module 'express' {
 **Purpose**: Replace generic `z.custom<any>()` with proper Zod schemas (fixes TYPE1-2)
 
 **Before** (loses type information):
+
 ```typescript
 export const api = {
   conversations: {
@@ -221,12 +225,9 @@ export const api = {
 ```
 
 **After** (full type inference):
+
 ```typescript
-import {
-  conversationSchema,
-  supporterSchema,
-  messageSchema,
-} from './schema';
+import { conversationSchema, supporterSchema, messageSchema } from "./schema";
 
 export const api = {
   conversations: {
@@ -281,6 +282,7 @@ export const api = {
 ```
 
 **Benefits**:
+
 - Full TypeScript type inference from API contract
 - Compile-time validation of response shapes
 - Auto-complete in IDEs for API responses
@@ -295,6 +297,7 @@ export const api = {
 **Implementation**: Managed by `express-rate-limit` library (no schema needed)
 
 **Data Structure** (internal to library):
+
 ```typescript
 // Per-IP tracking (in-memory store)
 {
@@ -310,22 +313,24 @@ export const api = {
 ```
 
 **Configuration**:
+
 - Window: 15 minutes (900000ms)
 - Max attempts: 5 per window per IP
 - Storage: In-process memory (single server)
 - Persistence: No (resets on server restart - acceptable for security feature)
 
 **Future Scaling**: Can migrate to Redis store without code changes:
+
 ```typescript
-import RedisStore from 'rate-limit-redis';
-import { createClient } from 'redis';
+import RedisStore from "rate-limit-redis";
+import { createClient } from "redis";
 
 const redisClient = createClient({ url: process.env.REDIS_URL });
 
 const authLimiter = rateLimit({
   store: new RedisStore({
     client: redisClient,
-    prefix: 'rl:auth:',
+    prefix: "rl:auth:",
   }),
   // ... other config
 });
@@ -338,6 +343,7 @@ const authLimiter = rateLimit({
 **Purpose**: Document required environment variables (addresses DEPLOY3)
 
 **New File**: `.env.example`
+
 ```bash
 # ===================================
 # SupportSpark Environment Variables
@@ -380,20 +386,23 @@ PORT=3000
 ```
 
 **Validation at Startup** (`server/index.ts`):
+
 ```typescript
 // Validate required environment variables
-const requiredEnvVars = ['SESSION_SECRET'];
-const missingEnvVars = requiredEnvVars.filter(key => !process.env[key]);
+const requiredEnvVars = ["SESSION_SECRET"];
+const missingEnvVars = requiredEnvVars.filter((key) => !process.env[key]);
 
 if (missingEnvVars.length > 0) {
-  console.error('❌ Missing required environment variables:', missingEnvVars.join(', '));
-  console.error('See .env.example for configuration details');
+  console.error("❌ Missing required environment variables:", missingEnvVars.join(", "));
+  console.error("See .env.example for configuration details");
   process.exit(1);
 }
 
-if (process.env.NODE_ENV === 'production' && process.env.SESSION_SECRET === 'simple-secret-key') {
-  console.error('❌ Production environment detected with default SESSION_SECRET');
-  console.error('Generate a secure secret: node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'hex\'))"');
+if (process.env.NODE_ENV === "production" && process.env.SESSION_SECRET === "simple-secret-key") {
+  console.error("❌ Production environment detected with default SESSION_SECRET");
+  console.error(
+    "Generate a secure secret: node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\""
+  );
   process.exit(1);
 }
 ```
@@ -409,22 +418,24 @@ if (process.env.NODE_ENV === 'production' && process.env.SESSION_SECRET === 'sim
 **Options**:
 
 **Option 1: Force Password Reset** (Recommended)
+
 ```typescript
 // On login attempt, detect old format
 if (!user.passwordVersion) {
   // Plain text password detected
   return res.status(403).json({
-    message: 'Password security upgrade required. Please reset your password.',
+    message: "Password security upgrade required. Please reset your password.",
     requiresReset: true,
   });
 }
 ```
 
 **Option 2: One-Time Migration Script**
+
 ```typescript
 // scripts/migrate-passwords.ts
-import bcrypt from 'bcrypt';
-import { FileStorage } from '../server/storage';
+import bcrypt from "bcrypt";
+import { FileStorage } from "../server/storage";
 
 const storage = new FileStorage();
 const users = await storage.getAllUsers();
@@ -434,7 +445,7 @@ for (const user of users) {
     const hashedPassword = await bcrypt.hash(user.password, 10);
     await storage.updateUser(user.id, {
       password: hashedPassword,
-      passwordVersion: 'bcrypt-10',
+      passwordVersion: "bcrypt-10",
     });
     console.log(`Migrated user: ${user.email}`);
   }
@@ -442,6 +453,7 @@ for (const user of users) {
 ```
 
 **Decision**: Use Option 1 (Force Reset) for security best practices
+
 - Plain text passwords should not be converted directly
 - Ensures users are aware of security change
 - Opportunity to enforce stronger password requirements
@@ -450,13 +462,13 @@ for (const user of users) {
 
 ## Schema Change Summary
 
-| Entity | Change Type | Fields Affected | Breaking? |
-|--------|-------------|-----------------|-----------|
-| User | Modified | `password` (now hash), added `passwordVersion` | No |
-| Message | New Export | Type exported from schema | No |
-| AuthenticatedRequest | New Type | TypeScript interface | No |
-| API Contracts | Modified | Replace `z.custom<any>()` with schemas | No |
-| Environment Config | New | `.env.example` documentation | No |
+| Entity               | Change Type | Fields Affected                                | Breaking? |
+| -------------------- | ----------- | ---------------------------------------------- | --------- |
+| User                 | Modified    | `password` (now hash), added `passwordVersion` | No        |
+| Message              | New Export  | Type exported from schema                      | No        |
+| AuthenticatedRequest | New Type    | TypeScript interface                           | No        |
+| API Contracts        | Modified    | Replace `z.custom<any>()` with schemas         | No        |
+| Environment Config   | New         | `.env.example` documentation                   | No        |
 
 **Database Migration**: Not applicable (file-based JSON storage)  
 **API Breaking Changes**: None  
@@ -469,50 +481,51 @@ for (const user of users) {
 ### Schema Validation Tests
 
 **New File**: `shared/schema.test.ts`
-```typescript
-import { describe, it, expect } from 'vitest';
-import { insertUserSchema, userSchema, messageSchema } from './schema';
 
-describe('User Schema', () => {
-  it('validates correct user registration data', () => {
+```typescript
+import { describe, it, expect } from "vitest";
+import { insertUserSchema, userSchema, messageSchema } from "./schema";
+
+describe("User Schema", () => {
+  it("validates correct user registration data", () => {
     const validUser = {
-      email: 'test@example.com',
-      password: 'SecurePass123',
-      firstName: 'Test',
+      email: "test@example.com",
+      password: "SecurePass123",
+      firstName: "Test",
     };
     expect(() => insertUserSchema.parse(validUser)).not.toThrow();
   });
 
-  it('rejects passwords shorter than 8 characters', () => {
+  it("rejects passwords shorter than 8 characters", () => {
     const invalidUser = {
-      email: 'test@example.com',
-      password: 'short',
-      firstName: 'Test',
+      email: "test@example.com",
+      password: "short",
+      firstName: "Test",
     };
     expect(() => insertUserSchema.parse(invalidUser)).toThrow();
   });
 
-  it('includes passwordVersion in stored user schema', () => {
+  it("includes passwordVersion in stored user schema", () => {
     const storedUser = {
-      id: '1',
-      email: 'test@example.com',
-      password: '$2b$10$hashedhashhashedhash',
-      firstName: 'Test',
-      passwordVersion: 'bcrypt-10',
+      id: "1",
+      email: "test@example.com",
+      password: "$2b$10$hashedhashhashedhash",
+      firstName: "Test",
+      passwordVersion: "bcrypt-10",
     };
     const result = userSchema.parse(storedUser);
-    expect(result.passwordVersion).toBe('bcrypt-10');
+    expect(result.passwordVersion).toBe("bcrypt-10");
   });
 });
 
-describe('Message Schema', () => {
-  it('validates complete message structure', () => {
+describe("Message Schema", () => {
+  it("validates complete message structure", () => {
     const validMessage = {
-      id: 'msg-1',
-      conversationId: 'conv-1',
-      authorId: 'user-1',
-      authorName: 'Test User',
-      content: 'Hello world',
+      id: "msg-1",
+      conversationId: "conv-1",
+      authorId: "user-1",
+      authorName: "Test User",
+      content: "Hello world",
       timestamp: new Date().toISOString(),
       isSupporter: false,
     };

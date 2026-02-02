@@ -12,7 +12,7 @@ export const userSchema = z.object({
   id: z.string(),
   email: z.string().email(),
   password: z.string(), // Bcrypt hash (no length constraint for stored hash)
-  passwordVersion: z.enum(['bcrypt-10']).optional(), // Optional for backwards compatibility
+  passwordVersion: z.enum(["bcrypt-10"]).optional(), // Optional for backwards compatibility
   firstName: z.string().optional(),
   lastName: z.string().optional(),
   profileImageUrl: z.string().optional(),

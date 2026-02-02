@@ -17,7 +17,8 @@ export function Footer() {
               </a>
             </Link>
             <p className="mt-4 text-muted-foreground max-w-md">
-              A safe, distraction-free space to share your journey through difficult times with the people who matter most.
+              A safe, distraction-free space to share your journey through difficult times with the
+              people who matter most.
             </p>
           </div>
 
@@ -27,16 +28,12 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="/">
-                  <a className="text-muted-foreground hover:text-primary transition-colors">
-                    Home
-                  </a>
+                  <a className="text-muted-foreground hover:text-primary transition-colors">Home</a>
                 </Link>
               </li>
               <li>
                 <Link href="/demo">
-                  <a className="text-muted-foreground hover:text-primary transition-colors">
-                    Demo
-                  </a>
+                  <a className="text-muted-foreground hover:text-primary transition-colors">Demo</a>
                 </Link>
               </li>
               <li>
@@ -78,7 +75,8 @@ export function Footer() {
             © {currentYear} SupportSpark. All rights reserved.
           </p>
           <p className="text-sm text-muted-foreground">
-            Made with <Heart className="w-4 h-4 inline fill-accent text-accent" /> for those who care
+            Made with <Heart className="w-4 h-4 inline fill-accent text-accent" /> for those who
+            care
           </p>
         </div>
       </div>

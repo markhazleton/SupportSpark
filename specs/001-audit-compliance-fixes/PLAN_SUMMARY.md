@@ -12,9 +12,11 @@
 All Phase 0 and Phase 1 deliverables have been completed:
 
 ### ✅ Phase 0: Research & Technology Decisions
+
 **File**: [research.md](./research.md)
 
 **Completed Research**:
+
 1. **Password Hashing**: Selected bcrypt with 10-round configuration (Constitution mandated)
 2. **Rate Limiting**: Selected express-rate-limit (5 attempts / 15 min window)
 3. **Testing Framework**: Configured Vitest with React Testing Library, jsdom, supertest
@@ -23,6 +25,7 @@ All Phase 0 and Phase 1 deliverables have been completed:
 6. **IIS Deployment**: Designed PowerShell automation for permissions and validation
 
 **Key Decisions Documented**:
+
 - All technology choices have documented rationale
 - Implementation patterns established for each category
 - Dependencies identified: 21 new dev dependencies
@@ -31,6 +34,7 @@ All Phase 0 and Phase 1 deliverables have been completed:
 ---
 
 ### ✅ Phase 1: Design & Contracts
+
 **Files**: [data-model.md](./data-model.md), [quickstart.md](./quickstart.md), [contracts/](./contracts/)
 
 **Completed Design**:
@@ -70,16 +74,16 @@ All Phase 0 and Phase 1 deliverables have been completed:
 
 ### Constitution Compliance Gates
 
-| Principle | Pre-Fix Status | Post-Fix Target | Strategy |
-|-----------|---------------|-----------------|----------|
-| I. Type Safety | ❌ 12 violations | ✅ Zero violations | Create proper TypeScript interfaces, fix all `any` types |
-| II. Testing | ❌ 0% coverage | ✅ 80%+ coverage | Implement Vitest + comprehensive test suites |
-| III. UI Components | ✅ Compliant | ✅ Maintained | No changes needed |
-| IV. Security | ❌ CRITICAL failures | ✅ Fully secure | Implement bcrypt, rate limiting, env validation |
-| V. API Contracts | ✅ Compliant | ✅ Enhanced | Strengthen with proper Zod schemas |
-| VI. State Management | ✅ Compliant | ✅ Maintained | No changes needed |
-| VII. Code Style | ❌ No tooling | ✅ Automated | Configure ESLint + Prettier |
-| VIII. Deployment | ⚠️ Partial | ✅ Production-ready | Automate IIS setup, validate config |
+| Principle            | Pre-Fix Status       | Post-Fix Target     | Strategy                                                 |
+| -------------------- | -------------------- | ------------------- | -------------------------------------------------------- |
+| I. Type Safety       | ❌ 12 violations     | ✅ Zero violations  | Create proper TypeScript interfaces, fix all `any` types |
+| II. Testing          | ❌ 0% coverage       | ✅ 80%+ coverage    | Implement Vitest + comprehensive test suites             |
+| III. UI Components   | ✅ Compliant         | ✅ Maintained       | No changes needed                                        |
+| IV. Security         | ❌ CRITICAL failures | ✅ Fully secure     | Implement bcrypt, rate limiting, env validation          |
+| V. API Contracts     | ✅ Compliant         | ✅ Enhanced         | Strengthen with proper Zod schemas                       |
+| VI. State Management | ✅ Compliant         | ✅ Maintained       | No changes needed                                        |
+| VII. Code Style      | ❌ No tooling        | ✅ Automated        | Configure ESLint + Prettier                              |
+| VIII. Deployment     | ⚠️ Partial           | ✅ Production-ready | Automate IIS setup, validate config                      |
 
 **Overall Compliance**: 38% → 90%+ (target)
 
@@ -90,6 +94,7 @@ All Phase 0 and Phase 1 deliverables have been completed:
 ### Addresses 24 Audit Issues
 
 **Critical (6)**:
+
 - SEC1: Plain text password storage → bcrypt hashing
 - SEC2: Hardcoded session secret → environment variable only
 - SEC3: No rate limiting → express-rate-limit middleware
@@ -98,18 +103,21 @@ All Phase 0 and Phase 1 deliverables have been completed:
 - TYPE1-12: `any` type violations → proper TypeScript types
 
 **High (7)**:
+
 - DEPLOY1: Data directory permissions automation
 - DEPLOY2: File-based storage (deferred to future - PostgreSQL)
 - Type safety violations across server routes
 - Missing test coverage for critical paths
 
 **Medium (8)**:
+
 - SEC4: File upload validation improvements
 - Code organization recommendations
 - Documentation gaps
 - Build validation enhancements
 
 **Low (3)**:
+
 - Code structure opportunities
 - Optional pre-commit hooks
 - Monitoring improvements
@@ -146,6 +154,7 @@ npm install -D husky lint-staged
 ## Estimated Implementation Effort
 
 ### Critical Path (Sequential)
+
 1. **Security Fixes** (6-8 hours):
    - Install bcrypt + express-rate-limit
    - Implement password hashing in auth routes
@@ -181,6 +190,7 @@ npm install -D husky lint-staged
 **Total Estimated Effort**: 27-37 hours (3-5 days for single developer)
 
 ### Parallel Work Opportunities
+
 - Type fixes can be done alongside test writing
 - Linting configuration independent of other work
 - Documentation updates can proceed in parallel
@@ -190,6 +200,7 @@ npm install -D husky lint-staged
 ## Success Metrics
 
 ### Pre-Implementation Baseline
+
 - Constitution Compliance: 38%
 - Security Score: 25%
 - Type Safety Violations: 12
@@ -199,6 +210,7 @@ npm install -D husky lint-staged
 - HIGH Issues: 7
 
 ### Post-Implementation Targets
+
 - Constitution Compliance: **90%+**
 - Security Score: **100%**
 - Type Safety Violations: **0**
@@ -208,6 +220,7 @@ npm install -D husky lint-staged
 - HIGH Issues: **0** (auth/security modules)
 
 ### Validation Commands
+
 ```bash
 npm run validate    # Run all checks
 npm run type-check  # TypeScript compilation
@@ -233,28 +246,33 @@ npm run build       # Production build
 ### Implementation Order
 
 **Phase 1: Security (P1 - CRITICAL)**
+
 - Install bcrypt, express-rate-limit
 - Implement password hashing
 - Add rate limiting
 - Environment variable validation
 
 **Phase 2: Type Safety (P2 - HIGH)**
+
 - Create type definitions
 - Fix all `any` violations
 - Update API schemas
 
 **Phase 3: Testing (P3 - CRITICAL)**
+
 - Configure Vitest
 - Write authentication tests
 - Write storage tests
 - Achieve coverage targets
 
 **Phase 4: Code Quality (P4)**
+
 - Configure linting
 - Run auto-fixes
 - Set up pre-commit hooks
 
 **Phase 5: Deployment (P2 - HIGH)**
+
 - Create deployment scripts
 - Update build process
 - Test IIS deployment
@@ -265,12 +283,12 @@ npm run build       # Production build
 
 ### Known Risks & Mitigations
 
-| Risk | Mitigation |
-|------|------------|
-| User lockout after password migration | Implement graceful password reset flow |
-| Rate limiting affects legitimate users | Conservative limits (5/15min), clear error messages |
-| Type fixes reveal hidden bugs | Comprehensive testing before merge |
-| IIS deployment failures | Thorough staging testing, documented manual fallback |
+| Risk                                   | Mitigation                                           |
+| -------------------------------------- | ---------------------------------------------------- |
+| User lockout after password migration  | Implement graceful password reset flow               |
+| Rate limiting affects legitimate users | Conservative limits (5/15min), clear error messages  |
+| Type fixes reveal hidden bugs          | Comprehensive testing before merge                   |
+| IIS deployment failures                | Thorough staging testing, documented manual fallback |
 
 ### Rollback Strategy
 
@@ -283,16 +301,16 @@ npm run build       # Production build
 
 ## Documentation Index
 
-| Document | Purpose | Status |
-|----------|---------|--------|
-| [spec.md](./spec.md) | Feature requirements & user stories | ✅ Complete |
-| [plan.md](./plan.md) | Implementation plan & technical approach | ✅ Complete |
-| [research.md](./research.md) | Technology decisions & patterns | ✅ Complete |
-| [data-model.md](./data-model.md) | Schema changes & type definitions | ✅ Complete |
-| [quickstart.md](./quickstart.md) | Setup & validation guide | ✅ Complete |
-| [contracts/security-updates.md](./contracts/security-updates.md) | API behavior changes | ✅ Complete |
-| [checklists/requirements.md](./checklists/requirements.md) | Spec quality validation | ✅ Complete |
-| [tasks.md](./tasks.md) | Detailed task breakdown | ⏭️ Next: Run `/speckit.tasks` |
+| Document                                                         | Purpose                                  | Status                        |
+| ---------------------------------------------------------------- | ---------------------------------------- | ----------------------------- |
+| [spec.md](./spec.md)                                             | Feature requirements & user stories      | ✅ Complete                   |
+| [plan.md](./plan.md)                                             | Implementation plan & technical approach | ✅ Complete                   |
+| [research.md](./research.md)                                     | Technology decisions & patterns          | ✅ Complete                   |
+| [data-model.md](./data-model.md)                                 | Schema changes & type definitions        | ✅ Complete                   |
+| [quickstart.md](./quickstart.md)                                 | Setup & validation guide                 | ✅ Complete                   |
+| [contracts/security-updates.md](./contracts/security-updates.md) | API behavior changes                     | ✅ Complete                   |
+| [checklists/requirements.md](./checklists/requirements.md)       | Spec quality validation                  | ✅ Complete                   |
+| [tasks.md](./tasks.md)                                           | Detailed task breakdown                  | ⏭️ Next: Run `/speckit.tasks` |
 
 ---
 

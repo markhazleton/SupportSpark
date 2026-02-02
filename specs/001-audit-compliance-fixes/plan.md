@@ -15,21 +15,22 @@ This feature implements critical security hardening, type safety improvements, a
 ## Technical Context
 
 **Language/Version**: TypeScript 5.x (with strict mode enabled - tsconfig.json)  
-**Primary Dependencies**: 
+**Primary Dependencies**:
+
 - Frontend: React 19, Vite, TanStack React Query, Wouter, shadcn/ui, Radix UI, Tailwind CSS
 - Backend: Express 5, Passport.js, express-session, Zod
 - **To Add**: bcrypt, express-rate-limit, vitest, eslint, prettier  
-**Storage**: File-based JSON (development) → PostgreSQL (production - future phase)  
-**Testing**: NONE CURRENTLY - must implement Vitest from scratch  
-**Target Platform**: Windows 11 + IIS 10.0+ with iisnode  
-**Project Type**: Full-stack web application (client/ + server/ + shared/)  
-**Performance Goals**: Support 100 concurrent users, <2s page load, <200ms API response  
-**Constraints**: 
+  **Storage**: File-based JSON (development) → PostgreSQL (production - future phase)  
+  **Testing**: NONE CURRENTLY - must implement Vitest from scratch  
+  **Target Platform**: Windows 11 + IIS 10.0+ with iisnode  
+  **Project Type**: Full-stack web application (client/ + server/ + shared/)  
+  **Performance Goals**: Support 100 concurrent users, <2s page load, <200ms API response  
+  **Constraints**:
 - Must maintain backward compatibility with existing user data
 - Must support IIS URL rewrite module for SPA routing
 - Must complete security fixes before any production deployment
 - Zero breaking changes to existing API contracts  
-**Scale/Scope**: 
+  **Scale/Scope**:
 - ~78 TypeScript files, ~8k LOC
 - 12 type safety violations to fix
 - 24 audit issues across 5 categories
@@ -37,86 +38,94 @@ This feature implements critical security hardening, type safety improvements, a
 
 ## Phase Cross-Reference
 
-*This plan uses "Planning Phases" (0-2) for specification workflow. The `tasks.md` file uses "Execution Phases" (1-8) for implementation.*
+_This plan uses "Planning Phases" (0-2) for specification workflow. The `tasks.md` file uses "Execution Phases" (1-8) for implementation._
 
-| Planning Phase | Description | Execution Phase(s) in tasks.md |
-|----------------|-------------|--------------------------------|
-| Phase 0 | Outline & Research | N/A (completed) |
-| Phase 1 | Design & Contracts | N/A (completed) |
-| Phase 2 | Implementation Tasks | Execution Phases 1-8 |
+| Planning Phase | Description          | Execution Phase(s) in tasks.md |
+| -------------- | -------------------- | ------------------------------ |
+| Phase 0        | Outline & Research   | N/A (completed)                |
+| Phase 1        | Design & Contracts   | N/A (completed)                |
+| Phase 2        | Implementation Tasks | Execution Phases 1-8           |
 
-| Execution Phase | User Story | Priority | MVP Status |
-|-----------------|------------|----------|------------|
-| Phase 1: Setup | Shared infrastructure | - | ✅ COMPLETE |
-| Phase 2: Foundational | Blocking prerequisites | - | ✅ COMPLETE |
-| Phase 3: Security | US1 - Secure Authentication | P1 | ✅ COMPLETE |
-| Phase 4: Type Safety | US2 - Reliable Code Structure | P2 | ✅ COMPLETE |
-| Phase 5: Testing | US3 - Auth Tests Only (MVP) | P3 | 🎯 MVP FOCUS |
-| Phase 6: Code Quality | US4 - Baseline Only (MVP) | P4 | 🎯 MVP FOCUS |
-| Phase 7: Deployment | US5 - Production + CSRF | P2 | 🎯 MVP FOCUS |
-| Phase 8: Polish | Essential validation only | - | 🎯 MVP FOCUS |
+| Execution Phase       | User Story                    | Priority | MVP Status   |
+| --------------------- | ----------------------------- | -------- | ------------ |
+| Phase 1: Setup        | Shared infrastructure         | -        | ✅ COMPLETE  |
+| Phase 2: Foundational | Blocking prerequisites        | -        | ✅ COMPLETE  |
+| Phase 3: Security     | US1 - Secure Authentication   | P1       | ✅ COMPLETE  |
+| Phase 4: Type Safety  | US2 - Reliable Code Structure | P2       | ✅ COMPLETE  |
+| Phase 5: Testing      | US3 - Auth Tests Only (MVP)   | P3       | 🎯 MVP FOCUS |
+| Phase 6: Code Quality | US4 - Baseline Only (MVP)     | P4       | 🎯 MVP FOCUS |
+| Phase 7: Deployment   | US5 - Production + CSRF       | P2       | 🎯 MVP FOCUS |
+| Phase 8: Polish       | Essential validation only     | -        | 🎯 MVP FOCUS |
 
 ## Terminology Reference
 
-*Consistent terms used across spec, plan, and tasks documents:*
+_Consistent terms used across spec, plan, and tasks documents:_
 
-| Term | Meaning | Example |
-|------|---------|----------|
-| **Zod schema** | Runtime validator object (lowercase) | `messageSchema`, `userSchema` |
-| **TypeScript type** | Compile-time type (capitalized) | `Message`, `User`, `AuthenticatedRequest` |
-| **Data model** | Entity structure in storage | "User entity in data/users.json" |
-| **API contract** | Route definition in shared/routes.ts | `GET /api/conversations` schema |
+| Term                | Meaning                              | Example                                   |
+| ------------------- | ------------------------------------ | ----------------------------------------- |
+| **Zod schema**      | Runtime validator object (lowercase) | `messageSchema`, `userSchema`             |
+| **TypeScript type** | Compile-time type (capitalized)      | `Message`, `User`, `AuthenticatedRequest` |
+| **Data model**      | Entity structure in storage          | "User entity in data/users.json"          |
+| **API contract**    | Route definition in shared/routes.ts | `GET /api/conversations` schema           |
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 ### Principle I: Type Safety
+
 **Status**: ⚠️ FAILING → MUST FIX  
 **Current Violations**: 12 instances of unjustified `any` types across server routes, storage layer, and React components  
 **Required Actions**:
+
 - Define explicit TypeScript interfaces for Express request/response handlers
 - Replace `z.custom<any>()` with proper Zod schemas in shared/routes.ts
 - Create AuthenticatedRequest interface extending Express Request
 - Type all error handling without generic catch-all types  
-**Post-Fix Status**: ✅ MUST PASS - Zero `any` types without justification
+  **Post-Fix Status**: ✅ MUST PASS - Zero `any` types without justification
 
 ### Principle II: Testing
+
 **Status**: ❌ CRITICAL FAILURE → ⚠️ MVP FOCUSED  
 **Current Violations**: Zero test files exist - 0% test coverage  
 **Required Actions** (MVP Focus per Principle X):
+
 - ✅ Create `vitest.config.ts` with React testing support
 - ✅ Install testing dependencies (vitest, @testing-library/react, jsdom, supertest)
 - 🎯 Implement authentication flow integration tests (server/routes.test.ts) → **MVP REQUIRED**
 - ⏸️ Implement storage layer unit tests (server/storage.test.ts) → **DEFERRED** (file storage is temporary)
-- ⏸️ Implement React hook tests (client/src/hooks/*.test.ts) → **DEFERRED** (UI is stable)
+- ⏸️ Implement React hook tests (client/src/hooks/\*.test.ts) → **DEFERRED** (UI is stable)
 - ⏸️ Achieve 80%+ coverage for all modules → **DEFERRED** (auth tests only for MVP)  
-**Post-Fix Status**: ⚠️ MVP COMPLIANT - Test infrastructure operational with authentication critical path coverage. Comprehensive coverage deferred per Principle X (YAGNI).
+  **Post-Fix Status**: ⚠️ MVP COMPLIANT - Test infrastructure operational with authentication critical path coverage. Comprehensive coverage deferred per Principle X (YAGNI).
 
 ### Principle III: UI Component Library
+
 **Status**: ✅ PASSING → MAINTAIN  
 **Current State**: All UI components properly use shadcn/ui primitives from @/components/ui/  
 **This Feature Impact**: No changes to UI components necessary  
 **Post-Fix Status**: ✅ REMAINS PASSING
 
 ### Principle IV: Security Standards
+
 **Status**: ❌ CRITICAL FAILURE → ✅ BETA COMPLIANT  
 **Current Violations**:
+
 - SEC1: Passwords stored in plain text (server/routes.ts#L47-48) → ✅ FIXED
 - SEC2: Hardcoded session secret fallback (server/routes.ts#L23) → ✅ FIXED
 - SEC3: No rate limiting on authentication endpoints → ✅ FIXED
 - SEC4: Insufficient file upload validation → ⚠️ PARTIAL (basic validation exists)
 - **NEW SEC5**: No CSRF protection → 🎯 ADDING (Constitution IV beta requirement)  
-**Required Actions**:
+  **Required Actions**:
 - ✅ Install and implement bcrypt for password hashing (10 rounds minimum)
 - ✅ Remove hardcoded session secret fallback - fail fast if not configured
 - ✅ Install and configure express-rate-limit (5 attempts per 15 min window)
 - 🎯 Add CSRF protection: SameSite cookies + size limits (T091b)
 - ⏸️ Add explicit filename sanitization for file uploads (defer to production)
 - ✅ Create `.env.example` documenting required environment variables  
-**Post-Fix Status**: ✅ BETA COMPLIANT - Alpha requirements met, beta requirements in progress (CSRF)
+  **Post-Fix Status**: ✅ BETA COMPLIANT - Alpha requirements met, beta requirements in progress (CSRF)
 
 **Timeline Compliance** (Constitution IV v1.3.0):
+
 - ✅ Alpha: Bcrypt + env variables → **COMPLETE**
 - 🎯 Beta: + rate limiting + CSRF → **CSRF IN PROGRESS**
 - ⏸️ Production: + all measures → **DEFERRED**
@@ -124,58 +133,64 @@ This feature implements critical security hardening, type safety improvements, a
 **Note on FR-009/FR-010**: Session token generation (FR-009) and session timeout (FR-010) are satisfied by `express-session` default configuration using cryptographically random session IDs. The `secret` option (from SESSION_SECRET env var) provides HMAC signing. Session timeout is configurable via `cookie.maxAge` option. No explicit tasks required—verify in implementation that defaults are appropriate.
 
 ### Principle V: API Contract Pattern
+
 **Status**: ✅ PASSING → MAINTAIN  
 **Current State**: All routes properly defined in shared/routes.ts with Zod schemas  
 **This Feature Impact**: Type safety fixes will strengthen existing contracts  
 **Post-Fix Status**: ✅ REMAINS PASSING (improved type definitions)
 
 ### Principle VI:State Management
+
 **Status**: ✅ PASSING → MAINTAIN  
 **Current State**: React Query properly implemented for server state management  
 **This Feature Impact**: No changes to state management patterns necessary  
 **Post-Fix Status**: ✅ REMAINS PASSING
 
 ### Principle VII: Code Style & Formatting
+
 **Status**: ❌ CRITICAL FAILURE → ⚠️ BASELINE ESTABLISHED  
 **Current Violations**: No ESLint or Prettier configuration exists  
 **Required Actions** (MVP Focus per Principle X):
+
 - ✅ Create `.eslintrc.json` with TypeScript and React rules
 - ✅ Create `.prettierrc.json` for consistent formatting
 - ✅ Install linting dependencies
 - ✅ Add lint scripts to package.json (lint, lint:fix, format)
 - 🎯 Run initial auto-fix pass across codebase → **MVP: Run once**
 - ⏸️ Optionally configure Husky pre-commit hooks → **DEFERRED** (premature automation)  
-**Post-Fix Status**: ⚠️ MVP COMPLIANT - Configuration exists, baseline established. Zero violations not required per Principle X (KISS). Accept <10 non-critical warnings.
+  **Post-Fix Status**: ⚠️ MVP COMPLIANT - Configuration exists, baseline established. Zero violations not required per Principle X (KISS). Accept <10 non-critical warnings.
 
 ### Principle VIII: Deployment & Hosting Standards
+
 **Status**: ⚠️ PARTIAL COMPLIANCE → ✅ BETA READY  
 **Current State**: web.config exists, build outputs CommonJS, but missing critical configuration  
 **Current Violations**:
+
 - DEPLOY1: Data directory permissions not automated → 🎯 ADDING
 - DEPLOY2: Still using file-based JSON → ✅ ACCEPTABLE (Constitution VIII explicitly endorses this for beta)
 - DEPLOY3: Environment variable documentation incomplete → 🎯 COMPLETING
 - DEPLOY4: web.config not validated during build → 🎯 ADDING  
-**Required Actions**:
+  **Required Actions**:
 - 🎯 Update build script (script/build.ts) to create data directory structure
 - 🎯 Create deployment script for IIS_IUSRS permissions (PowerShell)
 - ✅ Create comprehensive `.env.example` file
 - 🎯 Add web.config validation to build process
 - 🎯 Document IIS environment variable configuration in deployment guide  
-**Post-Fix Status**: ✅ BETA READY - IIS deployment automated (PostgreSQL migration is separate feature, not blocking per Principle VIII + Principle X)
+  **Post-Fix Status**: ✅ BETA READY - IIS deployment automated (PostgreSQL migration is separate feature, not blocking per Principle VIII + Principle X)
 
 ### Gate Evaluation Summary
 
-| Gate | Pre-Fix | Post-Fix | Blocking? | MVP Status |
-|------|---------|----------|-----------|------------|
-| Type Safety | ❌ FAIL | ✅ PASS | YES | ✅ COMPLETE |
-| Testing | ❌ FAIL | ⚠️ MVP | YES | 🎯 IN PROGRESS |
-| UI Components | ✅ PASS | ✅ PASS | NO | ✅ MAINTAINED |
-| Security | ❌ FAIL | ⚠️ BETA | YES | 🎯 CSRF PENDING |
-| API Contracts | ✅ PASS | ✅ PASS | NO | ✅ MAINTAINED |
-| State Management | ✅ PASS | ✅ PASS | NO | ✅ MAINTAINED |
-| Code Style | ❌ FAIL | ⚠️ MVP | YES | 🎯 IN PROGRESS |
-| Deployment | ⚠️ PARTIAL | ⚠️ BETA | YES | 🎯 IN PROGRESS |
-| Simplicity First | N/A | ✅ PASS | N/A | ✅ APPLIED |
+| Gate             | Pre-Fix    | Post-Fix | Blocking? | MVP Status      |
+| ---------------- | ---------- | -------- | --------- | --------------- |
+| Type Safety      | ❌ FAIL    | ✅ PASS  | YES       | ✅ COMPLETE     |
+| Testing          | ❌ FAIL    | ⚠️ MVP   | YES       | 🎯 IN PROGRESS  |
+| UI Components    | ✅ PASS    | ✅ PASS  | NO        | ✅ MAINTAINED   |
+| Security         | ❌ FAIL    | ⚠️ BETA  | YES       | 🎯 CSRF PENDING |
+| API Contracts    | ✅ PASS    | ✅ PASS  | NO        | ✅ MAINTAINED   |
+| State Management | ✅ PASS    | ✅ PASS  | NO        | ✅ MAINTAINED   |
+| Code Style       | ❌ FAIL    | ⚠️ MVP   | YES       | 🎯 IN PROGRESS  |
+| Deployment       | ⚠️ PARTIAL | ⚠️ BETA  | YES       | 🎯 IN PROGRESS  |
+| Simplicity First | N/A        | ✅ PASS  | N/A       | ✅ APPLIED      |
 
 **GATE DECISION**: ⚠️ **BETA TRACK** - MVP requirements being met. Comprehensive compliance deferred per Principle X.
 
@@ -275,15 +290,15 @@ dist/                        # Build output (unchanged structure)
 
 > **This section documents pre-existing violations being fixed by this feature**
 
-| Violation | Why It Existed | Impact of Fix |
-|-----------|----------------|---------------|
-| Plain text passwords | Initial MVP prioritized speed over security | CRITICAL - Must migrate all existing user passwords, requires user action |
-| Hardcoded secret fallback | Development convenience | CRITICAL - Will cause startup failure if SESSION_SECRET not set (intentional) |
-| No rate limiting | Not implemented in initial release | HIGH - Prevents brute-force attacks, may affect legitimate users who mistype |
-| 12 `any` type violations | Rapid prototyping without strict typing | MEDIUM - Improves type safety, may reveal hidden bugs during compilation |
-| Zero test coverage | MVP shipped without test infrastructure | HIGH - Tests catch regressions but require significant setup time |
-| No linting configuration | Not configured in initial project setup | LOW - Auto-fixes most issues, manual review needed for complex cases |
-| File-based storage | Acceptable for development/demo | DEFERRED - PostgreSQL migration is separate epic, not blocking production |
+| Violation                 | Why It Existed                              | Impact of Fix                                                                 |
+| ------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------- |
+| Plain text passwords      | Initial MVP prioritized speed over security | CRITICAL - Must migrate all existing user passwords, requires user action     |
+| Hardcoded secret fallback | Development convenience                     | CRITICAL - Will cause startup failure if SESSION_SECRET not set (intentional) |
+| No rate limiting          | Not implemented in initial release          | HIGH - Prevents brute-force attacks, may affect legitimate users who mistype  |
+| 12 `any` type violations  | Rapid prototyping without strict typing     | MEDIUM - Improves type safety, may reveal hidden bugs during compilation      |
+| Zero test coverage        | MVP shipped without test infrastructure     | HIGH - Tests catch regressions but require significant setup time             |
+| No linting configuration  | Not configured in initial project setup     | LOW - Auto-fixes most issues, manual review needed for complex cases          |
+| File-based storage        | Acceptable for development/demo             | DEFERRED - PostgreSQL migration is separate epic, not blocking production     |
 
 **No New Complexity Added**: This feature reduces technical debt rather than adding complexity. All changes align with constitution principles established on 2026-02-01.
 
@@ -328,6 +343,7 @@ dist/                        # Build output (unchanged structure)
    - Deliverable: Deployment script structure
 
 ### Success Criteria for Phase 0
+
 - All NEEDS CLARIFICATION items resolved
 - Technology choices documented with rationale
 - Implementation patterns established
@@ -348,6 +364,7 @@ dist/                        # Build output (unchanged structure)
 **Changes Required**:
 
 **User Schema (shared/schema.ts)**:
+
 ```typescript
 // Current
 export const insertUserSchema = z.object({
@@ -366,11 +383,12 @@ export const insertUserSchema = z.object({
 export const storedUserSchema = insertUserSchema.extend({
   id: z.string(),
   password: z.string(), // Now represents bcrypt hash
-  passwordVersion: z.literal('bcrypt-10').optional(), // Track hash algorithm
+  passwordVersion: z.literal("bcrypt-10").optional(), // Track hash algorithm
 });
 ```
 
 **New: AuthenticatedRequest Type (server/types.ts)**:
+
 ```typescript
 import { type User } from "@shared/schema";
 import { type Request } from "express";
@@ -381,6 +399,7 @@ export interface AuthenticatedRequest extends Request {
 ```
 
 **New: Rate Limit State** (in-memory, no schema change):
+
 - Tracked per IP address
 - Window: 15 minutes
 - Max attempts: 5
@@ -399,6 +418,7 @@ export interface AuthenticatedRequest extends Request {
 - `POST /api/demo` - Rate limited (5/15min)
 
 **Response Changes**:
+
 ```typescript
 // New error response for rate limiting
 {
@@ -410,6 +430,7 @@ export interface AuthenticatedRequest extends Request {
 **Breaking Changes**: NONE - All changes are backward compatible from client perspective
 
 **Requires Environment Variables** (NEW):
+
 ```bash
 SESSION_SECRET=<required-32-byte-hex>  # No fallback - app fails if missing
 NODE_ENV=production|development
@@ -420,6 +441,7 @@ NODE_ENV=production|development
 **File**: `shared/routes.ts`
 
 **Before** (TYPE1-2 violations):
+
 ```typescript
 export const api = {
   conversations: {
@@ -435,6 +457,7 @@ export const api = {
 ```
 
 **After** (Fixed):
+
 ```typescript
 import { conversationSchema } from "./schema";
 
@@ -456,6 +479,7 @@ export const api = {
 **File**: `quickstart.md`
 
 **Contents**:
+
 1. **Prerequisites**: Node.js 18+, Git
 2. **Environment Setup**:
    ```bash
@@ -501,6 +525,7 @@ export const api = {
 **Action**: Run `.specify/scripts/powershell/update-agent-context.ps1 -AgentType copilot`
 
 **Updates to `.github/copilot-instructions.md`**:
+
 - Add bcrypt, express-rate-limit, vitest to technology stack table
 - Update security standards section with implemented patterns
 - Add testing patterns and examples
@@ -510,6 +535,7 @@ export const api = {
 **Manual Additions Preserved**: Any content between markers `<!-- MANUAL_START -->` and `<!-- MANUAL_END -->` is preserved
 
 ### Success Criteria for Phase 1
+
 - Data model changes documented with before/after examples
 - API contract changes documented (none are breaking)
 - Quickstart guide complete and tested
@@ -523,6 +549,7 @@ export const api = {
 **Note**: Tasks are generated by `/speckit.tasks` command (NOT part of `/speckit.plan`)
 
 **Expected Task Categories**:
+
 1. Security hardening (bcrypt, rate limiting, secrets)
 2. Type safety fixes (12 violations)
 3. Test infrastructure setup
@@ -540,15 +567,18 @@ export const api = {
 ## Implementation Order
 
 **Critical Path** (must be sequential):
+
 1. Phase 0: Research → Phase 1: Design → Phase 2: Tasks (via `/speckit.tasks`)
 2. Within implementation: Security fixes → Type fixes → Tests → Linting → Deployment
 
 **Can Parallelize**:
+
 - Type safety fixes (independent across files)
 - Test file creation (after test infrastructure exists)
 - Linting configuration (independent of code fixes)
 
 **Dependencies**:
+
 - bcrypt implementation MUST complete before password migration
 - Type definitions MUST exist before fixing type violations
 - Test infrastructure MUST exist before writing tests
@@ -559,6 +589,7 @@ export const api = {
 ## Validation & Success Metrics
 
 ### Automated Validation
+
 - [ ] `npm run build` succeeds with zero TypeScript errors
 - [ ] `npm run lint` reports zero violations
 - [ ] `npm test` runs with zero failures, 80%+ coverage on auth/storage
@@ -566,6 +597,7 @@ export const api = {
 - [ ] Site audit re-run shows 90%+ compliance score
 
 ### Manual Validation
+
 - [ ] Existing user cannot login with old password (if migration needed)
 - [ ] New user registration stores hashed password
 - [ ] Login rate limiting blocks 6th attempt within 15 minutes
@@ -574,27 +606,30 @@ export const api = {
 - [ ] Environment variables loaded from IIS configuration
 
 ### Compliance Scorecard (Post-Implementation)
-| Metric | Before | Target | Validates |
-|--------|--------|--------|-----------|
-| Constitution Compliance | 38% | 90%+ | All principles |
-| Security Score | 25% | 100% | Principle IV |
-| Type Safety Violations | 12 | 0 | Principle I |
-| Test Coverage | 0% | 80%+ | Principle II |
-| Lint Violations | Unknown | 0 | Principle VII |
-| CRITICAL Issues | 6 | 0 | Production readiness |
-| HIGH Issues | 7 | 0 | Production readiness |
+
+| Metric                  | Before  | Target | Validates            |
+| ----------------------- | ------- | ------ | -------------------- |
+| Constitution Compliance | 38%     | 90%+   | All principles       |
+| Security Score          | 25%     | 100%   | Principle IV         |
+| Type Safety Violations  | 12      | 0      | Principle I          |
+| Test Coverage           | 0%      | 80%+   | Principle II         |
+| Lint Violations         | Unknown | 0      | Principle VII        |
+| CRITICAL Issues         | 6       | 0      | Production readiness |
+| HIGH Issues             | 7       | 0      | Production readiness |
 
 ---
 
 ## Rollback Plan
 
 **If Implementation Fails**:
+
 1. Branch is isolated - no impact to main
 2. Can abandon branch and restart
 3. No database schema changes to roll back
 4. Existing users unaffected until merge
 
 **If Deployed to Production with Issues**:
+
 1. **Password Migration Issue**: Users can reset via "forgot password"
 2. **Rate Limiting Too Strict**: Adjust limits via environment or code hot-fix
 3. **Type Errors**: Branch protects against merge, won't reach production
@@ -602,6 +637,7 @@ export const api = {
 5. **IIS Permissions**: Run deploy-iis.ps1 script to re-apply permissions
 
 **Monitoring**:
+
 - Watch for increased 401 errors (rate limiting impact)
 - Monitor login success rates
 - Check error logs for environment variable issues
@@ -611,14 +647,14 @@ export const api = {
 
 ## Risk Assessment
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| Existing user lockout after password migration | HIGH | HIGH | Implement graceful password reset flow, clear user communication |
-| Rate limiting blocks legitimate users | MEDIUM | MEDIUM | Conservative limits (5/15min), clear error messages, monitoring |
-| Type fixes reveal hidden bugs | MEDIUM | HIGH | Comprehensive testing before merge, staged rollout |
-| Test suite slows development | LOW | MEDIUM | Optimize test performance, parallel execution |
-| IIS deployment script failures | MEDIUM | HIGH | Thorough testing in staging, manual fallback documented |
-| Breaking changes to API contracts | LOW | CRITICAL | Careful review, no breaking changes planned |
+| Risk                                           | Likelihood | Impact   | Mitigation                                                       |
+| ---------------------------------------------- | ---------- | -------- | ---------------------------------------------------------------- |
+| Existing user lockout after password migration | HIGH       | HIGH     | Implement graceful password reset flow, clear user communication |
+| Rate limiting blocks legitimate users          | MEDIUM     | MEDIUM   | Conservative limits (5/15min), clear error messages, monitoring  |
+| Type fixes reveal hidden bugs                  | MEDIUM     | HIGH     | Comprehensive testing before merge, staged rollout               |
+| Test suite slows development                   | LOW        | MEDIUM   | Optimize test performance, parallel execution                    |
+| IIS deployment script failures                 | MEDIUM     | HIGH     | Thorough testing in staging, manual fallback documented          |
+| Breaking changes to API contracts              | LOW        | CRITICAL | Careful review, no breaking changes planned                      |
 
 **Overall Risk Level**: MEDIUM - Well-understood changes with clear mitigation strategies
 

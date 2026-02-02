@@ -81,6 +81,7 @@ Security protections MUST be implemented before public deployment (beta/producti
 - SQL injection prevention MUST be ensured through parameterized queries
 
 **Timeline Guidance**:
+
 - Alpha (internal testing): Bcrypt + env variables required
 - Beta (limited external): Add rate limiting + CSRF protection
 - Production (public): All security measures fully implemented
@@ -98,6 +99,7 @@ API endpoints SHOULD be defined in a shared contract for type-safe client-server
 - Breaking API changes MUST increment version or provide migration path
 
 **Prototyping Exception**: During early prototyping, simple endpoint implementations without formal contracts are acceptable. Add contracts when:
+
 - The endpoint design stabilizes
 - Multiple clients use the endpoint
 - Type safety becomes a maintenance burden
@@ -175,6 +177,7 @@ The application MUST be deployable to Windows 11 with IIS for production hosting
 - SSL/TLS MUST be configured in IIS for HTTPS in production
 
 **Build Requirements**:
+
 - `npm run build` MUST produce deployment-ready artifacts in `dist/`
 - `dist/index.cjs` = Compiled Express server (CommonJS)
 - `dist/public/` = Frontend static assets
@@ -196,6 +199,7 @@ Avoid premature optimization and over-engineering. Build what is needed now, not
 - Prototype first, optimize later (only when measurements show the need)
 
 **Examples of Simplicity First**:
+
 - ✓ Use JSON files before databases (Principle VIII)
 - ✓ Use React's useState before Redux/Zustand
 - ✓ Write inline code before extracting utilities
@@ -208,21 +212,21 @@ Avoid premature optimization and over-engineering. Build what is needed now, not
 
 ## Technology Stack
 
-| Layer | Technology | Constraint |
-|-------|------------|------------|
-| Language | TypeScript 5.x (strict) | MUST remain strict mode |
-| Frontend | React 19 + Vite | MUST use functional components |
-| UI | shadcn/ui + Radix + Tailwind CSS | MUST use these libraries |
-| State | TanStack React Query | SHOULD for server state |
-| Routing | Wouter (frontend) | MAY change if needs grow |
-| Backend | Express 5 | MUST remain Express |
-| Auth | Passport.js + express-session | MUST implement bcrypt |
-| Validation | Zod | MUST for all schemas |
-| Testing | Vitest or Jest | MUST be configured |
-| Linting | ESLint + Prettier | MUST be configured |
-| Storage | File-based JSON (initial) / Database TBD (when justified) | Follow Principle VIII |
-| Hosting | Windows 11 + IIS 10.0+ | MUST support iisnode |
-| Build | Vite (client) + esbuild (server) | MUST output CommonJS |
+| Layer      | Technology                                                | Constraint                     |
+| ---------- | --------------------------------------------------------- | ------------------------------ |
+| Language   | TypeScript 5.x (strict)                                   | MUST remain strict mode        |
+| Frontend   | React 19 + Vite                                           | MUST use functional components |
+| UI         | shadcn/ui + Radix + Tailwind CSS                          | MUST use these libraries       |
+| State      | TanStack React Query                                      | SHOULD for server state        |
+| Routing    | Wouter (frontend)                                         | MAY change if needs grow       |
+| Backend    | Express 5                                                 | MUST remain Express            |
+| Auth       | Passport.js + express-session                             | MUST implement bcrypt          |
+| Validation | Zod                                                       | MUST for all schemas           |
+| Testing    | Vitest or Jest                                            | MUST be configured             |
+| Linting    | ESLint + Prettier                                         | MUST be configured             |
+| Storage    | File-based JSON (initial) / Database TBD (when justified) | Follow Principle VIII          |
+| Hosting    | Windows 11 + IIS 10.0+                                    | MUST support iisnode           |
+| Build      | Vite (client) + esbuild (server)                          | MUST output CommonJS           |
 
 ## Project Structure
 
@@ -234,16 +238,16 @@ client/                    # React frontend (Vite)
     hooks/                 # Custom React hooks (use-*.ts)
     pages/                 # Route-level components
     lib/                   # Utilities, queryClient
-      
+
 server/                    # Express backend
   index.ts                 # Entry point with logging middleware
   routes.ts                # API route handlers (uses shared contract)
   storage.ts               # Data persistence layer (implements IStorage)
-  
+
 shared/                    # Shared between client & server
   schema.ts                # Zod schemas for all data models
   routes.ts                # API contract definitions
-  
+
 data/                      # File-based JSON storage (development only)
   users.json               # User accounts
 

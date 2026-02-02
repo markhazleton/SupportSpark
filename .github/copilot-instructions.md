@@ -1,7 +1,7 @@
 # GitHub Copilot Instructions for SupportSpark
 
 > **Constitution Reference**: All development MUST comply with `.specify/memory/constitution.md`
-> 
+>
 > This file provides GitHub Copilot with project-specific context and coding standards.
 
 ## Project Overview
@@ -25,7 +25,10 @@ const validated = insertUserSchema.parse(userData);
 const data: any = response.json();
 
 // ❌ WRONG: Inline type definitions for shared data
-interface User { id: number; name: string; }
+interface User {
+  id: number;
+  name: string;
+}
 ```
 
 - TypeScript `strict: true` is enabled
@@ -40,7 +43,7 @@ interface User { id: number; name: string; }
 // feature.test.ts or feature.test.tsx
 
 // ✅ CORRECT: Import from vitest
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
 ```
 
 - All new features MUST have accompanying tests
@@ -71,7 +74,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 ```typescript
 // ✅ CORRECT: Use bcrypt for passwords
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 const hashedPassword = await bcrypt.hash(password, 10);
 
 // ✅ CORRECT: Environment variables for secrets
@@ -139,10 +142,10 @@ mutation.onSuccess(() => {
 
 ```typescript
 // ✅ CORRECT: Import order
-import express from "express";           // External dependencies
-import { User } from "@shared/schema";   // @shared/ imports
+import express from "express"; // External dependencies
+import { User } from "@shared/schema"; // @shared/ imports
 import { Button } from "@/components/ui/button"; // @/ imports
-import { helper } from "./utils";        // Relative imports
+import { helper } from "./utils"; // Relative imports
 ```
 
 - ESLint + Prettier for formatting
@@ -151,17 +154,17 @@ import { helper } from "./utils";        // Relative imports
 
 ## Technology Stack Quick Reference
 
-| Layer | Technology | Notes |
-|-------|------------|-------|
-| Frontend | React 19 + Vite | Functional components only |
-| UI | shadcn/ui + Radix + Tailwind | MUST use for all UI |
-| State | TanStack React Query | For server state |
-| Routing | Wouter | Lightweight router |
-| Backend | Express 5 | RESTful API |
-| Auth | Passport.js + express-session | With bcrypt |
-| Validation | Zod | All schemas |
-| Testing | Vitest | All new features |
-| Hosting | Windows 11 + IIS | Production environment |
+| Layer      | Technology                    | Notes                      |
+| ---------- | ----------------------------- | -------------------------- |
+| Frontend   | React 19 + Vite               | Functional components only |
+| UI         | shadcn/ui + Radix + Tailwind  | MUST use for all UI        |
+| State      | TanStack React Query          | For server state           |
+| Routing    | Wouter                        | Lightweight router         |
+| Backend    | Express 5                     | RESTful API                |
+| Auth       | Passport.js + express-session | With bcrypt                |
+| Validation | Zod                           | All schemas                |
+| Testing    | Vitest                        | All new features           |
+| Hosting    | Windows 11 + IIS              | Production environment     |
 
 ## File Structure Convention
 
@@ -214,7 +217,6 @@ All generated documentation MUST follow this structure:
 
 - **Session documentation**: `/docs/copilot/session-{YYYY-MM-DD}/`
   - For session-specific work, audits, implementation notes
-  
 - **Domain documentation**: `/docs/domain/`
   - For long-lasting architectural decisions, patterns, guides
 

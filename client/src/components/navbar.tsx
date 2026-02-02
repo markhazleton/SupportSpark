@@ -33,8 +33,8 @@ export function Navbar() {
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-6">
           {links.map((link) => (
-            <Link 
-              key={link.href} 
+            <Link
+              key={link.href}
               href={link.href}
               className={`text-sm font-medium transition-colors hover:text-primary ${
                 location === link.href ? "text-primary" : "text-muted-foreground"
@@ -43,18 +43,18 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          
+
           {isAuthenticated ? (
             <div className="flex items-center gap-4 pl-4 border-l">
               <span className="text-sm font-medium text-muted-foreground hidden lg:block">
-                Hi, {user?.firstName || 'Friend'}
+                Hi, {user?.firstName || "Friend"}
               </span>
               <Button variant="outline" size="sm" onClick={() => logout()}>
                 Sign Out
               </Button>
             </div>
           ) : (
-            <Button size="sm" onClick={() => window.location.href = "/auth"}>
+            <Button size="sm" onClick={() => (window.location.href = "/auth")}>
               Sign In / Join
             </Button>
           )}
@@ -77,8 +77,8 @@ export function Navbar() {
           >
             <div className="flex flex-col p-4 space-y-4">
               {links.map((link) => (
-                <Link 
-                  key={link.href} 
+                <Link
+                  key={link.href}
                   href={link.href}
                   className={`text-sm font-medium py-2 ${
                     location === link.href ? "text-primary" : "text-muted-foreground"
@@ -90,11 +90,15 @@ export function Navbar() {
               ))}
               <div className="pt-4 border-t">
                 {isAuthenticated ? (
-                  <Button variant="ghost" className="w-full justify-start text-destructive" onClick={() => logout()}>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-destructive"
+                    onClick={() => logout()}
+                  >
                     Sign Out
                   </Button>
                 ) : (
-                  <Button className="w-full" onClick={() => window.location.href = "/auth"}>
+                  <Button className="w-full" onClick={() => (window.location.href = "/auth")}>
                     Sign In
                   </Button>
                 )}

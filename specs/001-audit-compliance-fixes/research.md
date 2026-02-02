@@ -13,21 +13,23 @@ This document consolidates research findings and technology decisions for implem
 ## 1. Password Hashing Implementation
 
 ### Research Question
+
 Which password hashing algorithm should be used for securing user credentials in Node.js/Express application?
 
 ### Options Evaluated
 
-| Algorithm | Pros | Cons | Node.js Support |
-|-----------|------|------|-----------------|
-| **bcrypt** | Industry standard, well-tested, adjustable work factor, wide adoption | Older algorithm, max 72-byte input | Excellent (`bcrypt` package) |
-| **argon2** | Winner of 2015 Password Hashing Competition, modern, memory-hard | Less widespread adoption, newer | Good (`argon2` package) |
-| **scrypt** | Built into Node.js crypto, good security | Fewer implementation examples, less tooling | Native (Node 10+) |
-| **PBKDF2** | Simple, built-in | Considered less secure than alternatives | Native |
+| Algorithm  | Pros                                                                  | Cons                                        | Node.js Support              |
+| ---------- | --------------------------------------------------------------------- | ------------------------------------------- | ---------------------------- |
+| **bcrypt** | Industry standard, well-tested, adjustable work factor, wide adoption | Older algorithm, max 72-byte input          | Excellent (`bcrypt` package) |
+| **argon2** | Winner of 2015 Password Hashing Competition, modern, memory-hard      | Less widespread adoption, newer             | Good (`argon2` package)      |
+| **scrypt** | Built into Node.js crypto, good security                              | Fewer implementation examples, less tooling | Native (Node 10+)            |
+| **PBKDF2** | Simple, built-in                                                      | Considered less secure than alternatives    | Native                       |
 
 ### Decision: **bcrypt**
 
 **Rationale**:
 -Constitution explicitly mandates bcrypt (Principle IV: "User passwords MUST be hashed using bcrypt")
+
 - Industry-standard with 20+ years of battle-testing
 - Passport.js ecosystem has excellent bcrypt examples
 - Simple API: `bcrypt.hash()` and `bcrypt.compare()`
@@ -35,8 +37,9 @@ Which password hashing algorithm should be used for securing user credentials in
 - Windows compatibility confirmed (binary builds available)
 
 **Configuration**:
+
 ```typescript
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 
 // Registration
 const saltRounds = 10; // Constitution minimum
@@ -49,6 +52,7 @@ const isMatch = await bcrypt.compare(plainPassword, hashedPassword);
 **Package**: `bcrypt` + `@types/bcrypt`
 
 **Alternatives Considered**:
+
 - argon2: Rejected because Constitution specifies bcrypt, would require amendment
 - scrypt: Less documentation for Express/Passport integration
 - PBKDF2: Not recommended for password hashing (2026 standards)
@@ -58,19 +62,21 @@ const isMatch = await bcrypt.compare(plainPassword, hashedPassword);
 ## 2. Rate Limiting Strategy
 
 ### Research Question
+
 How should rate limiting be implemented for authentication endpoints in Express 5?
 
 ### Options Evaluated
 
-| Solution | Pros | Cons | Best For |
-|----------|------|------|----------|
-| **express-rate-limit** | Express-focused, simple API, memory store built-in | Single-server only (without Redis) | Small-medium apps |
-| **rate-limiter-flexible** | Multi-backend (Redis, Memcached), advanced features | More complex configuration | High-scale apps |
-| **Custom middleware** | Full control, no dependencies | Must implement sliding window, testing burden | Special requirements |
+| Solution                  | Pros                                                | Cons                                          | Best For             |
+| ------------------------- | --------------------------------------------------- | --------------------------------------------- | -------------------- |
+| **express-rate-limit**    | Express-focused, simple API, memory store built-in  | Single-server only (without Redis)            | Small-medium apps    |
+| **rate-limiter-flexible** | Multi-backend (Redis, Memcached), advanced features | More complex configuration                    | High-scale apps      |
+| **Custom middleware**     | Full control, no dependencies                       | Must implement sliding window, testing burden | Special requirements |
 
 ### Decision: **express-rate-limit**
 
 **Rationale**:
+
 - Simple drop-in middleware for Express routes
 - Constitution requirement satisfied with minimal complexity
 - In-memory store sufficient for single IIS instance deployment
@@ -79,6 +85,7 @@ How should rate limiting be implemented for authentication endpoints in Express 
 - Active maintenance and Express 5 compatibility confirmed
 
 **Configuration**:
+
 ```typescript
 import rateLimit from 'express-rate-limit';
 
@@ -99,12 +106,14 @@ app.post('/api/register', authLimiter, ...);
 **Package**: `express-rate-limit`
 
 **Future Scaling Path**: If clustering/multi-server needed, configure Redis store:
+
 ```typescript
-import RedisStore from 'rate-limit-redis';
-store: new RedisStore({ client: redisClient })
+import RedisStore from "rate-limit-redis";
+store: new RedisStore({ client: redisClient });
 ```
 
 **Alternatives Considered**:
+
 - rate-limiter-flexible: Over-engineering for current single-server deployment
 - Custom: Unnecessary maintenance burden for solved problem
 
@@ -113,11 +122,13 @@ store: new RedisStore({ client: redisClient })
 ## 3. Testing Framework Configuration
 
 ### Research Question
+
 How should Vitest be configured for full-stack React + Express application?
 
 ### Research Findings
 
 **Vitest Advantages**:
+
 - Native Vite integration (already using Vite for client build)
 - Fast parallel test execution
 - Compatible with Jest API (easy migration path)
@@ -142,25 +153,26 @@ Test Organization Strategy:
 ```
 
 **Configuration** (`vitest.config.ts`):
+
 ```typescript
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
-import path from 'path';
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
-    environment: 'jsdom', // For React components
-    setupFiles: ['./test/setup.ts'],
+    environment: "jsdom", // For React components
+    setupFiles: ["./test/setup.ts"],
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
-      include: ['server/**/*.ts', 'client/src/**/*.{ts,tsx}'],
+      provider: "v8",
+      reporter: ["text", "json", "html"],
+      include: ["server/**/*.ts", "client/src/**/*.{ts,tsx}"],
       exclude: [
-        '**/*.test.{ts,tsx}',
-        '**/node_modules/**',
-        'client/src/components/ui/**', // shadcn/ui - vendor code
+        "**/*.test.{ts,tsx}",
+        "**/node_modules/**",
+        "client/src/components/ui/**", // shadcn/ui - vendor code
       ],
       thresholds: {
         lines: 80,
@@ -172,21 +184,22 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './client/src'),
-      '@shared': path.resolve(__dirname, './shared'),
+      "@": path.resolve(__dirname, "./client/src"),
+      "@shared": path.resolve(__dirname, "./shared"),
     },
   },
 });
 ```
 
 **Test Setup File** (`test/setup.ts`):
-```typescript
-import '@testing-library/jest-dom';
-import { beforeAll, afterAll, afterEach } from 'vitest';
-import { cleanup } from '@testing-library/react';
-import { server } from './mocks/server'; // MSW for API mocking
 
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+```typescript
+import "@testing-library/jest-dom";
+import { beforeAll, afterAll, afterEach } from "vitest";
+import { cleanup } from "@testing-library/react";
+import { server } from "./mocks/server"; // MSW for API mocking
+
+beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 afterAll(() => server.close());
 afterEach(() => {
   cleanup();
@@ -195,6 +208,7 @@ afterEach(() => {
 ```
 
 **Dependencies Required**:
+
 ```json
 {
   "devDependencies": {
@@ -213,27 +227,29 @@ afterEach(() => {
 **Test Patterns**:
 
 1. **API Integration Tests** (supertest):
-```typescript
-import request from 'supertest';
-import { app } from '../server/index';
 
-describe('POST /api/login', () => {
-  it('rejects invalid password', async () => {
+```typescript
+import request from "supertest";
+import { app } from "../server/index";
+
+describe("POST /api/login", () => {
+  it("rejects invalid password", async () => {
     const response = await request(app)
-      .post('/api/login')
-      .send({ email: 'test@example.com', password: 'wrong' });
+      .post("/api/login")
+      .send({ email: "test@example.com", password: "wrong" });
     expect(response.status).toBe(401);
   });
 });
 ```
 
 2. **React Hook Tests** (Testing Library):
-```typescript
-import { renderHook, waitFor } from '@testing-library/react';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { useAuth } from './use-auth';
 
-test('useAuth returns user after login', async () => {
+```typescript
+import { renderHook, waitFor } from "@testing-library/react";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { useAuth } from "./use-auth";
+
+test("useAuth returns user after login", async () => {
   const { result } = renderHook(() => useAuth(), {
     wrapper: QueryClientProvider,
   });
@@ -242,6 +258,7 @@ test('useAuth returns user after login', async () => {
 ```
 
 **Alternatives Considered**:
+
 - Jest: Rejected - Slower than Vitest, requires additional Babel configuration
 - Test-only frameworks (AVA, Tape): Rejected - Less React ecosystem integration
 
@@ -250,11 +267,13 @@ test('useAuth returns user after login', async () => {
 ## 4. Type Safety Patterns
 
 ### Research Question
+
 How should TypeScript types be properly defined for Express routes with Passport.js authentication?
 
 ### Best Practices Research
 
 **Problem Areas Identified**:
+
 1. Express `Request` doesn't know about `user` property added by Passport
 2. Route handlers use `any` for request/response
 3. Zod schemas use `z.custom<any>()` losing type information
@@ -262,9 +281,10 @@ How should TypeScript types be properly defined for Express routes with Passport
 **Solution Pattern**:
 
 **1. Define Authenticated Request Type** (`server/types.ts`):
+
 ```typescript
-import { type Request, type Response, type NextFunction } from 'express';
-import { type User } from '@shared/schema';
+import { type Request, type Response, type NextFunction } from "express";
+import { type User } from "@shared/schema";
 
 // Extend Express Request with Passport user
 export interface AuthenticatedRequest extends Request {
@@ -272,28 +292,17 @@ export interface AuthenticatedRequest extends Request {
 }
 
 // Type-safe middleware
-export type AuthMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => void;
+export type AuthMiddleware = (req: Request, res: Response, next: NextFunction) => void;
 
 // Type-safe authenticated route handler
-export type AuthHandler = (
-  req: AuthenticatedRequest,
-  res: Response
-) => Promise<void> | void;
+export type AuthHandler = (req: AuthenticatedRequest, res: Response) => Promise<void> | void;
 
 // Type-safe error handler
-export type ErrorHandler = (
-  error: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => void;
+export type ErrorHandler = (error: Error, req: Request, res: Response, next: NextFunction) => void;
 ```
 
 **2. Properly Type Route Handlers**:
+
 ```typescript
 // Before (TYPE7-8 violations)
 const requireAuth = (req: any, res: any, next: any) => { ... };
@@ -319,6 +328,7 @@ app.get('/api/conversations', requireAuth, listConversations);
 ```
 
 **3. Fix Zod Schema Types** (TYPE1-2):
+
 ```typescript
 // Before (shared/routes.ts)
 responses: {
@@ -334,12 +344,13 @@ responses: {
 ```
 
 **4. Passport Type Augmentation** (for serializeUser):
+
 ```typescript
 // server/types.ts
-import 'express-session';
-import { type User } from '@shared/schema';
+import "express-session";
+import { type User } from "@shared/schema";
 
-declare module 'express-session' {
+declare module "express-session" {
   interface SessionData {
     passport: {
       user: string; // User ID
@@ -354,6 +365,7 @@ passport.serializeUser<string>((user: User, done) => {
 ```
 
 **Type Safety Checklist**:
+
 - [ ] All request handlers use explicit types (no `any`)
 - [ ] All `req.user` access uses `AuthenticatedRequest`
 - [ ] All Zod schemas use concrete types (no `z.custom<any>()`)
@@ -361,6 +373,7 @@ passport.serializeUser<string>((user: User, done) => {
 - [ ] TypeScript strict mode compiles without errors
 
 **Alternatives Considered**:
+
 - Type assertions (`req as AuthenticatedRequest`): Rejected - bypasses type safety
 - Keeping `any`: Rejected - violates Constitution Principle I
 
@@ -369,11 +382,13 @@ passport.serializeUser<string>((user: User, done) => {
 ## 5. Linting Configuration
 
 ### Research Question
+
 What ESLint and Prettier configuration aligns with SupportSpark's TypeScript + React stack?
 
 ### Configuration Strategy
 
 **ESLint Rules** (`.eslintrc.json`):
+
 ```json
 {
   "root": true,
@@ -420,12 +435,14 @@ What ESLint and Prettier configuration aligns with SupportSpark's TypeScript + R
 ```
 
 **Key Rules Explained**:
+
 - `@typescript-eslint/no-explicit-any`: Enforces Constitution Principle I (no `any` types)
 - `@typescript-eslint/no-floating-promises`: Catches unhandled async operations
 - `react-hooks/recommended`: Prevents common React hooks mistakes
 - `prettier`: Disables conflicting ESLint style rules
 
 **Prettier Configuration** (`.prettierrc.json`):
+
 ```json
 {
   "semi": true,
@@ -440,6 +457,7 @@ What ESLint and Prettier configuration aligns with SupportSpark's TypeScript + R
 ```
 
 **Package Scripts** (`package.json`):
+
 ```json
 {
   "scripts": {
@@ -454,6 +472,7 @@ What ESLint and Prettier configuration aligns with SupportSpark's TypeScript + R
 ```
 
 **Dependencies Required**:
+
 ```json
 {
   "devDependencies": {
@@ -469,6 +488,7 @@ What ESLint and Prettier configuration aligns with SupportSpark's TypeScript + R
 ```
 
 **Pre-commit Hooks** (optional via Husky):
+
 ```bash
 npm install -D husky lint-staged
 npx husky install
@@ -476,6 +496,7 @@ npx husky add .husky/pre-commit "npx lint-staged"
 ```
 
 **lint-staged Configuration** (`package.json`):
+
 ```json
 {
   "lint-staged": {
@@ -486,6 +507,7 @@ npx husky add .husky/pre-commit "npx lint-staged"
 ```
 
 **Alternatives Considered**:
+
 - Standard.js: Rejected - Less flexible, opinionated formatting conflicts with Prettier
 - XO: Rejected - Too strict, would require extensive configuration overrides
 
@@ -494,11 +516,13 @@ npx husky add .husky/pre-commit "npx lint-staged"
 ## 6. IIS Deployment Automation
 
 ### Research Question
+
 How should data directory permissions be automated for IIS deployment on Windows 11?
 
 ### PowerShell ACL Management Pattern
 
 **Deployment Script** (`script/deploy-iis.ps1`):
+
 ```powershell
 <#
 .SYNOPSIS
@@ -520,7 +544,7 @@ IIS Application Pool name (default: SupportSpark)
 param(
     [Parameter(Mandatory=$true)]
     [string]$SitePath,
-    
+
     [Parameter(Mandatory=$false)]
     [string]$AppPoolName = "SupportSpark"
 )
@@ -572,16 +596,16 @@ Write-Host "✓ Server entry point validated"
 $conversationsPath = Join-Path $dataPath "conversations"
 if (-not (Test-Path $conversationsPath)) {
     New-Item -ItemType Directory -Path $conversationsPath -Force | Out-Null
-    
+
     # Initialize meta.json
     $metaJson = @{
         lastConversationId = 0
     } | ConvertTo-Json
     Set-Content -Path (Join-Path $conversationsPath "meta.json") -Value $metaJson
-    
+
     # Initialize index.json
     Set-Content -Path (Join-Path $conversationsPath "index.json") -Value "[]"
-    
+
     Write-Host "✓ Conversations structure initialized"
 }
 
@@ -595,6 +619,7 @@ Write-Host "3. Restart IIS: iisreset"
 ```
 
 **Build Script Integration** (`script/build.ts`):
+
 ```typescript
 // After building server, setup data directory
 console.log("Setting up data directory structure...");
@@ -635,6 +660,7 @@ console.log("✓ web.config validated");
 **Documentation**: Comments explain each step
 
 **Alternatives Considered**:
+
 - Batch scripts: Rejected - Less powerful ACL management
 - Manual steps: Rejected - Error-prone, not repeatable
 - Ansible/Chef: Rejected - Over-engineering for single-server deployment
@@ -644,6 +670,7 @@ console.log("✓ web.config validated");
 ## Implementation Patterns Summary
 
 ### Security Implementation Order
+
 1. Install bcrypt + express-rate-limit packages
 2. Implement bcrypt in authentication routes (register, login)
 3. Add rate limiter middleware
@@ -651,6 +678,7 @@ console.log("✓ web.config validated");
 5. Test authentication flow with new security
 
 ### Type Safety Implementation Order
+
 1. Create `server/types.ts` with proper interfaces
 2. Fix `shared/routes.ts` Zod schemas (TYPE1-2)
 3. Fix `server/storage.ts` Message types (TYPE3-4)
@@ -659,6 +687,7 @@ console.log("✓ web.config validated");
 6. Verify TypeScript compilation succeeds
 
 ### Testing Implementation Order
+
 1. Configure Vitest + testing libraries
 2. Create test setup file with mocks
 3. Write authentication integration tests
@@ -667,6 +696,7 @@ console.log("✓ web.config validated");
 6. Achieve 80%+ coverage target
 
 ### Deployment Implementation Order
+
 1. Create PowerShell deployment script
 2. Update build script with data directory setup
 3. Add web.config validation
@@ -678,6 +708,7 @@ console.log("✓ web.config validated");
 ## Dependencies Installation
 
 **Complete Dependency List**:
+
 ```bash
 # Security
 npm install bcrypt express-rate-limit
@@ -696,6 +727,7 @@ npm install -D husky lint-staged
 ```
 
 **One-Line Installation**:
+
 ```bash
 npm install bcrypt express-rate-limit && npm install -D @types/bcrypt vitest @vitest/ui jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event supertest @types/supertest eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-react eslint-plugin-react-hooks eslint-config-prettier prettier
 ```

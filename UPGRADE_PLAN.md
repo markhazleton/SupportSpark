@@ -12,6 +12,7 @@ This document outlines a phased approach to updating dependencies in the Support
 ## Updates Summary
 
 ### Major Version Updates (Breaking Changes Expected)
+
 - `express`: 4.22.1 → 5.2.1
 - `@hookform/resolvers`: 3.10.0 → 5.2.2
 - `date-fns`: 3.6.0 → 4.1.0
@@ -32,11 +33,11 @@ This document outlines a phased approach to updating dependencies in the Support
 **Goal:** Update packages with minimal breaking changes and good backward compatibility
 
 ### Packages to Update
+
 1. **framer-motion** (11.18.2 → 12.23.28) ⚠️ **DEFERRED to Phase 3+**
    - Risk: Medium-High (v12 has breaking API changes)
    - Status: Kept at v11.18.2 - v12 requires major refactoring
    - Notes: v12 changes animation prop types significantly, needs migration plan
-   
 2. **tailwind-merge** (2.6.0 → 3.4.0) ✅ **UPDATED**
    - Risk: Low
    - Status: Successfully updated to v3.4.0
@@ -48,6 +49,7 @@ This document outlines a phased approach to updating dependencies in the Support
    - Notes: Type definitions only, no issues found
 
 ### Testing Checklist
+
 - [x] Run `npm install` after updates
 - [x] Check TypeScript compilation: `npm run check`
 - [x] Test all animation components (cards, dialogs, transitions)
@@ -55,6 +57,7 @@ This document outlines a phased approach to updating dependencies in the Support
 - [x] Run build: `npm run build`
 
 ### Rollback Plan
+
 ```bash
 # If issues arise:
 git checkout package.json package-lock.json
@@ -68,6 +71,7 @@ npm install
 **Goal:** Update React-related dependencies and UI components
 
 ### Packages to Update
+
 1. **@vitejs/plugin-react** (4.7.0 → 5.1.2) ✅ **UPDATED**
    - Risk: Medium
    - Status: Successfully updated to v5.1.2
@@ -90,6 +94,7 @@ npm install
      - ✅ Verify panel collapse/expand behavior
 
 ### Testing Checklist
+
 - [x] Verify HMR works correctly in dev mode
 - [x] Test all pages that use resizable panels
 - [x] Check conversation view layout responsiveness
@@ -97,6 +102,7 @@ npm install
 - [x] Build and test production bundle
 
 ### Dependencies
+
 - Requires Phase 1 completion
 - React 19.2.3 is already at latest (no update needed)
 
@@ -124,6 +130,7 @@ npm install
    - Check if update available for v4 compatibility
 
 ### Testing Checklist
+
 - [ ] Visual regression testing on all pages:
   - [ ] Home page
   - [ ] Dashboard
@@ -138,7 +145,9 @@ npm install
 - [ ] Verify typography in markdown rendering
 
 ### Rollback Plan
+
 This is a critical update. Consider:
+
 1. Creating a feature branch: `git checkout -b upgrade/tailwind-v4`
 2. Committing Phase 1 & 2 updates first
 3. Taking screenshots of all pages before update
@@ -169,12 +178,14 @@ This is a critical update. Consider:
      - Test form submissions with validation
 
 ### Files to Review
+
 - [shared/schema.ts](shared/schema.ts) - All Zod schemas
 - [client/src/components/create-update-dialog.tsx](client/src/components/create-update-dialog.tsx)
 - [client/src/components/invite-supporter-dialog.tsx](client/src/components/invite-supporter-dialog.tsx)
 - Any other forms using react-hook-form
 
 ### Testing Checklist
+
 - [ ] Test all form validations:
   - [ ] Login/Signup forms
   - [ ] Create/Update dialogs
@@ -202,6 +213,7 @@ This is a critical update. Consider:
      - Verify date formatting patterns
 
 ### Testing Checklist
+
 - [ ] Test date display in conversations
 - [ ] Verify calendar component (react-day-picker integration)
 - [ ] Check timestamp formatting
@@ -225,6 +237,7 @@ This is a critical update. Consider:
      - Test all chart implementations
 
 ### Testing Checklist
+
 - [ ] Test all chart/graph visualizations
 - [ ] Verify data binding and updates
 - [ ] Check responsive behavior
@@ -240,20 +253,24 @@ This is a critical update. Consider:
 **⚠️ HIGHEST RISK - Requires significant testing**
 
 ### Packages to Update
+
 1. **express** (4.22.1 → 5.2.1)
 2. **@types/express** (4.17.25 → 5.0.6)
 
 ### Breaking Changes to Address
 
 #### 1. Middleware Changes
+
 - Middleware must be async-aware
 - Error handling changes
 
 #### 2. Response API Changes
+
 - Some deprecated methods removed
 - `res.json()` and `res.send()` behavior changes
 
 #### 3. Router Changes
+
 - Router API may have updates
 
 ### Action Items
@@ -280,34 +297,32 @@ This is a critical update. Consider:
    - Static file serving
 
 ### Testing Checklist
+
 - [ ] **Authentication**
   - [ ] Login
   - [ ] Logout
   - [ ] Session persistence
   - [ ] Protected routes
-  
 - [ ] **API Endpoints**
   - [ ] GET requests
   - [ ] POST requests
   - [ ] PUT/PATCH requests
   - [ ] DELETE requests
   - [ ] Error responses
-  
 - [ ] **WebSocket**
   - [ ] Connection establishment
   - [ ] Real-time updates
   - [ ] Connection cleanup
-  
 - [ ] **File Operations**
   - [ ] File uploads (multer)
   - [ ] Static file serving
-  
 - [ ] **Error Handling**
   - [ ] 404 errors
   - [ ] 500 errors
   - [ ] Validation errors
 
 ### Rollback Plan
+
 - Keep Express v4 branch
 - Document all changes made
 - Have database backup ready
@@ -320,6 +335,7 @@ This is a critical update. Consider:
 ### Before Each Phase
 
 1. **Create a backup branch**
+
    ```bash
    git checkout -b backup/pre-phase-N
    git push origin backup/pre-phase-N
@@ -338,11 +354,13 @@ This is a critical update. Consider:
 ### During Each Phase
 
 1. **Update packages**
+
    ```bash
    npm install <package>@latest
    ```
 
 2. **Run checks immediately**
+
    ```bash
    npm run check        # TypeScript
    npm run build        # Production build
@@ -362,6 +380,7 @@ This is a critical update. Consider:
    - Verify production build works
 
 2. **Commit changes**
+
    ```bash
    git add .
    git commit -m "Phase N: Update <packages>"
@@ -377,6 +396,7 @@ This is a critical update. Consider:
 ## 🚨 Risk Mitigation
 
 ### High-Risk Updates
+
 - **Tailwind v4**: Most visual impact
 - **Express v5**: Backend stability
 - **Zod v4**: Data validation critical
@@ -403,20 +423,21 @@ git checkout backup/pre-phase-N
 git checkout -b fix/rollback-phase-N
 npm install
 ```
+
 ✅ Complete | Jan 5, 2026 | Jan 5, 2026 | tailwind-merge, @types/node updated; framer-motion deferred |
 | Phase 2 | ✅ Complete | Jan 5, 2026 | Jan 5, 2026 | @vitejs/plugin-react, react-resizable-panels updated
 
 ## 📊 Progress Tracking
 
-| Phase | Status | Start Date | Complete Date | Notes |
-|-------|--------|------------|---------------|-------|
-| Phase 1 | ⬜ Not Started | | | Low-risk updates |
-| Phase 2 | ⬜ Not Started | | | React ecosystem |
-| Phase 3 | ⬜ Not Started | | | Tailwind v4 |
-| Phase 4 | ⬜ Not Started | | | Form validation |
-| Phase 5 | ⬜ Not Started | | | Date handling |
-| Phase 6 | ⬜ Not Started | | | Charts |
-| Phase 7 | ⬜ Not Started | | | Express v5 |
+| Phase   | Status         | Start Date | Complete Date | Notes            |
+| ------- | -------------- | ---------- | ------------- | ---------------- |
+| Phase 1 | ⬜ Not Started |            |               | Low-risk updates |
+| Phase 2 | ⬜ Not Started |            |               | React ecosystem  |
+| Phase 3 | ⬜ Not Started |            |               | Tailwind v4      |
+| Phase 4 | ⬜ Not Started |            |               | Form validation  |
+| Phase 5 | ⬜ Not Started |            |               | Date handling    |
+| Phase 6 | ⬜ Not Started |            |               | Charts           |
+| Phase 7 | ⬜ Not Started |            |               | Express v5       |
 
 ---
 
