@@ -9,7 +9,7 @@ import bcrypt from "bcrypt";
 describe("Authentication Security Tests", () => {
   let app: Express;
   let server: HttpServer;
-  let agent: request.SuperAgentTest;
+  let agent: ReturnType<typeof request.agent>;
 
   beforeAll(async () => {
     // Set environment variables for testing
@@ -148,10 +148,7 @@ describe("Authentication Security Tests", () => {
 
       // Make 5 requests (should all succeed with 200)
       for (let i = 0; i < 5; i++) {
-        const response = await testAgent
-          .post("/api/test/rate-limit")
-          .send({})
-          .expect(200);
+        const response = await testAgent.post("/api/test/rate-limit").send({}).expect(200);
 
         //Check rate limit headers
         expect(response.headers).toHaveProperty("ratelimit-limit");
@@ -159,10 +156,7 @@ describe("Authentication Security Tests", () => {
       }
 
       // 6th attempt should be rate limited (429)
-      const rateLimitedResponse = await testAgent
-        .post("/api/test/rate-limit")
-        .send({})
-        .expect(429);
+      const rateLimitedResponse = await testAgent.post("/api/test/rate-limit").send({}).expect(429);
 
       expect(rateLimitedResponse.body).toHaveProperty("message");
       expect(rateLimitedResponse.body.message).toContain("Too many");

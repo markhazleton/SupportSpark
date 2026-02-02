@@ -4,9 +4,10 @@ import { type User } from "@shared/schema";
 /**
  * Express Request extended with authenticated Passport user
  * Use this interface for protected routes that require authentication
+ * Note: user is optional at type level; runtime guards ensure it exists
  */
 export interface AuthenticatedRequest extends Request {
-  user: User;
+  user?: User;
 }
 
 /**

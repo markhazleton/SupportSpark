@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+// Build script needs console output for progress reporting
 import { build as esbuild } from "esbuild";
 import { rm, readFile, writeFile, mkdir, copyFile } from "fs/promises";
 import { execSync } from "child_process";
@@ -139,7 +141,7 @@ async function buildAll() {
     const webConfig = await readFile("dist/web.config", "utf-8");
 
     // Check for required iisnode handler
-    if (!webConfig.includes("<add name=\"iisnode\"")) {
+    if (!webConfig.includes('<add name="iisnode"')) {
       console.warn("  ⚠️  Warning: web.config missing iisnode handler configuration");
     } else {
       console.log("  ✓ iisnode handler found");
@@ -147,7 +149,7 @@ async function buildAll() {
 
     // Check for correct entry point
     if (!webConfig.includes('path="index.cjs"') && !webConfig.includes("index.cjs")) {
-      console.warn('  ⚠️  Warning: web.config may not reference correct entry point (index.cjs)');
+      console.warn("  ⚠️  Warning: web.config may not reference correct entry point (index.cjs)");
     } else {
       console.log("  ✓ Entry point reference found");
     }

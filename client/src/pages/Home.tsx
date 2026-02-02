@@ -134,7 +134,7 @@ export default function Home() {
                   transition={{ duration: 0.5 }}
                 >
                   <p className="text-3xl font-serif italic text-stone-600 mb-8">
-                    "{currentQuote.quote}"
+                    &quot;{currentQuote.quote}&quot;
                   </p>
                   <footer className="text-stone-500 font-medium">
                     — {currentQuote.author}

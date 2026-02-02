@@ -11,11 +11,10 @@ import memorystore from "memorystore";
 import { promises as fs } from "fs";
 import path from "path";
 import multer from "multer";
-import express from "express";
 import bcrypt from "bcrypt";
 import rateLimit from "express-rate-limit";
-import type { User } from "@shared/schema";
-import type { AuthenticatedRequest, AuthMiddleware, AuthHandler, RouteHandler } from "./types";
+import type { User, Message, Supporter } from "@shared/schema";
+import type { AuthenticatedRequest, AuthMiddleware } from "./types";
 
 const MemoryStore = memorystore(session);
 
@@ -77,7 +76,6 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     )
   );
 
-  // @ts-expect-error - Passport types don't perfectly align with our User schema
   passport.serializeUser<string>((user: User, done) => {
     done(null, user.id);
   });
@@ -86,8 +84,8 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     try {
       const user = await storage.getUser(id);
       done(null, user);
-    } catch (err) {
-      done(err);
+    } catch (_err) {
+      done(_err);
     }
   });
 
@@ -96,7 +94,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   // In test mode, use higher limit to avoid cross-test contamination
   const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: process.env.NODE_ENV === 'test' ? 100 : 5, // Higher limit in tests
+    max: process.env.NODE_ENV === "test" ? 100 : 5, // Higher limit in tests
     message: { message: "Too many login attempts, please try again later" },
     standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
     legacyHeaders: false, // Disable `X-RateLimit-*` headers
@@ -124,9 +122,10 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   // === AUTH ROUTES ===
 
   // Helper to strip sensitive fields from user object
-  const sanitizeUser = (user: any) => {
-    if (!user) return user;
-    const { password, passwordVersion, ...safeUser } = user;
+  const sanitizeUser = (user: User | undefined) => {
+    if (!user) return undefined;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _password, passwordVersion: _passwordVersion, ...safeUser } = user;
     return safeUser;
   };
 
@@ -155,7 +154,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         if (err) return res.status(500).json({ message: "Login failed after registration" });
         return res.status(201).json(sanitizeUser(user));
       });
-    } catch (err) {
+    } catch {
       res.status(500).json({ message: "Registration failed" });
     }
   });
@@ -184,15 +183,17 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   };
 
   // === CONVERSATIONS ===
-  // @ts-expect-error - Express middleware typing conflict, but functionally correct
 
   app.get(api.conversations.list.path, requireAuth, async (req: AuthenticatedRequest, res) => {
+    if (!req.user?.id) return res.status(401).json({ message: "Not authenticated" });
     const conversations = await storage.getConversationsForUser(req.user.id);
     res.json(conversations);
   });
-  // @ts-expect-error - Express middleware typing conflict, but functionally correct
 
   app.get(api.conversations.get.path, requireAuth, async (req: AuthenticatedRequest, res) => {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: "Not authenticated" });
+
     const id = Number(req.params.id);
     const conversation = await storage.getConversation(id);
 
@@ -212,15 +213,16 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     }
 
     res.json(conversation);
-    // @ts-expect-error - Express middleware typing conflict, but functionally correct
   });
 
   app.post(api.conversations.create.path, requireAuth, async (req: AuthenticatedRequest, res) => {
+    const user = req.user;
+    if (!user) return res.status(401).json({ message: "Not authenticated" });
     try {
       const input = api.conversations.create.input.parse(req.body);
-      const userId = req.user.id;
+      const userId = user.id;
       const userName =
-        `${req.user.firstName || ""} ${req.user.lastName || ""}`.trim() || "Anonymous";
+        `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Anonymous";
 
       const initialMessage = {
         id: randomUUID(),
@@ -240,13 +242,16 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       }
       throw err;
     }
-    // @ts-expect-error - Express middleware typing conflict, but functionally correct
   });
 
   app.post(
     api.conversations.addMessage.path,
     requireAuth,
     async (req: AuthenticatedRequest, res) => {
+      const user = req.user;
+      const userId = user?.id;
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+
       const id = Number(req.params.id);
       const conversation = await storage.getConversation(id);
 
@@ -267,7 +272,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       const input = api.conversations.addMessage.input.parse(req.body);
       const userName = `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Anonymous";
 
-      const newMessage: any = {
+      const newMessage: Omit<Message, "replies"> & { replies: Message[] } = {
         id: randomUUID(),
         authorId: userId,
         authorName: userName,
@@ -283,7 +288,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
       if (input.parentMessageId) {
         // Helper to recursively find and reply
-        const addReply = (messages: any[]): boolean => {
+        const addReply = (messages: Message[]): boolean => {
           for (const msg of messages) {
             if (msg.id === input.parentMessageId) {
               if (!msg.replies) msg.replies = [];
@@ -308,41 +313,47 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       res.json(updated);
     }
   );
-  // @ts-expect-error - Express middleware typing conflict, but functionally correct
 
   // === SUPPORTERS ===
 
   app.get(api.supporters.list.path, requireAuth, async (req: AuthenticatedRequest, res) => {
-    const userId = req.user.id;
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: "Not authenticated" });
+
     const mySupporters = await storage.getSupportersForMember(userId);
     const supporting = await storage.getSupportingMembers(userId);
 
     // Enrich data with names if possible (in a real DB this is a join)
     // For now we'll fetch user details for each
-    const enrichSupporters = async (list: any[], idField: string) => {
+    const enrichSupporters = async (
+      list: Supporter[], 
+      idField: 'memberId' | 'supporterId',
+      nameField: 'memberName' | 'supporterName',
+      emailField: 'memberEmail' | 'supporterEmail'
+    ) => {
       return Promise.all(
         list.map(async (item) => {
           const user = await storage.getUser(item[idField]);
           return {
             ...item,
-            userName: user ? `${user.firstName} ${user.lastName}` : "Unknown",
-            userEmail: user?.email,
+            [nameField]: user ? `${user.firstName} ${user.lastName}` : "Unknown",
+            [emailField]: user?.email,
           };
         })
       );
     };
 
-    const mySupportersEnriched = await enrichSupporters(mySupporters, "supporterId");
-    const supportingEnriched = await enrichSupporters(supporting, "memberId");
+    const mySupportersEnriched = await enrichSupporters(mySupporters, "supporterId", "supporterName", "supporterEmail");
+    const supportingEnriched = await enrichSupporters(supporting, "memberId", "memberName", "memberEmail");
 
     res.json({
       mySupporters: mySupportersEnriched,
       supporting: supportingEnriched,
-      // @ts-expect-error - Express middleware typing conflict, but functionally correct
     });
   });
 
   app.post(api.supporters.invite.path, requireAuth, async (req: AuthenticatedRequest, res) => {
+    if (!req.user?.id) return res.status(401).json({ message: "Not authenticated" });
     const userId = req.user.id;
     const input = api.supporters.invite.input.parse(req.body);
 
@@ -361,7 +372,6 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       return res.status(400).json({ message: "Already invited or connected." });
     }
 
-    // @ts-expect-error - Express middleware typing conflict, but functionally correct
     const supporter = await storage.createSupporter(userId, invitedUser.id);
     res.status(201).json(supporter);
   });
@@ -370,6 +380,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     api.supporters.updateStatus.path,
     requireAuth,
     async (req: AuthenticatedRequest, res) => {
+      if (!req.user?.id) return res.status(401).json({ message: "Not authenticated" });
       const id = Number(req.params.id);
       const userId = req.user.id;
       const input = api.supporters.updateStatus.input.parse(req.body);
@@ -434,7 +445,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       const data = await fs.readFile(quotesPath, "utf-8");
       const quotes = JSON.parse(data);
       res.json(quotes);
-    } catch (err) {
+    } catch {
       res.status(500).json({ message: "Failed to load quotes" });
     }
   });
@@ -497,15 +508,23 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   // Middleware to verify member ownership before upload
   const verifyMemberOwnership: AuthMiddleware = async (req: AuthenticatedRequest, res, next) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ message: "Not authenticated" });
+      return;
+    }
+
     const id = Number(req.params.id);
     const conversation = await storage.getConversation(id);
 
     if (!conversation) {
-      return res.status(404).json({ message: "Conversation not found" });
+      res.status(404).json({ message: "Conversation not found" });
+      return;
     }
 
-    if (conversation.memberId !== req.user.id) {
-      return res.status(403).json({ message: "Only the member can upload images" });
+    if (conversation.memberId !== userId) {
+      res.status(403).json({ message: "Only the member can upload images" });
+      return;
     }
 
     next();
@@ -546,10 +565,9 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     }
   });
 
-  // === HEALTH CHECK ENDPOINT (T091a) ===
   // === TEST-ONLY ENDPOINTS ===
   // These endpoints are only available in test environment for verifying rate limiting
-  if (process.env.NODE_ENV === 'test') {
+  if (process.env.NODE_ENV === "test") {
     // Simple test endpoint to verify rate limiting without auth complexity
     app.post("/api/test/rate-limit", testLoginLimiter, (req, res) => {
       // Always return success - we just want to test the rate limiter
@@ -581,7 +599,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
           if (err) return res.status(500).json({ message: "Login failed after registration" });
           return res.status(201).json(sanitizeUser(user));
         });
-      } catch (err) {
+      } catch {
         res.status(500).json({ message: "Registration failed" });
       }
     });
@@ -597,7 +615,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       let storageReady = false;
       try {
         // Try to access storage - if it doesn't throw, storage is ready
-        await storage.getUser('health-check-test');
+        await storage.getUser("health-check-test");
         storageReady = true;
       } catch (error) {
         console.error("Storage health check failed:", error);
@@ -612,7 +630,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         storageReady,
         timestamp: new Date().toISOString(),
       });
-    } catch (error) {
+    } catch {
       res.status(503).json({
         status: "error",
         configValid: false,

@@ -138,7 +138,7 @@ export function CreateUpdateDialog() {
       setOpen(false);
       form.reset();
       setPendingImages([]);
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to publish update. Please try again.",
@@ -160,7 +160,7 @@ export function CreateUpdateDialog() {
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
           <DialogTitle>Share an Update</DialogTitle>
-          <DialogDescription>Let your supporters know how you're doing.</DialogDescription>
+          <DialogDescription>Let your supporters know how you&apos;re doing.</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>

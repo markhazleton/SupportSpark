@@ -1,23 +1,18 @@
 import { Navbar } from "@/components/navbar";
-import { useAuth } from "@/hooks/use-auth";
-import { useSupporters, useUpdateSupporterStatus } from "@/hooks/use-supporters";
+import { useSupporters } from "@/hooks/use-supporters";
 import { InviteSupporterDialog } from "@/components/invite-supporter-dialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check, X, User, Loader2, Clock } from "lucide-react";
+import { X, User, Loader2, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export default function Supporters() {
-  const { data: supporters, isLoading } = useSupporters();
-  const updateStatusMutation = useUpdateSupporterStatus();
-  const { user } = useAuth();
+  const { data: supportersData, isLoading } = useSupporters();
 
-  // "My Supporters" = people who support ME (where I am the member)
-  const mySupporters = supporters?.filter((s) => s.memberId === user?.id) || [];
-
-  // "People I Support" = people I support (where I am supporter)
-  const iSupport = supporters?.filter((s) => s.supporterId === user?.id) || [];
+  // API now returns {mySupporters, supporting}
+  const mySupporters = supportersData?.mySupporters || [];
+  const iSupport = supportersData?.supporting || [];
 
   const pendingInvites = mySupporters.filter((s) => s.status === "pending");
   const activeSupporters = mySupporters.filter((s) => s.status === "accepted");
@@ -124,7 +119,7 @@ export default function Supporters() {
                   ))
                 ) : (
                   <div className="text-center py-12 border-2 border-dashed rounded-xl text-muted-foreground">
-                    You haven't added any supporters yet. Invite friends and family to get started.
+                    You haven&apos;t added any supporters yet. Invite friends and family to get started.
                   </div>
                 )}
               </div>
@@ -154,7 +149,7 @@ export default function Supporters() {
                 ))
               ) : (
                 <div className="text-center py-12 border-2 border-dashed rounded-xl text-muted-foreground">
-                  You aren't following anyone yet.
+                  You aren&apos;t following anyone yet.
                 </div>
               )}
             </div>

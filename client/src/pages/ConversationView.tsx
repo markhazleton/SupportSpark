@@ -26,7 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { Message } from "@shared/schema";
 
 export default function ConversationView() {
-  const [match, params] = useRoute("/conversation/:id");
+  const [, params] = useRoute("/conversation/:id");
   const id = parseInt(params?.id || "0");
   const { user } = useAuth();
   const conversationQuery = useConversation(id);
@@ -118,7 +118,7 @@ export default function ConversationView() {
         title: "Images uploaded",
         description: `${data.images.length} image(s) ready to include in your message`,
       });
-    } catch (err) {
+    } catch {
       toast({
         title: "Upload failed",
         description: "Could not upload images. Please try again.",

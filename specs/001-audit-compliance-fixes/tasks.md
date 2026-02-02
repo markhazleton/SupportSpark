@@ -168,11 +168,11 @@
 ### Implementation for User Story 4 (SIMPLIFIED)
 
 - [x] T065 [P] [US4] [DEFERRED] Add ESLint ignore patterns to `.eslintrc.json` - exclude dist/, node_modules/, *.config.js - *Already in config\*
-- [x] T066 [P] [US4] [DEFERRED] Add Prettier ignore file `.prettierignore` excluding dist/, node_modules/, coverage/ - _Already exists_
-- [ ] T067 [US4] [MVP] Run initial `npm run lint` to generate baseline violation report and save output for review
-- [ ] T068 [US4] [MVP] Run `npm run lint:fix` to automatically fix all auto-fixable violations
-- [ ] T069 [US4] [DEFERRED] Manually review and fix remaining lint violations identified in T067 that couldn't be auto-fixed - _Accept <10 non-critical warnings (Principle X)_
-- [ ] T070 [US4] [MVP] Run `npm run format` to format all TypeScript, JSON, and Markdown files
+- [x] T066 [P] [US4] [DEFERRED] Add Prettier ignore file `.prettierignore` excluding dist/, node*modules/, coverage/ - \_Already exists*
+- [x] T067 [US4] [MVP] Run initial `npm run lint` to generate baseline violation report and save output for review
+- [x] T068 [US4] [MVP] Run `npm run lint:fix` to automatically fix all auto-fixable violations
+- [x] T069 [US4] [DEFERRED] Manually review and fix remaining lint violations identified in T067 that couldn't be auto-fixed - _Accept <10 non-critical warnings (Principle X)_
+- [x] T070 [US4] [MVP] Run `npm run format` to format all TypeScript, JSON, and Markdown files
 - [ ] T071 [US4] [DEFERRED] Verify `npm run lint` reports zero violations after fixes - _Not required for MVP_
 - [ ] T072 [US4] [DEFERRED] Verify `npm run format:check` reports all files properly formatted - _Not required for MVP_
 - [ ] T073 [P] [US4] [DEFERRED] (OPTIONAL) Install Husky for pre-commit hooks: `npm install -D husky lint-staged` - _Premature automation (Principle X)_
@@ -195,18 +195,18 @@
 
 - [x] T076 [P] [US5] [MVP] Update `script/build.ts` - add data directory creation logic after server build (mkdir dist/data/conversations)
 - [x] T077 [P] [US5] [MVP] Update `script/build.ts` - copy initial data files (users.json, supporters.json, quotes.json) to dist/data or create empty arrays
-- [x] T078 [P] [US5] [MVP] Update `script/build.ts` - initialize conversations metadata files (meta.json with lastConversationId: 0, index.json with [])  
+- [x] T078 [P] [US5] [MVP] Update `script/build.ts` - initialize conversations metadata files (meta.json with lastConversationId: 0, index.json with [])
 - [x] T079 [US5] [MVP] Update `script/build.ts` - add web.config validation logic checking for iisnode handler and correct entry point path
 - [x] T080 [US5] [MVP] Test build process - run `npm run build` and verify dist/ structure is complete
 
 ### Deployment Automation (MVP REQUIRED)
 
-- [ ] T081 [P] [US5] [MVP] Create `script/deploy-iis.ps1` PowerShell script - parameter validation for SitePath and AppPoolName
-- [ ] T082 [P] [US5] [MVP] Add data directory permission configuration to `script/deploy-iis.ps1` - Get-Acl, set IIS_IUSRS Modify permissions, Set-Acl
-- [ ] T083 [P] [US5] [MVP] Add web.config validation to `script/deploy-iis.ps1` - check file exists and contains iisnode configuration
-- [ ] T084 [P] [US5] [MVP] Add entry point validation to `script/deploy-iis.ps1` - verify index.cjs exists in site path
-- [ ] T085 [P] [US5] [MVP] Add conversations structure initialization to `script/deploy-iis.ps1` - create directories and initialize JSON files if missing
-- [ ] T086 [P] [US5] [MVP] Add deployment summary output to `script/deploy-iis.ps1` - success message with next steps (configure env vars, npm install, iisreset)
+- [x] T081 [P] [US5] [MVP] Create `script/deploy-iis.ps1` PowerShell script - parameter validation for SitePath and AppPoolName
+- [x] T082 [P] [US5] [MVP] Add data directory permission configuration to `script/deploy-iis.ps1` - Get-Acl, set IIS_IUSRS Modify permissions, Set-Acl
+- [x] T083 [P] [US5] [MVP] Add web.config validation to `script/deploy-iis.ps1` - check file exists and contains iisnode configuration
+- [x] T084 [P] [US5] [MVP] Add entry point validation to `script/deploy-iis.ps1` - verify index.cjs exists in site path
+- [x] T085 [P] [US5] [MVP] Add conversations structure initialization to `script/deploy-iis.ps1` - create directories and initialize JSON files if missing
+- [x] T086 [P] [US5] [MVP] Add deployment summary output to `script/deploy-iis.ps1` - success message with next steps (configure env vars, npm install, iisreset)
 
 ### CSRF Protection (NEW - Constitution IV Beta Requirement)
 
@@ -242,7 +242,7 @@
 - [ ] T093 [P] [DEFERRED] Update `README.md` with new npm scripts (lint, test, validate) and setup instructions referencing quickstart.md - _Update after deployment_
 - [ ] T094 [P] [DEFERRED] Add GitHub Copilot examples to `.github/copilot-instructions.md` showing bcrypt usage, rate limiting patterns, test examples - _Add patterns as they emerge_
 - [ ] T095 [P] [DEFERRED] Update `package.json` version and add keywords for security, testing, typescript - _Cosmetic, not blocking_
-- [ ] T096 [MVP] Run site audit validation - execute `/speckit.site-audit` and verify compliance score improved from 38% to 70%+ (MVP target)
+- [x] T096 [MVP] Run site audit validation - execute `/speckit.site-audit` and verify compliance score improved from 38% to 70%+ (MVP target)
 - [ ] T097 [DEFERRED] Review all acceptance scenarios from spec.md and manually verify each one passes - _Test critical auth path only_
 - [x] T098 [MVP] Perform manual security testing per quickstart.md validation checklist (password hash, rate limiting, env var validation, CSRF headers)
 - [ ] T099 [DEFERRED] Review all documentation for accuracy and completeness (spec.md, plan.md, research.md, data-model.md, quickstart.md, contracts/) - _Update post-deployment_

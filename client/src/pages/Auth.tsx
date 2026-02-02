@@ -28,7 +28,7 @@ export default function AuthPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-serif text-primary">SupportSpark</CardTitle>
-          <CardDescription>A safe space for sharing life's challenges together.</CardDescription>
+          <CardDescription>A safe space for sharing life&apos;s challenges together.</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="login">

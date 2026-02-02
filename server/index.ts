@@ -68,13 +68,14 @@ export function log(message: string, source = "express") {
     hour12: true,
   });
 
+  // eslint-disable-next-line no-console
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
+  let capturedJsonResponse: Record<string, unknown> | undefined = undefined;
 
   const originalResJson = res.json;
   res.json = function (bodyJson, ...args) {
@@ -100,10 +101,13 @@ app.use((req, res, next) => {
 (async () => {
   await registerRoutes(httpServer, app);
 
-  // @ts-expect-error - Error handler type conflict with Express overloads
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+  app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+    const status = (err && typeof err === 'object' && ('status' in err || 'statusCode' in err)) 
+      ? (err as { status?: number; statusCode?: number }).status || (err as { statusCode?: number }).statusCode || 500 
+      : 500;
+    const message = (err && typeof err === 'object' && 'message' in err && typeof (err as { message: unknown }).message === 'string') 
+      ? (err as { message: string }).message 
+      : "Internal Server Error";
 
     res.status(status).json({ message });
     throw err;

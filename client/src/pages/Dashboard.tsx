@@ -104,7 +104,7 @@ export default function Dashboard() {
             <div className="p-6 rounded-xl bg-white border shadow-sm">
               <h3 className="font-serif font-bold mb-4">Daily Reflection</h3>
               <p className="text-sm text-stone-600 italic leading-relaxed">
-                "We rise by lifting others, and in turn, we are lifted by those who care."
+                &quot;We rise by lifting others, and in turn, we are lifted by those who care.&quot;
               </p>
               <span className="block mt-2 text-xs text-stone-400">— Robert Ingersoll</span>
             </div>

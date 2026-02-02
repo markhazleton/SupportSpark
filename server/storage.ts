@@ -324,7 +324,7 @@ export class FileStorage implements IStorage {
       const content = await fs.readFile(filePath, "utf-8");
       return JSON.parse(content);
     } catch (error) {
-      if ((error as any).code === "ENOENT") {
+      if (error && typeof error === 'object' && 'code' in error && (error as { code: string }).code === "ENOENT") {
         await fs.writeFile(filePath, JSON.stringify(defaultValue, null, 2));
         return defaultValue;
       }
@@ -381,7 +381,7 @@ export class FileStorage implements IStorage {
       const content = await fs.readFile(filePath, "utf-8");
       return JSON.parse(content);
     } catch (error) {
-      if ((error as any).code === "ENOENT") {
+      if (error && typeof error === 'object' && 'code' in error && (error as { code: string }).code === "ENOENT") {
         return undefined;
       }
       throw error;

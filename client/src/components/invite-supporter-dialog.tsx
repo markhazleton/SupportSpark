@@ -70,7 +70,7 @@ export function InviteSupporterDialog() {
         <DialogHeader>
           <DialogTitle>Invite a Supporter</DialogTitle>
           <DialogDescription>
-            Enter the email address of someone you'd like to invite to your circle.
+            Enter the email address of someone you&apos;d like to invite to your circle.
           </DialogDescription>
         </DialogHeader>
 

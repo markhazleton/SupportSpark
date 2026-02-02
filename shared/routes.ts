@@ -1,7 +1,5 @@
 import { z } from "zod";
 import {
-  insertConversationSchema,
-  insertSupporterSchema,
   conversationSchema,
   supporterSchema,
   type Conversation,
@@ -30,17 +28,6 @@ export const errorSchemas = {
 // ============================================
 // RESPONSE SCHEMAS
 // ============================================
-// Schema for enriched supporter object in list response
-const enrichedSupporterSchema = supporterSchema.extend({
-  userName: z.string(),
-  userEmail: z.string().optional(),
-});
-
-// Schema for supportconversationSchema), // TYPE1 FIX: Use proper schema instead of any
-const supportersListSchema = z.object({
-  mySupporters: z.array(enrichedSupporterSchema),
-  supporting: z.array(enrichedSupporterSchema),
-});
 
 // ============================================
 // API CONTRACT
@@ -51,7 +38,7 @@ export const api = {
       method: "GET" as const,
       path: "/api/conversations",
       responses: {
-        200: z.array(z.custom<any>()), // Using custom because of the join/extra fields
+        200: z.array(conversationSchema),
       },
     },
     get: {
@@ -94,7 +81,16 @@ export const api = {
       method: "GET" as const,
       path: "/api/supporters",
       responses: {
-        200: z.array(z.custom<any>()),
+        200: z.object({
+          mySupporters: z.array(supporterSchema.extend({
+            supporterName: z.string().optional(),
+            supporterEmail: z.string().optional(),
+          })),
+          supporting: z.array(supporterSchema.extend({
+            memberName: z.string().optional(),
+            memberEmail: z.string().optional(),
+          })),
+        }),
       },
     },
     invite: {

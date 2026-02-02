@@ -245,7 +245,7 @@ export default function Demo() {
                 </div>
                 <CardDescription>
                   Experience the platform as {demoInfo?.supporter?.firstName || "James"}, a friend
-                  supporting {demoInfo?.patient?.firstName || "Sarah"}'s journey.
+                  supporting {demoInfo?.patient?.firstName || "Sarah"}&apos;s journey.
                 </CardDescription>
               </CardHeader>
               <CardContent>
