@@ -1,0 +1,17 @@
+{
+  "id": 6,
+  "memberId": "74766997-4017-420a-94f9-dfdbeb06c0e3",
+  "title": "Updated Title",
+  "data": {
+    "messages": [
+      {
+        "id": "msg-1",
+        "authorId": "74766997-4017-420a-94f9-dfdbeb06c0e3",
+        "authorName": "Test User",
+        "content": "Original",
+        "timestamp": "2026-02-03T14:07:57.430Z"
+      }
+    ]
+  },
+  "createdAt": "2026-02-03T14:07:57.430Z"
+}

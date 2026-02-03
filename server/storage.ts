@@ -333,26 +333,50 @@ export class FileStorage implements IStorage {
   }
 
   private async persistUsers() {
-    await fs.writeFile(this.usersFile, JSON.stringify(Array.from(this.users.values()), null, 2));
+    await this.atomicWrite(this.usersFile, Array.from(this.users.values()));
   }
 
   private async persistConversationIndex() {
-    await fs.writeFile(
+    await this.atomicWrite(
       this.conversationIndexFile,
-      JSON.stringify(Array.from(this.conversationIndex.values()), null, 2)
+      Array.from(this.conversationIndex.values())
     );
   }
 
   private async persistConversationMeta() {
     const meta: ConversationMeta = { lastConversationId: this.currentConversationId - 1 };
-    await fs.writeFile(this.conversationMetaFile, JSON.stringify(meta, null, 2));
+    await this.atomicWrite(this.conversationMetaFile, meta);
   }
 
   private async persistSupporters() {
-    await fs.writeFile(
+    await this.atomicWrite(
       this.supportersFile,
-      JSON.stringify(Array.from(this.supporters.values()), null, 2)
+      Array.from(this.supporters.values())
     );
+  }
+
+  /**
+   * Atomic write operation using temp file + rename strategy
+   * Prevents data corruption from concurrent writes (STORAGE1 fix)
+   */
+  private async atomicWrite(filePath: string, data: unknown): Promise<void> {
+    const tempPath = `${filePath}.tmp.${Date.now()}.${Math.random().toString(36).slice(2)}`;
+    
+    try {
+      // Write to temp file
+      await fs.writeFile(tempPath, JSON.stringify(data, null, 2), 'utf-8');
+      
+      // Atomic rename (POSIX guarantees atomicity)
+      await fs.rename(tempPath, filePath);
+    } catch (error) {
+      // Cleanup temp file on error
+      try {
+        await fs.unlink(tempPath);
+      } catch {
+        // Ignore cleanup errors
+      }
+      throw error;
+    }
   }
 
   private getConversationFilePath(memberId: string, conversationId: number): string {
@@ -367,9 +391,7 @@ export class FileStorage implements IStorage {
   private async writeConversationFile(conversation: Conversation) {
     await this.ensureMemberDir(conversation.memberId);
     const filePath = this.getConversationFilePath(conversation.memberId, conversation.id);
-    const tempPath = filePath + ".tmp";
-    await fs.writeFile(tempPath, JSON.stringify(conversation, null, 2));
-    await fs.rename(tempPath, filePath);
+    await this.atomicWrite(filePath, conversation);
   }
 
   private async readConversationFile(

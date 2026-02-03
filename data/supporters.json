@@ -5,5 +5,61 @@
     "supporterId": "demo-supporter-james",
     "status": "accepted",
     "createdAt": "2025-12-26T21:59:26.253Z"
+  },
+  {
+    "id": 2,
+    "memberId": "d1665640-0ff2-416a-9c7c-c08a1223bec9",
+    "supporterId": "e98a1e53-2010-41ec-95b9-6a0be2b1ebfa",
+    "status": "pending",
+    "createdAt": "2026-02-03T14:07:57.456Z"
+  },
+  {
+    "id": 3,
+    "memberId": "e8fa005b-4eed-4cc8-a2a2-b6a1b12461ea",
+    "supporterId": "7974fc7a-a7ff-416a-a81f-f62ecdda38d6",
+    "status": "pending",
+    "createdAt": "2026-02-03T14:07:57.464Z"
+  },
+  {
+    "id": 4,
+    "memberId": "e8fa005b-4eed-4cc8-a2a2-b6a1b12461ea",
+    "supporterId": "abc41847-8772-4b44-8b4f-37c9e2effe76",
+    "status": "pending",
+    "createdAt": "2026-02-03T14:07:57.465Z"
+  },
+  {
+    "id": 5,
+    "memberId": "84e39e99-5896-491a-ba80-a890d8197a33",
+    "supporterId": "5836d60c-ea59-4548-92da-04d9325c92a6",
+    "status": "pending",
+    "createdAt": "2026-02-03T14:07:57.473Z"
+  },
+  {
+    "id": 6,
+    "memberId": "1a63f826-990e-41ed-bc1d-90df1ab6b53b",
+    "supporterId": "5836d60c-ea59-4548-92da-04d9325c92a6",
+    "status": "pending",
+    "createdAt": "2026-02-03T14:07:57.474Z"
+  },
+  {
+    "id": 7,
+    "memberId": "25f049cb-5a44-47ac-b3ac-f8e402406f4f",
+    "supporterId": "4d5d567a-bfc8-42a3-8c89-9a4c0430667d",
+    "status": "accepted",
+    "createdAt": "2026-02-03T14:07:57.480Z"
+  },
+  {
+    "id": 8,
+    "memberId": "bd091509-4721-4a70-9c82-a3eec007e684",
+    "supporterId": "31e4aa69-c11b-45a0-bcf6-71e6a2025e9e",
+    "status": "rejected",
+    "createdAt": "2026-02-03T14:07:57.487Z"
+  },
+  {
+    "id": 9,
+    "memberId": "2b8686e0-1441-4f89-8ca3-fb40b4997fbc",
+    "supporterId": "a6eb800e-9f47-4c03-bd86-405bbb0eb78f",
+    "status": "pending",
+    "createdAt": "2026-02-03T14:07:57.494Z"
   }
 ]

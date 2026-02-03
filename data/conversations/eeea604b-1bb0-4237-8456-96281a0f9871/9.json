@@ -1,0 +1,17 @@
+{
+  "id": 9,
+  "memberId": "eeea604b-1bb0-4237-8456-96281a0f9871",
+  "title": "Conv 1",
+  "data": {
+    "messages": [
+      {
+        "id": "msg-1",
+        "authorId": "eeea604b-1bb0-4237-8456-96281a0f9871",
+        "authorName": "User",
+        "content": "First",
+        "timestamp": "2026-02-03T14:07:57.507Z"
+      }
+    ]
+  },
+  "createdAt": "2026-02-03T14:07:57.507Z"
+}
