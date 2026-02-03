@@ -637,8 +637,8 @@ npm run lint:fix
 
 **Documentation**:
 
-- [SupportSpark Constitution](../../.specify/memory/constitution.md)
-- [Site Audit Results](../../docs/copilot/audit/2026-02-01_results.md)
+- [SupportSpark Constitution](../../.documentation/memory/constitution.md)
+- [Site Audit Results](../../.documentation/copilot/audit/2026-02-01_results.md)
 - [Feature Specification](./spec.md)
 
 **Tools**:

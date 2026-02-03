@@ -34,18 +34,18 @@ Act as a skeptical technical expert identifying risks, architectural flaws, impl
 
 **Critical Mindset**: Assume the team has **limited experience** with the proposed stack, **optimistic estimates**, and **incomplete understanding** of edge cases. Your job is to identify where the plan will fail in production.
 
-**Constitution Authority**: The project constitution (`.specify/memory/constitution.md`) is **non-negotiable**. Constitution violations are automatically SHOWSTOPPER severity.
+**Constitution Authority**: The project constitution (`/.documentation.documentation/memory/constitution.md`) is **non-negotiable**. Constitution violations are automatically SHOWSTOPPER severity.
 
 ## Execution Steps
 
 ### 1. Initialize Analysis Context
 
-Run `.specify/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks` once from repo root and parse JSON for FEATURE_DIR and AVAILABLE_DOCS. Derive absolute paths:
+Run `.documentation/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks` once from repo root and parse JSON for FEATURE_DIR and AVAILABLE_DOCS. Derive absolute paths:
 
 - SPEC = FEATURE_DIR/spec.md
 - PLAN = FEATURE_DIR/plan.md
 - TASKS = FEATURE_DIR/tasks.md
-- CONSTITUTION = .specify/memory/constitution.md
+- CONSTITUTION = /.documentation.documentation/memory/constitution.md
 
 Abort with an error message if any required file is missing (instruct the user to run the appropriate prerequisite command).
 
@@ -301,23 +301,22 @@ Output Markdown report with this structure:
 **Detected Stack:** [Language] + [Framework] + [Database]
 
 ### Executive Summary
-
 [2-3 sentence verdict on whether this should proceed to implementation]
 
 ### Showstopper Risks (Must Fix Before Implementation)
 
-| ID  | Category | Location | Risk Description | Likely Impact | Mitigation Required |
-| --- | -------- | -------- | ---------------- | ------------- | ------------------- |
+| ID | Category | Location | Risk Description | Likely Impact | Mitigation Required |
+|----|----------|----------|------------------|---------------|---------------------|
 
 ### Critical Risks (High Probability of Costly Issues)
 
-| ID  | Category | Location | Risk Description | Likely Impact | Recommended Action |
-| --- | -------- | -------- | ---------------- | ------------- | ------------------ |
+| ID | Category | Location | Risk Description | Likely Impact | Recommended Action |
+|----|----------|----------|------------------|---------------|--------------------|
 
 ### High-Priority Concerns
 
-| ID  | Category | Location | Issue | Impact | Suggestion |
-| --- | -------- | -------- | ----- | ------ | ---------- |
+| ID | Category | Location | Issue | Impact | Suggestion |
+|----|----------|----------|-------|--------|------------|
 
 ### Framework-Specific Red Flags
 
@@ -347,7 +346,7 @@ Output Markdown report with this structure:
 ### Dependencies Risk Assessment
 
 | Dependency | Concern | Alternative to Consider |
-| ---------- | ------- | ----------------------- |
+|------------|---------|-------------------------|
 
 ### Estimated Technical Debt at Launch
 
@@ -371,7 +370,7 @@ End report with:
 
 **GO/NO-GO RECOMMENDATION:**
 
-```
+```text
 [ ] STOP - Showstoppers present, cannot proceed to implementation
 [ ] CONDITIONAL - Fix critical risks first, then reassess
 [ ] PROCEED WITH CAUTION - Document acknowledged risks, add mitigation tasks
@@ -381,7 +380,7 @@ End report with:
 
 1. [Specific fix for showstopper #1]
 2. [Specific fix for showstopper #2]
-   ...
+...
 
 **Recommended Risk Mitigations:**
 
@@ -446,14 +445,14 @@ End report with:
 
 This command produces a **"pre-mortem"** analysis - imagining the project has failed in production and explaining why.
 
-| Aspect           | /speckit.analyze           | /speckit.critic          |
-| ---------------- | -------------------------- | ------------------------ |
-| **Purpose**      | Consistency checking       | Risk identification      |
-| **Mindset**      | Neutral validator          | Adversarial skeptic      |
-| **Focus**        | Alignment across artifacts | Production failure modes |
-| **Severity**     | Quality issues             | Business impact          |
-| **Output**       | Remediation suggestions    | Go/No-Go recommendation  |
-| **Constitution** | CRITICAL violations        | SHOWSTOPPER violations   |
+| Aspect | /speckit.analyze | /speckit.critic |
+|--------|------------------|-----------------|
+| **Purpose** | Consistency checking | Risk identification |
+| **Mindset** | Neutral validator | Adversarial skeptic |
+| **Focus** | Alignment across artifacts | Production failure modes |
+| **Severity** | Quality issues | Business impact |
+| **Output** | Remediation suggestions | Go/No-Go recommendation |
+| **Constitution** | CRITICAL violations | SHOWSTOPPER violations |
 
 ## Context
 

@@ -218,9 +218,9 @@
 
 ### Documentation Updates (DEFERRED)
 
-- [ ] T087 [P] [US5] [DEFERRED] Update `docs/domain/deployment-iis.md` - add section on environment variable configuration (IIS Configuration Editor steps) - _Document after successful deployment_
-- [ ] T088 [P] [US5] [DEFERRED] Update `docs/domain/deployment-iis.md` - add section on running deploy-iis.ps1 script with examples
-- [ ] T089 [P] [US5] [DEFERRED] Update `docs/domain/deployment-iis.md` - add troubleshooting section for common IIS deployment issues
+- [ ] T087 [P] [US5] [DEFERRED] Update `.documentation/domain/deployment-iis.md` - add section on environment variable configuration (IIS Configuration Editor steps) - _Document after successful deployment_
+- [ ] T088 [P] [US5] [DEFERRED] Update `.documentation/domain/deployment-iis.md` - add section on running deploy-iis.ps1 script with examples
+- [ ] T089 [P] [US5] [DEFERRED] Update `.documentation/domain/deployment-iis.md` - add troubleshooting section for common IIS deployment issues
 
 ### Deployment Validation (DEFERRED - Production Environment Access Required)
 

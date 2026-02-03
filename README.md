@@ -128,7 +128,7 @@ This script will:
 
 #### Manual Deployment
 
-See the comprehensive [IIS Deployment Guide](docs/domain/deployment-iis.md) for:
+See the comprehensive [IIS Deployment Guide](.documentation/domain/deployment-iis.md) for:
 
 - Prerequisites (IIS, iisnode, URL Rewrite)
 - Step-by-step deployment instructions
@@ -175,11 +175,11 @@ SupportSpark/
 │   ├── supporters.json
 │   └── conversations/
 │
-├── docs/                   # Documentation
+├── .documentation/         # Documentation
 │   ├── domain/             # Architectural docs
 │   └── copilot/            # Session-based docs
 │
-└── .specify/memory/
+└── .documentation/memory/
     └── constitution.md     # Project governance
 ```
 
@@ -238,7 +238,7 @@ This project follows strict development principles defined in the [Constitution]
 3. Implement handler in `server/routes.ts`
 4. Create React component using shadcn/ui
 5. Write tests
-6. Document in appropriate `/docs` folder
+6. Document in appropriate `/.documentation` folder
 
 ---
 
@@ -246,10 +246,10 @@ This project follows strict development principles defined in the [Constitution]
 
 | Document                                                | Purpose                           |
 | ------------------------------------------------------- | --------------------------------- |
-| [Constitution](.specify/memory/constitution.md)         | Project governance and principles |
-| [Architecture](docs/domain/architecture.md)             | System design and data flow       |
-| [Patterns](docs/domain/development-patterns.md)         | Common development patterns       |
-| [IIS Deployment](docs/domain/deployment-iis.md)         | Windows 11 + IIS deployment guide |
+| [Constitution](.documentation/memory/constitution.md)         | Project governance and principles |
+| [Architecture](.documentation/domain/architecture.md)             | System design and data flow       |
+| [Patterns](.documentation/domain/development-patterns.md)         | Common development patterns       |
+| [IIS Deployment](.documentation/domain/deployment-iis.md)         | Windows 11 + IIS deployment guide |
 | [Copilot Instructions](.github/copilot-instructions.md) | AI assistant context              |
 
 ---

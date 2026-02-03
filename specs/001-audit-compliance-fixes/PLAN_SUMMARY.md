@@ -316,10 +316,10 @@ npm run build       # Production build
 
 ## References
 
-- **Site Audit**: [docs/copilot/audit/2026-02-01_results.md](../../docs/copilot/audit/2026-02-01_results.md)
-- **Constitution**: [.specify/memory/constitution.md](../../.specify/memory/constitution.md)
-- **Architecture**: [docs/domain/architecture.md](../../docs/domain/architecture.md)
-- **Deployment Guide**: [docs/domain/deployment-iis.md](../../docs/domain/deployment-iis.md)
+- **Site Audit**: [.documentation/copilot/audit/2026-02-01_results.md](../../.documentation/copilot/audit/2026-02-01_results.md)
+- **Constitution**: [.documentation/memory/constitution.md](../../.documentation/memory/constitution.md)
+- **Architecture**: [.documentation/domain/architecture.md](../../.documentation/domain/architecture.md)
+- **Deployment Guide**: [.documentation/domain/deployment-iis.md](../../.documentation/domain/deployment-iis.md)
 
 ---
 

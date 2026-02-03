@@ -3,7 +3,7 @@ description: Perform constitution-aware pull request review with actionable feed
 handoffs:
   - label: View Review History
     agent: speckit.pr-review
-    prompt: Show me previous PR reviews in specs/pr-review/
+    prompt: Show me previous PR reviews in .documentation/specs/pr-review/
 ---
 
 ## User Input
@@ -16,13 +16,13 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Overview
 
-This command reviews GitHub Pull Requests against the project constitution. It works for **any PR in the repository** regardless of feature branch or target branch. Reviews are stored in `/specs/pr-review/pr-{id}.md` for historical reference.
+This command reviews GitHub Pull Requests against the project constitution. It works for **any PR in the repository** regardless of feature branch or target branch. Reviews are stored in `/.documentation/specs/pr-review/pr-{id}.md` for historical reference.
 
 **IMPORTANT**: This command **only provides suggestions** - it does not make any code changes.
 
 ## Prerequisites
 
-- Project constitution at `.specify/memory/constitution.md` (REQUIRED)
+- Project constitution at `/.documentation.documentation/memory/constitution.md` (REQUIRED)
 - GitHub repository with PR context
 - GitHub CLI (`gh`) installed and authenticated (required)
 
@@ -30,7 +30,7 @@ This command reviews GitHub Pull Requests against the project constitution. It w
 
 ### 1. Initialize Review Context
 
-Run `.specify/scripts/powershell/get-pr-context.ps1 $ARGUMENTS -Json` to extract PR context and parse JSON output for:
+Run `.documentation/scripts/powershell/get-pr-context.ps1 $ARGUMENTS -Json` to extract PR context and parse JSON output for:
 
 - `PR_CONTEXT`: PR metadata (number, title, branches, commit SHA, files, diff)
 - `CONSTITUTION_PATH`: Path to constitution file
@@ -56,7 +56,7 @@ For single quotes in args like "I'm reviewing", use escape syntax: e.g 'I'\''m r
 
 ### 2. Load Constitution
 
-Read and parse `.specify/memory/constitution.md`:
+Read and parse `/.documentation.documentation/memory/constitution.md`:
 
 - Extract all core principles with their names
 - Identify MUST requirements (non-negotiable/mandatory)
@@ -192,8 +192,9 @@ If constitution requires documentation:
 Try to determine if this PR maps to a feature spec:
 
 - Extract feature number from branch name pattern (e.g., `001-feature-name`)
-- Check if `/specs/{feature}/spec.md` exists
+- Check if `/.documentation/specs/{feature}/spec.md` exists
 - If spec exists, optionally cross-reference:
+
   - Does implementation match spec requirements?
   - Are acceptance criteria being addressed?
   - Is scope appropriate for the spec?
@@ -202,7 +203,7 @@ Try to determine if this PR maps to a feature spec:
 
 ### 7. Generate Review Report
 
-Create comprehensive report at `/specs/pr-review/pr-{PR_NUMBER}.md`:
+Create comprehensive report at `/.documentation/specs/pr-review/pr-{PR_NUMBER}.md`:
 
 #### Handle Existing Reviews
 
@@ -224,14 +225,14 @@ If file already exists:
 
 Use this exact format:
 
-````markdown
+```markdown
 # Pull Request Review: [PR_TITLE]
 
 ## Review Metadata
 
 - **PR Number**: #[NUMBER]
 - **Source Branch**: [HEAD_BRANCH]
-- **Target Branch**: [BASE_BRANCH]
+- **Target Branch**: [BASE_BRANCH]  
 - **Review Date**: [YYYY-MM-DD HH:MM:SS UTC]
 - **Last Updated**: [YYYY-MM-DD HH:MM:SS UTC]
 - **Reviewed Commit**: [COMMIT_SHA]
@@ -263,42 +264,42 @@ Use this exact format:
 
 [If none, write "None found."]
 
-| ID  | Principle | File:Line        | Issue                                | Recommendation           |
-| --- | --------- | ---------------- | ------------------------------------ | ------------------------ |
-| C1  | [Name]    | path/file.ext:45 | [Specific violation with code quote] | [Specific action to fix] |
+| ID | Principle | File:Line | Issue | Recommendation |
+|----|-----------|-----------|-------|----------------|
+| C1 | [Name] | path/file.ext:45 | [Specific violation with code quote] | [Specific action to fix] |
 
 ## High Priority Issues
 
 [If none, write "None found."]
 
-| ID  | Principle | File:Line        | Issue               | Recommendation  |
-| --- | --------- | ---------------- | ------------------- | --------------- |
-| H1  | [Name]    | path/file.ext:67 | [Issue description] | [Action to fix] |
+| ID | Principle | File:Line | Issue | Recommendation |
+|----|-----------|-----------|-------|----------------|
+| H1 | [Name] | path/file.ext:67 | [Issue description] | [Action to fix] |
 
 ## Medium Priority Suggestions
 
 [If none, write "None found."]
 
-| ID  | Principle | File:Line        | Issue        | Recommendation |
-| --- | --------- | ---------------- | ------------ | -------------- |
-| M1  | [Name]    | path/file.ext:89 | [Suggestion] | [Improvement]  |
+| ID | Principle | File:Line | Issue | Recommendation |
+|----|-----------|-----------|-------|----------------|
+| M1 | [Name] | path/file.ext:89 | [Suggestion] | [Improvement] |
 
 ## Low Priority Improvements
 
 [If none, write "None found."]
 
-| ID  | Principle | File:Line         | Issue              | Recommendation         |
-| --- | --------- | ----------------- | ------------------ | ---------------------- |
-| L1  | [Name]    | path/file.ext:123 | [Minor suggestion] | [Optional improvement] |
+| ID | Principle | File:Line | Issue | Recommendation |
+|----|-----------|-----------|-------|----------------|
+| L1 | [Name] | path/file.ext:123 | [Minor suggestion] | [Optional improvement] |
 
 ## Constitution Alignment Details
 
-| Principle     | Status     | Evidence       | Notes                        |
-| ------------- | ---------- | -------------- | ---------------------------- |
-| [Principle 1] | ✅ Pass    | Files comply   | [Brief explanation]          |
-| [Principle 2] | ❌ Fail    | src/api.ts:45  | [Why it fails]               |
+| Principle | Status | Evidence | Notes |
+|-----------|--------|----------|-------|
+| [Principle 1] | ✅ Pass | Files comply | [Brief explanation] |
+| [Principle 2] | ❌ Fail | src/api.ts:45 | [Why it fails] |
 | [Principle 3] | ⚠️ Partial | Multiple files | [Partial compliance details] |
-| [Principle 4] | ⏭️ N/A     | -              | Not applicable to this PR    |
+| [Principle 4] | ⏭️ N/A | - | Not applicable to this PR |
 
 ## Security Checklist
 
@@ -314,12 +315,10 @@ Use this exact format:
 ## Code Quality Assessment
 
 ### Strengths
-
 - [Positive aspect 1]
 - [Positive aspect 2]
 
 ### Areas for Improvement
-
 - [Specific improvement 1]
 - [Specific improvement 2]
 
@@ -337,11 +336,11 @@ Use this exact format:
 
 ## Changed Files Summary
 
-| File              | Changes | Type     | Constitution Issues |
-| ----------------- | ------- | -------- | ------------------- |
-| src/api.ts        | +45 -12 | Modified | 2 issues (C1, H1)   |
-| tests/api.test.ts | +120 -0 | Added    | None                |
-| README.md         | +8 -2   | Modified | None                |
+| File | Changes | Type | Constitution Issues |
+|------|---------|------|---------------------|
+| src/api.ts | +45 -12 | Modified | 2 issues (C1, H1) |
+| tests/api.test.ts | +120 -0 | Added | None |
+| README.md | +8 -2 | Modified | None |
 
 ## Detailed Findings by File
 
@@ -350,12 +349,10 @@ Use this exact format:
 ### src/api.ts
 
 **Lines 45-67**: [Issue description]
-
 ```javascript
 // Quote the problematic code here
 const apiKey = "hardcoded-secret-key";
 ```
-````
 
 - **Principle Violated**: Security - No hardcoded credentials
 - **Severity**: CRITICAL
@@ -400,9 +397,9 @@ No immediate blocking actions required.
 
 ---
 
-_Review generated by speckit.pr-review v1.0_  
-_Constitution-driven code review for [PROJECT_NAME]_  
-_To update this review after changes: `/speckit.pr-review #[PR_NUMBER]`_
+*Review generated by speckit.pr-review v1.0*  
+*Constitution-driven code review for [PROJECT_NAME]*  
+*To update this review after changes: `/speckit.pr-review #[PR_NUMBER]`*
 
 ---
 
@@ -422,18 +419,22 @@ _To update this review after changes: `/speckit.pr-review #[PR_NUMBER]`_
 
 [Summary of first review]
 
+```text
+End of report template
 ```
 
 ### 8. Create Review Directory
 
-Ensure `/specs/pr-review/` directory exists:
+Ensure `/.documentation/specs/pr-review/` directory exists:
+
 - Check if directory exists
-- Create it if it doesn't (including parent `/specs/` if needed)
+- Create it if it doesn't (including parent `/.documentation/specs/` if needed)
 - Set appropriate permissions
 
 ### 9. Write Review File
 
-Write the generated report to `/specs/pr-review/pr-{PR_NUMBER}.md`:
+Write the generated report to `/.documentation/specs/pr-review/pr-{PR_NUMBER}.md`:
+
 - Use UTF-8 encoding
 - Ensure proper line endings
 - Make file readable
@@ -442,16 +443,14 @@ Write the generated report to `/specs/pr-review/pr-{PR_NUMBER}.md`:
 
 Display concise summary to the user:
 
-```
-
+```text
 ✅ PR Review Complete!
 
-📄 Review saved: /specs/pr-review/pr-{NUMBER}.md
+📄 Review saved: /.documentation/specs/pr-review/pr-{NUMBER}.md
 🔍 Reviewed commit: {COMMIT_SHA}
 📅 Review date: {DATETIME}
 
 Executive Summary:
-
 - [Status emoji] {COUNT} Critical issues
 - [Status emoji] {COUNT} High priority
 - [Status emoji] {COUNT} Medium priority
@@ -461,12 +460,10 @@ Recommendation: {APPROVE/REQUEST CHANGES/REJECT}
 
 {If critical issues:}
 Critical issues must be resolved before merge:
-
 - C1: {Brief description}
 - C2: {Brief description}
 
-View full review: /specs/pr-review/pr-{NUMBER}.md
-
+View full review: /.documentation/specs/pr-review/pr-{NUMBER}.md
 ```
 
 ## Guidelines
@@ -476,6 +473,7 @@ View full review: /specs/pr-review/pr-{NUMBER}.md
 The constitution is **non-negotiable** and the **authoritative source** for all review criteria.
 
 All findings must:
+
 - Reference the specific constitution section (by principle name)
 - Quote the exact constitution language (MUST/SHOULD/etc.)
 - Explain how the code violates or complies with the principle
@@ -484,12 +482,13 @@ All findings must:
 ### Evidence-Based Feedback
 
 Every issue must include:
+
 - **Specific location**: File path and line number (not "multiple files" or "various places")
 - **Code quote**: Actual code snippet showing the issue (2-5 lines of context)
 - **Constitution reference**: Which principle is violated and why
 - **Actionable recommendation**: Specific fix with example if possible
 
-**Bad example**: "Code has issues with naming"
+**Bad example**: "Code has issues with naming"  
 **Good example**: "src/api.ts:45 - Variable `x` violates naming principle 'Use descriptive names'. Rename to `userApiKey`."
 
 ### Review Objectivity
@@ -502,6 +501,7 @@ Every issue must include:
 ### Severity Guidelines
 
 Use these criteria for classification:
+
 - **CRITICAL**: Violates MUST principle, blocks functionality, security risk, breaks production
 - **HIGH**: Violates SHOULD principle significantly, quality concerns, technical debt
 - **MEDIUM**: Partial compliance, improvement opportunity, maintainability concern
@@ -510,8 +510,8 @@ Use these criteria for classification:
 ### Graceful Error Handling
 
 **If constitution missing**:
-```
 
+```text
 ❌ Cannot perform PR review - Constitution required
 
 The project constitution defines the review criteria. Create one first:
@@ -520,47 +520,43 @@ The project constitution defines the review criteria. Create one first:
 2. Define your project's core principles
 3. Then retry: /speckit.pr-review #{PR_NUMBER}
 
-Learn more: https://github.com/MarkHazleton/spec-kit
-
+Learn more: <https://github.com/MarkHazleton/spec-kit>
 ```
 
 **If PR not found**:
-```
 
+```text
 ❌ PR #{NUMBER} not found
 
 Troubleshooting:
-
 1. Check the PR number is correct
 2. Verify GitHub CLI authentication: gh auth status
 3. Confirm you have repository access
 
 If issue persists, provide PR number explicitly:
 /speckit.pr-review #123
-
 ```
 
 **If GitHub CLI not installed**:
-```
 
+```text
 ❌ GitHub CLI (gh) required but not installed
 
 Install GitHub CLI:
-
 - macOS: brew install gh
 - Windows: winget install --id GitHub.cli
-- Linux: https://github.com/cli/cli#installation
+- Linux: <https://github.com/cli/cli#installation>
 
 After installation, authenticate:
 gh auth login
 
 Then retry: /speckit.pr-review
-
 ```
 
 ### Positive Feedback
 
 If PR is excellent:
+
 - Acknowledge good practices
 - Call out strengths specifically
 - Provide enthusiastic approval
@@ -569,6 +565,7 @@ If PR is excellent:
 ### Review Updates
 
 When re-reviewing an updated PR:
+
 - Explicitly note what changed since last review
 - Acknowledge fixed issues: "✅ Fixed: C1 (tests added)"
 - Note new issues introduced: "⚠️ New: H3 (missing validation)"
@@ -577,4 +574,3 @@ When re-reviewing an updated PR:
 ## Context
 
 $ARGUMENTS
-```
