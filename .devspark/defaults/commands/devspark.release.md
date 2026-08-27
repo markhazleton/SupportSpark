@@ -1,15 +1,12 @@
 ---
-description: Archive development artifacts at release, distill key decisions into permanent documentation, and prepare for next development cycle
+description: Seal a release — version-stamp, generate CHANGELOG and release notes, create ADRs, and archive completed specs into the releases directory
 handoffs:
-  - label: View Release History
-    agent: devspark.release
-    prompt: Show me previous releases in .documentation/releases/
+  - label: Run Post-Release Harvest
+    agent: devspark.harvest
+    prompt: Clean up stale docs, rewrite spec-linked comments, and archive to .archive/ after the release is complete
   - label: Run Final Audit
     agent: devspark.site-audit
     prompt: Run a final site audit before release
-scripts:
-  sh: .devspark/scripts/bash/release-context.sh $ARGUMENTS --json
-  ps: .devspark/scripts/powershell/release-context.ps1 $ARGUMENTS -Json
 ---
 
 ## User Input
@@ -22,13 +19,15 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Overview
 
-This command performs release documentation by:
+This command seals a release by:
 
-1. Archiving completed development artifacts (specs, plans, tasks)
-2. Distilling key architectural decisions into ADRs (Architecture Decision Records)
-3. Generating CHANGELOG entries
-4. Creating release notes
-5. Preparing a clean slate for the next development cycle
+1. Archiving completed specs and quickfixes into `/.documentation/releases/v{VERSION}/`
+2. Distilling key architectural decisions into ADRs under `/.documentation/decisions/`
+3. Generating a versioned CHANGELOG entry and release notes
+4. Bumping the version in source files and public-facing docs
+5. Leaving a clean `/.documentation/specs/` ready for the next cycle
+
+**Scope boundary**: `/devspark.release` archives into `/.documentation/releases/` only. It does **not** move files to `/.archive/`, rewrite code comments, or clean up stale docs — those are `/devspark.harvest` responsibilities. Run harvest after release to complete the cleanup cycle.
 
 **IMPORTANT**: This command modifies documentation files. Use `--dry-run` to preview changes before committing.
 
@@ -45,6 +44,7 @@ Parse `$ARGUMENTS` for options:
 | Option | Description |
 |--------|-------------|
 | `{version}` | Explicit version (e.g., `2.0.0` or `v2.0.0`) |
+| `--from <date>` | Override the release window start date (`YYYY-MM-DD`) |
 | `--dry-run` | Preview changes without writing files |
 
 ## Outline
@@ -53,7 +53,9 @@ Parse `$ARGUMENTS` for options:
 
 ### 1. Initialize Release Context
 
-Run `{SCRIPT}` to gather context and parse JSON output for:
+> **Script Resolution**: Before running `.devspark/scripts/powershell/release-context.ps1 $ARGUMENTS -Json`, apply the 2-tier override check — if `.documentation/scripts/powershell/<filename>` (PowerShell) or `.documentation/scripts/bash/<filename>` (Bash) exists on disk, run that file instead, preserving all arguments. Team overrides in `.documentation/scripts/` always take priority over `.devspark/scripts/`.
+
+Run `.devspark/scripts/powershell/release-context.ps1 $ARGUMENTS -Json` to gather context and parse JSON output for:
 
 - `REPO_ROOT`: Repository root path
 - `SPECS_DIR`: Path to specs directory
@@ -64,16 +66,30 @@ Run `{SCRIPT}` to gather context and parse JSON output for:
 - `VERSION_SOURCE`: Where version was read from
 - `NEXT_VERSION`: Proposed next version
 - `VERSION_BUMP`: Type of bump (major/minor/patch)
-- `COMPLETED_SPECS`: List of specs ready for archival
+- `RELEASE_FROM`: Start date for the release window
+- `RELEASE_TO`: End date for the release window
+- `COMPLETED_SPECS`: List of specs ready for archival (includes `STATUS_INCONSISTENT_SPECS` — must reconcile status field before archiving)
+- `STATUS_INCONSISTENT_SPECS`: Specs where all tasks are checked but `**Status**:` in spec.md is not `Complete` — Step 3A must update these before archiving
 - `PENDING_SPECS`: List of incomplete specs
 - `QUICKFIXES`: List of quickfixes since last release
 - `LAST_TAG`: Most recent git tag
 - `LAST_RELEASE_DATE`: Date of last release
 - `COMMITS_SINCE_RELEASE`: Commit count since last release
+- `BASE_SHA`: Resolved full commit SHA of `LAST_TAG` (empty if no prior tag)
+- `HEAD_SHA`: Resolved full commit SHA of `HEAD` at release time
 - `CONTRIBUTORS`: List of contributors
+- `MERGED_PR_NUMBERS`: Pull request numbers detected in the release window
+- `MERGED_PR_COUNT`: Number of merged PRs detected in the release window
+- `PR_REVIEW_SUMMARY`: Aggregated PR review stats (`files_changed`, `tests_added`, `breaking_changes`, `resolved_high_findings`)
 - `DRY_RUN`: Whether this is a preview run
 - `DEVSPARK_VERSION_PATH`: Path to `.devspark/VERSION`
 - `INSTALLED_VERSION`: Version recorded in the stamp file (blank if absent)
+
+The release context should be built from the full release window, not only the specs archived during the current command run. Prefer the following sources in order:
+
+1. Active `.documentation/` artifacts
+2. `.archive/<date>/` batches whose dates fall within `{RELEASE_FROM}..{RELEASE_TO}`
+3. Git history and PR review metadata within the same window
 
 ### 2. Version Confirmation
 
@@ -84,6 +100,7 @@ Display proposed version:
 
 - **Current Version**: {CURRENT_VERSION} (from {VERSION_SOURCE})
 - **Proposed Version**: {NEXT_VERSION} ({VERSION_BUMP} bump)
+- **Release Window**: {RELEASE_FROM} → {RELEASE_TO}
 - **Reason**: {N} completed specs, {M} quickfixes
 
 Confirm this version or provide explicit version:
@@ -108,9 +125,9 @@ For each spec in COMPLETED_SPECS:
 - Verify the `**Status**:` field in `spec.md` is `Complete` (not `Draft` or `In Progress`)
 - Verify all tasks are checked in `tasks.md`
 - Confirm associated PR merged (if trackable)
-- If spec status is NOT `Complete` but tasks are all checked, **flag as inconsistency** — update spec status to `Complete` before archiving
-- If spec status is `Draft` or `In Progress` and tasks are incomplete, move to Pending Specs (section B)
-- Mark for archival only when both status is `Complete` AND all tasks are checked
+- If tasks are all checked but `**Status**:` is not `Complete`: update the status field to `Complete` now, then include in archival. Do not archive without reconciling the status field first.
+- If `**Status**:` is `Draft` or `In Progress` and tasks are incomplete: move to Pending Specs (section B)
+- Mark for archival only when both `**Status**: Complete` AND all tasks are checked
 
 #### B. Pending Specs (Keep Active)
 
@@ -252,9 +269,12 @@ Create `/.documentation/releases/v{NEXT_VERSION}/release-notes.md`:
 
 - **Version**: v{NEXT_VERSION}
 - **Release Date**: {RELEASE_DATE}
+- **Release Window**: {RELEASE_FROM} → {RELEASE_TO}
 - **Previous Version**: {LAST_TAG}
+- **Commit Range**: `{BASE_SHA}..{HEAD_SHA}` (`{LAST_TAG}..HEAD`)
 - **Commits**: {COMMITS_SINCE_RELEASE}
 - **Contributors**: {CONTRIBUTORS count}
+- **Merged PRs**: {MERGED_PR_COUNT}
 
 ## Highlights
 
@@ -310,6 +330,10 @@ Create `/.documentation/releases/v{NEXT_VERSION}/release-notes.md`:
 |--------|-------|
 | Features Delivered | {completed specs count} |
 | Bugs Fixed | {quickfixes count} |
+| PRs Merged | {MERGED_PR_COUNT} |
+| Files Changed | {PR_REVIEW_SUMMARY.files_changed} |
+| Tests Added | {PR_REVIEW_SUMMARY.tests_added} |
+| Breaking Changes | {PR_REVIEW_SUMMARY.breaking_changes} |
 | ADRs Created | {ADR count} |
 | Contributors | {contributors count} |
 | Commits | {commits count} |
@@ -327,12 +351,31 @@ Create `/.documentation/releases/v{NEXT_VERSION}/metrics.json`:
 {
   "version": "{NEXT_VERSION}",
   "releaseDate": "{RELEASE_DATE}",
+  "release": {
+    "from": "{RELEASE_FROM}",
+    "to": "{RELEASE_TO}"
+  },
+  "commitRange": {
+    "baseRef": "{LAST_TAG}",
+    "baseSha": "{BASE_SHA}",
+    "headRef": "HEAD",
+    "headSha": "{HEAD_SHA}",
+    "rangeSpec": "{LAST_TAG}..HEAD"
+  },
   "previousVersion": "{LAST_TAG}",
   "features": {
     "completed": {count},
     "deferred": {count}
   },
   "quickfixes": {count},
+  "pullRequests": {
+    "merged": {MERGED_PR_COUNT},
+    "numbers": [{MERGED_PR_NUMBERS}],
+    "filesChanged": {PR_REVIEW_SUMMARY.files_changed},
+    "testsAdded": {PR_REVIEW_SUMMARY.tests_added},
+    "breakingChanges": {PR_REVIEW_SUMMARY.breaking_changes},
+    "resolvedHighFindings": {PR_REVIEW_SUMMARY.resolved_high_findings}
+  },
   "adrs": {count},
   "commits": {count},
   "contributors": {count},
@@ -387,56 +430,87 @@ When running **Create Release** via `workflow_dispatch`, set `release_version` t
 `{NEXT_VERSION}` (or `v{NEXT_VERSION}`) so the workflow publishes the intended tag
 instead of auto-incrementing from the latest existing tag.
 
-### 10. Update Public-Facing Version References
+### 10. Verify Public-Facing Version References
 
-After bumping `pyproject.toml` (Step 9), update **all** public documents that mention the current release version so they stay in sync. **Skip if DRY_RUN** — but list the files that would change.
+`README.md` and every page under `.documentation/` display the current release as a live `img.shields.io/github/v/release/...` badge that reads the GitHub Releases API directly — there is nothing to edit by hand. As soon as the `.github/workflows/release.yml` workflow publishes the `v{NEXT_VERSION}` tag and GitHub Release, every badge updates on its own.
 
-#### A. Roadmap files
+**Skip if DRY_RUN.**
 
-Update **both** roadmap files to reflect the new current release:
+Confirm the no-manual-edit invariant still holds and nothing has regressed into a hardcoded copy:
 
-| File | Field to update |
-|------|-----------------|
-| `README.md` → `## 🗺️ Roadmap` | `### Current Release (v{NEXT_VERSION})` — add any new capabilities to the checked list |
-| `/.documentation/roadmap.md` | `## Current Release: v{NEXT_VERSION}` — move newly shipped items from Near-Term into Current, update version example |
+```bash
+grep -rn "Current Release: v[0-9]" README.md .documentation/*.md
+```
 
-Ensure future roadmap section version ranges (`Near-Term`, `Medium-Term`, `Long-Term`) are **ahead** of `{NEXT_VERSION}`. If any future section uses a version number ≤ `{NEXT_VERSION}`, bump it forward.
+This should return **no matches**. If it does, someone hardcoded a version string instead of using the badge — replace it with:
 
-#### B. Release notes / index page
+```markdown
+[![Current Release](https://img.shields.io/github/v/release/markhazleton/devspark?label=current%20release)](https://github.com/markhazleton/devspark/releases/latest)
+```
 
-| File | Field to update |
-|------|-----------------|
-| `release_notes.md` | Update highlights and "What's New" to `{NEXT_VERSION}` |
-| `/.documentation/index.md` | Update any version badges or "latest" references |
+Also run a quick search for the **old** version string (`{CURRENT_VERSION}`) across `README.md` and `.documentation/*.md`, and confirm every remaining reference is intentional (e.g., CHANGELOG history, worked examples). Flag any stale occurrences for manual review.
 
-#### C. Verify — no stale version strings
+### 11. Markdownlint Preflight (Required)
 
-Run a quick search for the **old** version string (`{CURRENT_VERSION}`) across `README.md`, `release_notes.md`, `.documentation/*.md`, and confirm every remaining reference is intentional (e.g., CHANGELOG history). Flag any stale occurrences for manual review.
+Before finalizing release output, run a full markdown lint pass and fail closed on any violations.
 
-### 11. Clean Slate Preparation
+#### A. Run markdownlint-cli2
 
-After archival (skip if DRY_RUN):
+Execute from repository root:
 
-#### A. Archive Specs
+```bash
+npx markdownlint-cli2 "**/*.md" "#node_modules"
+```
+
+If local policy requires a different invocation, use the repository-standard equivalent but keep full-repo coverage.
+
+#### B. Produce a detailed findings report
+
+If lint fails, parse and print a structured report with:
+
+- Rule ID (e.g., `MD036`, `MD050`)
+- File path
+- Line number
+- Short message
+
+Include grouped counts by rule and by file so the author can fix quickly.
+
+#### C. Block release completion on lint errors
+
+If any markdownlint violations remain:
+
+- Mark release as **BLOCKED**
+- Do **not** proceed to completion messaging
+- Return explicit remediation guidance with the failing file/line/rule list
+
+Continue only when markdownlint exits cleanly.
+
+### 12. Clean Slate Preparation
+
+After archival (skip if DRY_RUN).
+
+**Note**: This step moves specs and quickfixes into `/.documentation/releases/v{NEXT_VERSION}/` — the versioned release archive. Moving files to `/.archive/` is **not** done here; that is the responsibility of `/devspark.harvest`, which should be run after release to complete the cleanup cycle.
+
+#### A. Move Specs to Release Archive
 
 For each spec in COMPLETED_SPECS:
 
-1. Copy entire spec directory to `releases/v{NEXT_VERSION}/specs/`
-2. Remove from `/.documentation/specs/`
+1. Move entire spec directory to `/.documentation/releases/v{NEXT_VERSION}/specs/{spec-name}/`
+2. This removes it from `/.documentation/specs/` in one operation (no separate copy + delete)
 
-#### B. Archive Quickfixes
+#### B. Move Quickfixes to Release Archive
 
 For each quickfix in QUICKFIXES:
 
-1. Copy to `releases/v{NEXT_VERSION}/quickfixes/`
-2. Remove from `/.documentation/quickfixes/`
+1. Move file to `/.documentation/releases/v{NEXT_VERSION}/quickfixes/`
+2. This removes it from `/.documentation/quickfixes/` in one operation
 
 #### C. Reset State
 
-1. Create `/.documentation/specs/.gitkeep` if directory is empty
-2. Create `/.documentation/quickfixes/.gitkeep` if directory is empty
+1. Create `/.documentation/specs/.gitkeep` if directory is now empty
+2. Create `/.documentation/quickfixes/.gitkeep` if directory is now empty
 
-### 12. Output Summary
+### 13. Output Summary
 
 #### Dry Run Output
 
@@ -502,13 +576,13 @@ To execute this release:
 
 1. Confirm `pyproject.toml` has been bumped to `{NEXT_VERSION}` (Step 9A above).
 
-2. Confirm roadmap and public docs reference `{NEXT_VERSION}` (Step 10 above).
+2. Confirm public docs have no hardcoded version strings (Step 10 above) — the release badges read `{NEXT_VERSION}` automatically once it's tagged.
 
 3. Review generated documentation:
    - `/.documentation/releases/v{NEXT_VERSION}/release-notes.md`
    - `CHANGELOG.md`
 
-3. Commit changes:
+4. Commit changes:
 
    ```bash
    git add -A
@@ -538,6 +612,8 @@ To execute this release:
    ```bash
    devspark upgrade
    ```
+
+5. Run `/devspark.harvest` to complete the cleanup cycle: rewrite spec-linked code comments, consolidate or archive stale docs, and move obsolete artifacts to `/.archive/`.
 
 ## Guidelines
 

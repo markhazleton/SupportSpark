@@ -4,9 +4,6 @@ handoffs:
   - label: View Review History
     agent: devspark.pr-review
     prompt: Show me previous PR reviews in .documentation/specs/pr-review/
-scripts:
-  sh: .devspark/scripts/bash/get-pr-context.sh $ARGUMENTS --json
-  ps: .devspark/scripts/powershell/get-pr-context.ps1 $ARGUMENTS -Json
 ---
 
 ## User Input
@@ -27,6 +24,12 @@ Reviews are advisory. The agent must explain constitution or lifecycle issues, r
 
 `/devspark.create-pr` is the preferred predecessor for spec-driven work because it collects task, checklist, and gate context before review. If the PR was created manually, continue with review but call out any missing lifecycle context.
 
+## Genuine Fix Discipline
+
+Apply `templates/command-preamble-contract.md` §9 when generating review
+findings. Each actionable finding must name the behavioral intent being
+protected before recommending metric movement or style cleanup.
+
 ## Prerequisites
 
 - Project constitution at `/.documentation/memory/constitution.md` (REQUIRED)
@@ -34,13 +37,19 @@ Reviews are advisory. The agent must explain constitution or lifecycle issues, r
 - GitHub CLI (`gh`) installed and authenticated (required)
 - **HARD RULE — Branch Sync**: The source (head) branch **MUST** be fully in sync with the target (base) branch. Do **NOT** proceed with review or approval if the source branch is behind the target. Instruct the user to rebase or merge the target branch into the source branch first.
 
+## Definition of Done
+
+Done when: the report is written to `/.documentation/specs/pr-review/pr-{PR_NUMBER}.md` (step 9) and the step-10 chat summary is printed. The execution limits in §1 (max 20 findings, max 25 files, "stop once evidence is sufficient") are the convergence condition for the analysis itself — don't expand scope beyond them speculatively. Chat output is the step-10 template only; the full report (all tables, all sections) lives in the file — don't re-paste it into chat.
+
 ## Outline
 
 **Multi-app support**: If this repository uses multi-app mode (`.documentation/devspark.json` exists with `mode: "multi-app"`), check for `--app <id>` in the user input to scope this workflow to a specific application. When app context is provided, resolve artifacts from `{app.path}/.documentation/` instead of the repository root `.documentation/`. Print the resolved scope (app name, doc root) at the start of output.
 
 ### 1. Initialize Review Context
 
-Run `{SCRIPT}` to extract PR context and parse JSON output for:
+> **Script Resolution**: Before running `.devspark/scripts/powershell/get-pr-context.ps1 $ARGUMENTS -Json`, apply the 2-tier override check — if `.documentation/scripts/powershell/<filename>` (PowerShell) or `.documentation/scripts/bash/<filename>` (Bash) exists on disk, run that file instead, preserving all arguments. Team overrides in `.documentation/scripts/` always take priority over `.devspark/scripts/`.
+
+Run `.devspark/scripts/powershell/get-pr-context.ps1 $ARGUMENTS -Json` to extract PR context and parse JSON output for:
 
 - `PR_CONTEXT`: PR metadata (number, title, branches, commit SHA, files, diff)
 - `CONSTITUTION_PATH`: Path to constitution file
@@ -70,6 +79,7 @@ Before running a full review, check whether the user's input contains iteration 
 5. Mark previously flagged findings as `✅ Resolved`, `⚠️ Partially Addressed`, or `❌ Still Present` based on the new diff
 6. Append new findings (if any) introduced by the new commits
 7. Update the Revision Log section with the new commit SHA and pass/fail counts
+8. **Co-mingling check**: Detect whether the review file (`.documentation/specs/pr-review/pr-{PR_NUMBER}.md`) was committed in the same commit as production code changes. Compare commit SHAs from `git log main...{source_branch} --oneline -- .documentation/specs/pr-review/pr-{PR_NUMBER}.md` against `git log main...{source_branch} --oneline -- {app_path}/`. If any SHA appears in both outputs, flag it as an M-NN finding: "Review file and production code changes committed together — iteration diff may be polluted. Commit review updates separately from code fixes."
 
 **PR Number Detection**:
 The script will try to determine PR number in this order:
@@ -92,6 +102,41 @@ If the script fails:
 
 For single quotes in args like "I'm reviewing", use escape syntax: e.g 'I'\''m reviewing' (or double-quote if possible: "I'm reviewing").
 
+### 1b. Trust-Tier Classification
+
+Detect workflow compliance for the PR's source branch before loading the constitution:
+
+1. Extract `head_branch` from PR context.
+2. Derive spec dir: `.documentation/specs/{head_branch}/`
+3. Check file existence:
+   - `spec.md` present?
+   - `plan.md` present?
+   - `tasks.md` present?
+4. Classify trust tier:
+   - All 3 present → **full-compliance** (standard review depth)
+   - `spec.md` only, or `spec.md` + `plan.md` → **partial-compliance** (note gap; moderate scrutiny)
+   - None present → **no-compliance** (elevated scrutiny; emit MEDIUM finding below)
+   - Branch name does not match `NNN-*` pattern → **no-compliance** (note naming convention gap)
+5. For **no-compliance** branches only, emit the following finding and include the reviewer alert below. Do NOT emit this finding or alert for full-compliance or partial-compliance branches.
+
+```yaml
+findings:
+  - finding_id: trust-tier-01
+    severity: medium
+    description: "Branch has no spec artifacts under .documentation/specs/{head_branch}/. Constitution §Development Workflow requires features to be spec-driven: specify first, plan second, implement third."
+    intent_cue: "Keep review behavior grounded in declared spec, plan, and task evidence before merge."
+    recommended_action: "Run /devspark.specify to create the spec, then /devspark.plan and /devspark.tasks before merging."
+    execution_mode: manual
+    status: open
+    outcome: ""
+```
+
+   > ⚠️ **No spec artifacts detected** — apply heightened attention to all findings in this
+   > report. The absence of a spec means requirements and acceptance criteria have not been
+   > formally defined; findings may undercount issues.
+
+   For **partial-compliance** branches (spec.md present but plan.md or tasks.md missing), note the gap inline in the review output without emitting a separate finding: "Partial spec compliance detected — plan.md or tasks.md missing. Standard depth review applied."
+
 ### 2. Load Constitution
 
 Read and parse `/.documentation/memory/constitution.md`:
@@ -100,6 +145,7 @@ Read and parse `/.documentation/memory/constitution.md`:
 - Identify MUST requirements (non-negotiable/mandatory)
 - Identify SHOULD requirements (recommended)
 - Note constitution version and amendment date
+- If `.documentation/memory/severity-registry.md` exists, load it and use its `§{section}.{LEVEL}` entries to validate finding codes when emitting findings
 - Build a checklist of principles to evaluate
 
 If constitution doesn't exist:
@@ -146,6 +192,8 @@ Parse the full diff to:
 - Check for removed functionality
 - Look for modified behavior
 - Note refactoring vs. feature changes
+
+**Collect code churn stats** via `git diff --numstat` (or from `PR_CONTEXT` totals) and record them in the Stats section of the report. Re-collect on every revision for trend tracking.
 
 #### C. Review Commit Messages
 
@@ -198,10 +246,12 @@ Create structured findings with **stable IDs** that persist across re-reviews. U
   - `H-NN` = High priority
   - `M-NN` = Medium priority
   - `L-NN` = Low priority
+  - `CON-NN` = Constitution (code may be correct; governance needs updating)
 - **Status**: `🔴 Open` | `✅ Resolved` | `⚠️ Partial` | `➡️ Carried` (for re-reviews)
 - **Principle**: Name of constitution principle
 - **File:Line**: Exact location in code
 - **Issue**: Specific description of the problem, including broken code snippet for CRITICAL/HIGH
+- **Intent cue**: Behavioral intent that must be repaired or preserved
 - **Fix**: Concrete code fix for CRITICAL/HIGH findings (required); recommendation for others
 
 ### 5. Additional Review Dimensions
@@ -265,7 +315,14 @@ Identify:
 
 #### Testing Validation
 
-If constitution has testing principles (e.g., TDD):
+**Mandatory test execution** (default behavior — opt out only if constitution explicitly marks test execution as impractical):
+
+1. **Detect the test command**: Identify the project's test runner from project files (`pytest.ini`, `pyproject.toml`, `package.json`, `go.mod`, etc.). If re-reviewing, use the command recorded in the first Revision Log row to maintain a consistent baseline.
+2. **Scope to changed test files**: Run the test suite scoped to test files changed in this PR. Only run the full suite if a scoped run is not possible.
+3. **Record result in Revision Log**: Write the test command and pass/fail result into the Revision Log row for this review.
+4. **Test failures are automatic HIGH findings**: If tests fail, create an H-NN finding citing the failure output. Do not classify test failures as MEDIUM or lower.
+
+Additionally:
 
 - Check if tests exist for new/modified code
 - Verify test quality and coverage
@@ -396,9 +453,9 @@ Use this exact format:
 
 ## Revision Log
 
-| Rev | Commit | Date | Critical | High | Medium | Low | Test Command | Result |
-|-----|--------|------|----------|------|--------|-----|--------------|--------|
-| 1 | [SHA_SHORT] | [DATE] | [N] | [N] | [N] | [N] | [pytest / N/A] | [pass/fail/N/A] |
+| Rev | Commit | Date | Critical | High | Medium | Low | CON | Test Command | Result |
+|-----|--------|------|----------|------|--------|-----|-----|--------------|--------|
+| 1 | [SHA_SHORT] | [DATE] | [N] | [N] | [N] | [N] | [N] | [pytest scoped / skip if opted-out] | [pass/fail/skipped] |
 
 *Add a row for each re-review. Keep the same test command across all revisions to prevent flaky baselines.*
 
@@ -411,6 +468,18 @@ Use this exact format:
 - **Commits**: [COUNT]
 - **Lines**: +[ADDITIONS] -[DELETIONS]
 
+## Stats
+
+| Metric | Value |
+|--------|-------|
+| Files changed | [COUNT] |
+| Lines added | +[ADDITIONS] |
+| Lines removed | −[DELETIONS] |
+| Net lines | [±NET] |
+| Commit snapshot | `[SHA_SHORT]` |
+
+*Collected via `git diff --numstat`. Re-collect on every revision for trend tracking.*
+
 ## Executive Summary
 
 - ✅ **Constitution Compliance**: [PASS/FAIL] ([X]/[Y] principles checked)
@@ -418,8 +487,9 @@ Use this exact format:
 - 📝 **Task Completion**: [X/Y tasks complete | No tasks file | N/A]
 - 🔒 **Security**: [X] issues found
 - 📊 **Code Quality**: [X] recommendations
-- 🧪 **Testing**: [PASS/FAIL/N/A]
+- 🧪 **Testing**: [PASS/FAIL/skipped (opted-out)]
 - 📝 **Documentation**: [PASS/FAIL/N/A]
+- 🏛️ **Constitution Improvements**: [X] CON findings
 
 **Overall Assessment**: [1-2 sentence summary]
 
@@ -445,6 +515,10 @@ Use this exact format:
 
 - [ ] **M-01** `path/file.ext:89` — [One-line description]
 - [ ] **L-01** `path/file.ext:123` — [Optional improvement]
+
+### Constitution Improvements (Non-blocking — feed into `/devspark.evolve-constitution`)
+
+- [ ] **CON-01** — [Constitution section that needs updating]
 
 ## What's Good
 
@@ -489,6 +563,16 @@ Use this exact format:
 |----|--------|-----------|-----------|-------|----------------|
 | L-01 | 🔴 Open | [Name] | path/file.ext:123 | [Minor suggestion] | [Optional improvement] |
 
+### Constitution Improvements
+
+*Findings where the code may be correct but the constitution needs updating. Feed these into `/devspark.evolve-constitution`.*
+
+[If none, write "None found."]
+
+| ID | Status | Section | Observation | Suggested Amendment |
+|----|--------|---------|-------------|---------------------|
+| CON-01 | 🔴 Open | §[Section] | [What the code does that is better than what the constitution prescribes] | [Suggested wording for the constitution] |
+
 ## Constitution Alignment Details
 
 | Principle | Status | Evidence | Notes |
@@ -513,7 +597,22 @@ Use this exact format:
 
 **Status**: [ADEQUATE | INADEQUATE | N/A]
 
-[Details about test coverage, or "N/A - No testing principle in constitution"]
+[Details about test coverage, or reasons why test execution was skipped per constitution opt-out]
+
+## Test Inventory
+
+*Count of test functions per changed test file. Unjustified removals are MEDIUM findings.*
+
+| File | Main | Branch | Delta | Justification |
+|------|------|--------|-------|---------------|
+| `tests/[test_file].py` | [N] | [N] | [±N] | N/A |
+| **Total** | [N] | [N] | [±N] | |
+
+Removed tests (if any):
+
+- `[test_name]` — **[Justified/Unjustified]**: [reason] → [finding ID if unjustified]
+
+*If no test files changed, write "No test files changed in this PR."*
 
 ## Documentation Status
 
@@ -530,6 +629,16 @@ Use this exact format:
 | tests/test_auth.py | P2 | +120 -0 | Added | None |
 | README.md | P3 | +8 -2 | Modified | None |
 
+## Behavioral Changes
+
+*Silent behavioral changes detectable from diff analysis. Callers may break without test failures.*
+
+[If none detected, write "None detected."]
+
+| Change | Before | After | Intentional? | Risk |
+|--------|--------|-------|-------------|------|
+| `[function()]` [what changed] | [before value/type] | [after value/type] | [Yes (PR description) / Unclear] | [Impact on callers] |
+
 ## Approval Decision
 
 **Recommendation**: [✅ APPROVE | ⚠️ REQUEST CHANGES | ❌ REJECT]
@@ -545,9 +654,10 @@ Use this exact format:
 
 ---
 
-*Review generated by devspark.pr-review v1.1*
+*Review generated by devspark.pr-review v1.2*
 *Constitution-driven code review for [PROJECT_NAME]*
 *To re-review after fixes: `/devspark.pr-review #[PR_NUMBER] re-review`*
+*When addressing these findings, run `/devspark.address-pr-review {PR_ID}`. The review file must be committed on its own — this rule is enforced by the prompt and can also be enforced by the optional pre-commit hook.*
 
 ---
 
@@ -603,6 +713,7 @@ Executive Summary:
 - [Status emoji] {COUNT} High priority
 - [Status emoji] {COUNT} Medium priority
 - [Status emoji] {COUNT} Low priority
+- 🏛️ {COUNT} Constitution improvements
 
 Recommendation: {APPROVE/REQUEST CHANGES/REJECT}
 
@@ -648,12 +759,48 @@ Every issue must include:
 
 ### Severity Guidelines
 
-Use these criteria for classification:
+Use this scenario-to-severity mapping table to anchor classification. When two tiers are plausible, prefer the higher one. Projects may extend this table via their constitution's anti-pattern appendix.
+
+| Finding Type | Severity | Rationale |
+|---|---|---|
+| Runtime crash on production path | CRITICAL | Immediate user impact |
+| Data corruption / silent data loss | CRITICAL | Breaks data contracts |
+| Auth bypass / credential exposure | CRITICAL | Compliance + security |
+| Schema violation (frozen fields) | CRITICAL | Pipeline breakage |
+| Spec lifecycle not complete (feature branches) | CRITICAL | Process requirement |
+| Runtime error on edge path | HIGH | Affects subset of users |
+| Silent behavior change (defaults, types) | HIGH | Invisible regression |
+| API contract violation (wrong status codes) | HIGH | Breaks consumers |
+| Broken test infrastructure | HIGH | Blocks developer workflow |
+| Test suite failures on changed test files | HIGH | Runtime errors missed by diff |
+| Missing tests for new code | MEDIUM | Tech debt, not production risk |
+| Unjustified test removal | MEDIUM | Coverage regression |
+| Dead code introduced in PR | MEDIUM | Maintenance burden |
+| Performance inefficiency | MEDIUM | Latency, not correctness |
+| Review file co-mingled with code fixes | MEDIUM | Pollutes iteration diff |
+| Stale TODO referencing merged work | LOW | Clutter |
+| Style / naming / docs | LOW | Optional improvement |
+| Constitution needs updating (not code) | CON | Governance improvement |
+
+#### Severity Code Format
+
+Every finding that references a constitution principle MUST include a severity code in the
+format `§{section}.{LEVEL}` matching an entry in `.documentation/memory/severity-registry.md`.
+
+**Examples**: `§VI.HIGH` (platform parity), `§VII.MEDIUM` (review file commit discipline),
+`§VIII.HIGH` (markdownlint CI block), `§I.SHOWSTOPPER` (backward compatibility violation)
+
+For findings not mapped to any constitution section (e.g., security observations, code-quality
+issues not covered by the constitution): emit the finding without a `§` code and flag it as
+a `CON` candidate for `/devspark.evolve-constitution`.
+
+Summary tiers:
 
 - **CRITICAL**: Violates MUST principle, blocks functionality, security risk, breaks production
 - **HIGH**: Violates SHOULD principle significantly, quality concerns, technical debt
 - **MEDIUM**: Partial compliance, improvement opportunity, maintainability concern
 - **LOW**: Style preference, minor optimization, optional enhancement
+- **CON**: Constitution needs updating — the code may be correct but governance is lagging behind
 
 ### Graceful Error Handling
 
@@ -725,3 +872,21 @@ When re-reviewing an updated PR:
 ## Context
 
 $ARGUMENTS
+
+## Shared Review Resolution Contract Output
+
+When emitting findings (review observations, issues, recommendations), structure each entry to include the shared resolution contract fields so downstream tools (/devspark.address-pr-review, telemetry, harvest) can act on them deterministically:
+
+```yaml
+findings:
+  - finding_id: <stable-id-unique-within-this-command-output>   # e.g., analyze-001, clarify-002
+    severity: critical | high | medium | low
+    description: <1-3 sentence problem statement>
+    intent_cue: <behavioral intent that must be repaired or preserved>
+    recommended_action: <machine-actionable next step>
+    execution_mode: auto | selective | manual
+    status: open                                                  # set to `resolved` after remediation
+    outcome: ""                                                  # populated post-resolution by address-pr-review
+```
+
+`finding_id` MUST be stable across re-runs when the underlying issue is unchanged. `intent_cue` MUST name the behavior, contract, safety property, or user outcome the finding protects before metric-focused remediation. `execution_mode` MUST be one of: `auto` (safe to apply automatically), `selective` (apply with reviewer approval), `manual` (requires human implementation). The `status` and `outcome` fields are written by `/devspark.address-pr-review` (FR-028).
