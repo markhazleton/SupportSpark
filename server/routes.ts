@@ -12,7 +12,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import bcrypt from "bcrypt";
 import rateLimit from "express-rate-limit";
-import type { User, Message, Supporter } from "@shared/schema";
+import { insertUserSchema, type User, type Message, type Supporter } from "@shared/schema";
 import type { AuthenticatedRequest, AuthMiddleware } from "./types";
 import { registerConversationImageRoutes } from "./conversation-image-routes";
 
@@ -135,26 +135,30 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   app.post("/api/register", authLimiter, async (req, res) => {
     try {
-      const existingUser = await storage.getUserByEmail(req.body.email);
+      const input = insertUserSchema.parse(req.body);
+      const existingUser = await storage.getUserByEmail(input.email);
       if (existingUser) {
         return res.status(400).json({ message: "Email already registered" });
       }
 
       // Hash password with bcrypt (10 rounds)
-      const hashedPassword = await bcrypt.hash(req.body.password, 10);
+      const hashedPassword = await bcrypt.hash(input.password, 10);
 
       const user = await storage.createUser({
-        email: req.body.email,
+        email: input.email,
         password: hashedPassword,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
+        firstName: input.firstName,
+        lastName: input.lastName,
       });
 
       req.login(user, (err) => {
         if (err) return res.status(500).json({ message: "Login failed after registration" });
         return res.status(201).json(sanitizeUser(user));
       });
-    } catch {
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: err.message });
+      }
       res.status(500).json({ message: "Registration failed" });
     }
   });
@@ -221,8 +225,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     try {
       const input = api.conversations.create.input.parse(req.body);
       const userId = user.id;
-      const userName =
-        `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Anonymous";
+      const userName = `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Anonymous";
 
       const initialMessage = {
         id: randomUUID(),
@@ -326,10 +329,10 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     // Enrich data with names if possible (in a real DB this is a join)
     // For now we'll fetch user details for each
     const enrichSupporters = async (
-      list: Supporter[], 
-      idField: 'memberId' | 'supporterId',
-      nameField: 'memberName' | 'supporterName',
-      emailField: 'memberEmail' | 'supporterEmail'
+      list: Supporter[],
+      idField: "memberId" | "supporterId",
+      nameField: "memberName" | "supporterName",
+      emailField: "memberEmail" | "supporterEmail"
     ) => {
       return Promise.all(
         list.map(async (item) => {
@@ -343,8 +346,18 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       );
     };
 
-    const mySupportersEnriched = await enrichSupporters(mySupporters, "supporterId", "supporterName", "supporterEmail");
-    const supportingEnriched = await enrichSupporters(supporting, "memberId", "memberName", "memberEmail");
+    const mySupportersEnriched = await enrichSupporters(
+      mySupporters,
+      "supporterId",
+      "supporterName",
+      "supporterEmail"
+    );
+    const supportingEnriched = await enrichSupporters(
+      supporting,
+      "memberId",
+      "memberName",
+      "memberEmail"
+    );
 
     res.json({
       mySupporters: mySupportersEnriched,

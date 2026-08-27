@@ -1,10 +1,5 @@
 import { z } from "zod";
-import {
-  conversationSchema,
-  supporterSchema,
-  type Conversation,
-  type Supporter,
-} from "./schema";
+import { conversationSchema, supporterSchema, type Conversation, type Supporter } from "./schema";
 
 // ============================================
 // SHARED ERROR SCHEMAS
@@ -82,14 +77,18 @@ export const api = {
       path: "/api/supporters",
       responses: {
         200: z.object({
-          mySupporters: z.array(supporterSchema.extend({
-            supporterName: z.string().optional(),
-            supporterEmail: z.string().optional(),
-          })),
-          supporting: z.array(supporterSchema.extend({
-            memberName: z.string().optional(),
-            memberEmail: z.string().optional(),
-          })),
+          mySupporters: z.array(
+            supporterSchema.extend({
+              supporterName: z.string().optional(),
+              supporterEmail: z.string().optional(),
+            })
+          ),
+          supporting: z.array(
+            supporterSchema.extend({
+              memberName: z.string().optional(),
+              memberEmail: z.string().optional(),
+            })
+          ),
         }),
       },
     },

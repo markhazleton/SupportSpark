@@ -112,6 +112,19 @@ describe("Authentication Security Tests", () => {
 
   // Verifies that passwords are stored as bcrypt hashes (not plaintext) on registration
   describe("POST /api/register - Password Hashing", () => {
+    it("should reject invalid registration input", async () => {
+      const response = await agent
+        .post("/api/register")
+        .send({
+          email: "not-an-email",
+          password: "short",
+        })
+        .expect(400);
+
+      expect(response.body).toHaveProperty("message");
+      await expect(storage.getUserByEmail("not-an-email")).resolves.toBeUndefined();
+    });
+
     it("should hash password on registration using bcrypt", async () => {
       const testEmail = `test-hash-${Date.now()}@example.com`;
       const plainPassword = "TestPassword123";

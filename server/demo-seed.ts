@@ -91,7 +91,9 @@ export function buildDemoSeedData({
                 authorName: "James Chen",
                 content:
                   "Sarah, I'm so sorry to hear this. We've all been thinking of you. Your skills and experience are incredible - this is just a temporary setback. We're here for whatever you need.",
-                timestamp: new Date(new Date(timestamps.sevenDaysAgo).getTime() + 2 * 60 * 60 * 1000).toISOString(),
+                timestamp: new Date(
+                  new Date(timestamps.sevenDaysAgo).getTime() + 2 * 60 * 60 * 1000
+                ).toISOString(),
                 replies: [],
               },
             ],
@@ -110,7 +112,9 @@ export function buildDemoSeedData({
                 authorName: "James Chen",
                 content:
                   "That's the spirit! Every small step counts. Happy to review your resume if you'd like another set of eyes on it.",
-                timestamp: new Date(new Date(timestamps.sixDaysAgo).getTime() + 3 * 60 * 60 * 1000).toISOString(),
+                timestamp: new Date(
+                  new Date(timestamps.sixDaysAgo).getTime() + 3 * 60 * 60 * 1000
+                ).toISOString(),
                 replies: [],
               },
             ],
@@ -148,7 +152,9 @@ export function buildDemoSeedData({
                 authorName: "James Chen",
                 content:
                   "Those ups and downs are completely normal. Be kind to yourself - you're going through a major life change. We're all cheering for you!",
-                timestamp: new Date(new Date(timestamps.threeDaysAgo).getTime() + 4 * 60 * 60 * 1000).toISOString(),
+                timestamp: new Date(
+                  new Date(timestamps.threeDaysAgo).getTime() + 4 * 60 * 60 * 1000
+                ).toISOString(),
                 replies: [],
               },
             ],
@@ -167,7 +173,9 @@ export function buildDemoSeedData({
                 authorName: "James Chen",
                 content:
                   "That's amazing progress! Establishing a routine is so important. Keep celebrating those wins - they add up!",
-                timestamp: new Date(new Date(timestamps.twoDaysAgo).getTime() + 2 * 60 * 60 * 1000).toISOString(),
+                timestamp: new Date(
+                  new Date(timestamps.twoDaysAgo).getTime() + 2 * 60 * 60 * 1000
+                ).toISOString(),
                 replies: [],
               },
             ],

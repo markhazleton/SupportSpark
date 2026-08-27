@@ -1,5 +1,14 @@
 {
-  "include": ["client/src/**/*", "shared/**/*", "server/**/*", "test/**/*", "script/**/*", "vite.config.ts", "vite.config.static.ts", "eslint.config.js"],
+  "include": [
+    "client/src/**/*",
+    "shared/**/*",
+    "server/**/*",
+    "test/**/*",
+    "script/**/*",
+    "vite.config.ts",
+    "vite.config.static.ts",
+    "eslint.config.js"
+  ],
   "exclude": ["node_modules", "build", "dist", "dist-static"],
   "compilerOptions": {
     "incremental": true,

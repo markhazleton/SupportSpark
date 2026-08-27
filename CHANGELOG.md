@@ -11,10 +11,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conv
 ## [2026-04-12] Archive run
 
 ### Archived
+
 - `.documentation/copilot/harvest-2026-04-12.md` — transient harvest report moved to the dated archive after the archive workflow completed.
 - `.documentation/copilot/session-2026-04-12/architecture-documentation-arrangement.md` — session-specific documentation arrangement notes archived after their decisions were folded into living docs.
 
 ### Key decisions preserved
+
 - `.documentation/Guide.md` remains the living entry point for repository documentation.
 - Durable product and system guidance stays in `.documentation/domain/` rather than in session artifacts.
 - README and documentation links should continue pointing at the active `.documentation/` tree instead of archived notes.

@@ -1,4 +1,5 @@
 # AGENTS.md
+
 ## DevSpark
 
 - DevSpark framework files live in `.devspark/`.

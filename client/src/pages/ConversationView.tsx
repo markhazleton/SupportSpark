@@ -31,9 +31,7 @@ export default function ConversationView() {
   const { user } = useAuth();
   const conversationQuery = useConversation(id);
   const conversation = conversationQuery.data as
-    | (typeof conversationQuery.data & { memberName?: string })
-    | null
-    | undefined;
+    (typeof conversationQuery.data & { memberName?: string }) | null | undefined;
   const isLoading = conversationQuery.isLoading;
   const error = conversationQuery.error;
   const addMessageMutation = useAddMessage(id);

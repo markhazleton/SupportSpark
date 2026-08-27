@@ -203,8 +203,8 @@ export default function Demo() {
                   <CardTitle className="text-xl">Try as Member</CardTitle>
                 </div>
                 <CardDescription>
-                  Experience the platform as {patientName}, someone
-                  sharing their journey with supporters.
+                  Experience the platform as {patientName}, someone sharing their journey with
+                  supporters.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -245,8 +245,7 @@ export default function Demo() {
                   <CardTitle className="text-xl">Try as Supporter</CardTitle>
                 </div>
                 <CardDescription>
-                  Experience the platform as Alex, a friend
-                  supporting {patientName}&apos;s journey.
+                  Experience the platform as Alex, a friend supporting {patientName}&apos;s journey.
                 </CardDescription>
               </CardHeader>
               <CardContent>

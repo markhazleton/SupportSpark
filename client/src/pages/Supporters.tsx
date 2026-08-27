@@ -119,7 +119,8 @@ export default function Supporters() {
                   ))
                 ) : (
                   <div className="text-center py-12 border-2 border-dashed rounded-xl text-muted-foreground">
-                    You haven&apos;t added any supporters yet. Invite friends and family to get started.
+                    You haven&apos;t added any supporters yet. Invite friends and family to get
+                    started.
                   </div>
                 )}
               </div>

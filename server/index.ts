@@ -102,12 +102,19 @@ app.use((req, res, next) => {
   await registerRoutes(httpServer, app);
 
   app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
-    const status = (err && typeof err === 'object' && ('status' in err || 'statusCode' in err)) 
-      ? (err as { status?: number; statusCode?: number }).status || (err as { statusCode?: number }).statusCode || 500 
-      : 500;
-    const message = (err && typeof err === 'object' && 'message' in err && typeof (err as { message: unknown }).message === 'string') 
-      ? (err as { message: string }).message 
-      : "Internal Server Error";
+    const status =
+      err && typeof err === "object" && ("status" in err || "statusCode" in err)
+        ? (err as { status?: number; statusCode?: number }).status ||
+          (err as { statusCode?: number }).statusCode ||
+          500
+        : 500;
+    const message =
+      err &&
+      typeof err === "object" &&
+      "message" in err &&
+      typeof (err as { message: unknown }).message === "string"
+        ? (err as { message: string }).message
+        : "Internal Server Error";
 
     res.status(status).json({ message });
     throw err;

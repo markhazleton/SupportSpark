@@ -31,11 +31,9 @@ describe("seed-data", () => {
 
   it("creates My Journey conversations for registered user", () => {
     injectSeedData("test-user-001");
-    const conversations = JSON.parse(
-      localStorage.getItem("supportSpark_conversations") || "[]",
-    );
+    const conversations = JSON.parse(localStorage.getItem("supportSpark_conversations") || "[]");
     const myJourney = conversations.filter(
-      (c: { memberId: string }) => c.memberId === "test-user-001",
+      (c: { memberId: string }) => c.memberId === "test-user-001"
     );
     expect(myJourney).toHaveLength(2);
     expect(myJourney[0].title).toBe("Starting My Recovery Journey");
@@ -44,11 +42,9 @@ describe("seed-data", () => {
 
   it("creates Following conversations for seed supporter", () => {
     injectSeedData("test-user-001");
-    const conversations = JSON.parse(
-      localStorage.getItem("supportSpark_conversations") || "[]",
-    );
+    const conversations = JSON.parse(localStorage.getItem("supportSpark_conversations") || "[]");
     const following = conversations.filter(
-      (c: { memberId: string }) => c.memberId === "seed-supporter-001",
+      (c: { memberId: string }) => c.memberId === "seed-supporter-001"
     );
     expect(following).toHaveLength(2);
     expect(following[0].title).toBe("Managing Daily Challenges");
@@ -62,11 +58,11 @@ describe("seed-data", () => {
 
     const forward = supporters.find(
       (s: { memberId: string; supporterId: string }) =>
-        s.memberId === "test-user-001" && s.supporterId === "seed-supporter-001",
+        s.memberId === "test-user-001" && s.supporterId === "seed-supporter-001"
     );
     const reverse = supporters.find(
       (s: { memberId: string; supporterId: string }) =>
-        s.memberId === "seed-supporter-001" && s.supporterId === "test-user-001",
+        s.memberId === "seed-supporter-001" && s.supporterId === "test-user-001"
     );
     expect(forward).toBeDefined();
     expect(reverse).toBeDefined();
@@ -82,12 +78,8 @@ describe("seed-data", () => {
 
   it("uses registered user name in conversation messages", () => {
     injectSeedData("test-user-001");
-    const conversations = JSON.parse(
-      localStorage.getItem("supportSpark_conversations") || "[]",
-    );
-    const myConv = conversations.find(
-      (c: { memberId: string }) => c.memberId === "test-user-001",
-    );
+    const conversations = JSON.parse(localStorage.getItem("supportSpark_conversations") || "[]");
+    const myConv = conversations.find((c: { memberId: string }) => c.memberId === "test-user-001");
     expect(myConv.data.messages[0].authorName).toBe("TestUser");
   });
 });

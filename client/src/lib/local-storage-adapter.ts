@@ -1,10 +1,4 @@
-import type {
-  User,
-  InsertUser,
-  Conversation,
-  Message,
-  Supporter,
-} from "@shared/schema";
+import type { User, InsertUser, Conversation, Message, Supporter } from "@shared/schema";
 import { DEMO_SUPPORTER_ID } from "./seed-data";
 
 // localStorage key constants
@@ -118,7 +112,7 @@ function register(data: InsertUser): User {
 function login(credentials: { email: string; password: string }): User {
   const users = getUsers();
   const user = users.find(
-    (u) => u.email === credentials.email && u.password === credentials.password,
+    (u) => u.email === credentials.email && u.password === credentials.password
   );
   if (!user) throw new Error("Invalid email or password");
   setSessionUserId(user.id);
@@ -178,7 +172,7 @@ function getConversation(id: number): Conversation | null {
     (s) =>
       s.status === "accepted" &&
       ((s.memberId === conversation.memberId && s.supporterId === user.id) ||
-        (s.supporterId === conversation.memberId && s.memberId === user.id)),
+        (s.supporterId === conversation.memberId && s.memberId === user.id))
   );
   if (!hasAccess) throw new Error("You do not have access to this conversation");
   return conversation;
@@ -212,7 +206,7 @@ function createConversation(data: { title: string; initialMessage: string }): Co
 
 function addMessage(
   conversationId: number,
-  data: { content: string; parentMessageId?: string; images?: string[] },
+  data: { content: string; parentMessageId?: string; images?: string[] }
 ): Conversation {
   const user = requireAuth();
   const all = getConversationsStore();
@@ -228,7 +222,7 @@ function addMessage(
       (s) =>
         s.status === "accepted" &&
         ((s.memberId === conversation.memberId && s.supporterId === user.id) ||
-          (s.supporterId === conversation.memberId && s.memberId === user.id)),
+          (s.supporterId === conversation.memberId && s.memberId === user.id))
     );
     if (!hasAccess) throw new Error("You do not have access to this conversation");
   }
@@ -352,10 +346,7 @@ function inviteSupporter(data: { email: string }): Supporter {
   return supporter;
 }
 
-function updateSupporterStatus(
-  id: number,
-  status: "accepted" | "rejected",
-): Supporter {
+function updateSupporterStatus(id: number, status: "accepted" | "rejected"): Supporter {
   requireAuth();
   const all = getSupportersStore();
   const idx = all.findIndex((s) => s.id === id);

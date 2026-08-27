@@ -27,9 +27,9 @@ describe("LocalStorageAdapter", () => {
 
     it("throws on duplicate email", () => {
       storage.register({ email: "dup@example.com", password: "password123" });
-      expect(() =>
-        storage.register({ email: "dup@example.com", password: "password456" }),
-      ).toThrow("A user with this email already exists");
+      expect(() => storage.register({ email: "dup@example.com", password: "password456" })).toThrow(
+        "A user with this email already exists"
+      );
     });
   });
 
@@ -45,15 +45,15 @@ describe("LocalStorageAdapter", () => {
     it("throws on wrong password", () => {
       storage.register({ email: "user@test.com", password: "mypassword" });
       storage.logout();
-      expect(() =>
-        storage.login({ email: "user@test.com", password: "wrong" }),
-      ).toThrow("Invalid email or password");
+      expect(() => storage.login({ email: "user@test.com", password: "wrong" })).toThrow(
+        "Invalid email or password"
+      );
     });
 
     it("throws on non-existent email", () => {
-      expect(() =>
-        storage.login({ email: "nobody@test.com", password: "pass" }),
-      ).toThrow("Invalid email or password");
+      expect(() => storage.login({ email: "nobody@test.com", password: "pass" })).toThrow(
+        "Invalid email or password"
+      );
     });
   });
 
@@ -154,7 +154,7 @@ describe("LocalStorageAdapter", () => {
 
     it("throws on non-existent supporter", () => {
       expect(() => storage.updateSupporterStatus(9999, "accepted")).toThrow(
-        "Supporter relationship not found",
+        "Supporter relationship not found"
       );
     });
   });

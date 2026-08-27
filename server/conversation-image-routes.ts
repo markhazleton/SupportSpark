@@ -52,11 +52,7 @@ export function registerConversationImageRoutes(
     },
   });
 
-  const verifyMemberOwnership: AuthMiddleware = async (
-    req: AuthenticatedRequest,
-    res,
-    next
-  ) => {
+  const verifyMemberOwnership: AuthMiddleware = async (req: AuthenticatedRequest, res, next) => {
     const userId = req.user?.id;
     if (!userId) {
       res.status(401).json({ message: "Not authenticated" });
