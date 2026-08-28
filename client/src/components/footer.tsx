@@ -4,8 +4,11 @@ import { Heart } from "lucide-react";
 export function Footer() {
   const currentYear = new Date().getFullYear();
   const buildDate = new Intl.DateTimeFormat("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
     timeZone: "UTC",
     timeZoneName: "short",
   }).format(new Date(__BUILD_DATE__));

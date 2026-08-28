@@ -9,8 +9,9 @@
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx server/index.ts",
+    "clean": "node -e \"const fs=require('fs'); for (const p of ['dist','dist-static']) fs.rmSync(p,{recursive:true,force:true});\"",
     "build": "tsx script/build.ts",
-    "start": "cross-env NODE_ENV=production node dist/index.cjs",
+    "start": "node script/start.cjs",
     "check": "tsc",
     "test": "vitest",
     "test:ui": "vitest --ui",

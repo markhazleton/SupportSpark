@@ -18,6 +18,9 @@ const allowlist = [
 ];
 
 async function buildAll() {
+  const pkg = JSON.parse(await readFile("package.json", "utf-8"));
+  const buildDate = new Date().toISOString();
+
   await rm("dist", { recursive: true, force: true });
   await mkdir("dist/public", { recursive: true });
 
@@ -37,6 +40,8 @@ async function buildAll() {
     outfile: "dist/public/site.js",
     define: {
       "process.env.NODE_ENV": '"production"',
+      __APP_VERSION__: JSON.stringify(pkg.version),
+      __BUILD_DATE__: JSON.stringify(buildDate),
     },
     jsx: "automatic",
     loader: {
@@ -84,7 +89,6 @@ async function buildAll() {
   }
 
   console.log("Building server...");
-  const pkg = JSON.parse(await readFile("package.json", "utf-8"));
   const allDeps = [
     ...Object.keys(pkg.dependencies || {}),
     ...Object.keys(pkg.devDependencies || {}),
